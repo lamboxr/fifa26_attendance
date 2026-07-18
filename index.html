@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🏆 观赛名单 · 晋级特效</title>
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at 50% 20%, #0b1a2e, #050a14);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ===== 主容器 ===== */
+        #app {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(10, 20, 40, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 30px 35px 35px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.3s ease;
+        }
+
+        /* ===== 头部 ===== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #f6e05e, #fbd38d, #f6e05e);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            animation: shimmerGold 4s ease-in-out infinite;
+        }
+
+        .logo .sub {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+            margin-top: 2px;
+            -webkit-text-fill-color: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes shimmerGold {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .round-badge {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 10px 22px 10px 26px;
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .round-badge .label {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .round-badge .round-num {
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            min-width: 36px;
+            text-align: center;
+            transition: 0.3s;
+        }
+
+        .round-badge .round-num.active {
+            color: #f6e05e;
+            text-shadow: 0 0 20px rgba(246, 224, 94, 0.3);
+        }
+
+        .round-badge .total {
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 16px;
+        }
+
+        .round-badge .people-count {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
+        /* ===== 统计条 ===== */
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .stats-bar .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.45);
+            font-weight: 500;
+        }
+
+        .stats-bar .stat-item .num {
+            font-weight: 700;
+            font-size: 18px;
+            color: #fff;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .stats-bar .stat-item .num.qualify-num {
+            color: #68d391;
+        }
+        .stats-bar .stat-item .num.eliminate-num {
+            color: #fc8181;
+        }
+
+        .stats-bar .stat-divider {
+            width: 1px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* ===== 名字网格 ===== */
+        #nameGrid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            min-height: 320px;
+            padding: 18px 8px 10px;
+            border-radius: 24px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        /* ===== 名字卡片 ===== */
+        .name-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 18px;
+            min-width: 60px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: default;
+            position: relative;
+            user-select: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .name-card:hover {
+            transform: translateY(-2px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ---- 晋级状态 ---- */
+        .name-card.qualify {
+            background: rgba(104, 211, 145, 0.18);
+            border-color: rgba(104, 211, 145, 0.5);
+            color: #68d391;
+            box-shadow: 0 0 25px rgba(104, 211, 145, 0.15), inset 0 0 20px rgba(104, 211, 145, 0.05);
+            animation: qualifyPulse 1.2s ease-in-out;
+        }
+
+        @keyframes qualifyPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(104, 211, 145, 0);
+            }
+            30% {
+                transform: scale(1.12);
+                box-shadow: 0 0 50px rgba(104, 211, 145, 0.4);
+                border-color: #68d391;
+            }
+            70% {
+                transform: scale(0.96);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 25px rgba(104, 211, 145, 0.15);
+            }
+        }
+
+        .name-card.qualify .check-mark {
+            display: inline-block;
+            margin-left: 6px;
+            font-size: 13px;
+            color: #68d391;
+        }
+
+        /* ---- 淘汰状态 ---- */
+        .name-card.eliminate {
+            background: rgba(252, 129, 129, 0.12);
+            border-color: rgba(252, 129, 129, 0.3);
+            color: #fc8181;
+            animation: eliminateFade 0.9s ease-in forwards;
+        }
+
+        @keyframes eliminateFade {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+                background: rgba(252, 129, 129, 0.12);
+            }
+            40% {
+                transform: scale(0.85);
+                opacity: 0.8;
+                background: rgba(252, 129, 129, 0.25);
+            }
+            100% {
+                transform: scale(0.6) translateY(30px);
+                opacity: 0;
+                background: rgba(252, 129, 129, 0);
+                border-color: transparent;
+            }
+        }
+
+        /* ---- 回归状态 (上一场) ---- */
+        .name-card.reappear {
+            animation: reappearUp 0.7s ease-out forwards;
+        }
+
+        @keyframes reappearUp {
+            0% {
+                transform: translateY(40px) scale(0.7);
+                opacity: 0;
+                background: rgba(104, 211, 145, 0.05);
+            }
+            60% {
+                transform: translateY(-6px) scale(1.02);
+                opacity: 1;
+                background: rgba(104, 211, 145, 0.12);
+                border-color: rgba(104, 211, 145, 0.3);
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+                background: rgba(255, 255, 255, 0.05);
+                border-color: rgba(255, 255, 255, 0.07);
+                color: rgba(255, 255, 255, 0.8);
+            }
+        }
+
+        /* ---- 晋级成功 特殊高亮 ---- */
+        .name-card.qualify-glow {
+            background: rgba(246, 224, 94, 0.15);
+            border-color: #f6e05e;
+            color: #f6e05e;
+            box-shadow: 0 0 40px rgba(246, 224, 94, 0.2), inset 0 0 30px rgba(246, 224, 94, 0.05);
+            animation: glowGold 1.4s ease-in-out;
+        }
+
+        @keyframes glowGold {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(246, 224, 94, 0);
+            }
+            25% {
+                transform: scale(1.15);
+                box-shadow: 0 0 60px rgba(246, 224, 94, 0.5);
+            }
+            60% {
+                transform: scale(0.95);
+                box-shadow: 0 0 30px rgba(246, 224, 94, 0.2);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 40px rgba(246, 224, 94, 0.15);
+            }
+        }
+
+        /* ---- 空状态 ---- */
+        .empty-hint {
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 18px;
+            padding: 60px 20px;
+            letter-spacing: 2px;
+        }
+
+        /* ===== 底部控制 ===== */
+        footer {
+            margin-top: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .controls button {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 60px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(4px);
+        }
+
+        .controls button:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls button:active:not(:disabled) {
+            transform: scale(0.96);
+        }
+
+        .controls button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .controls button.primary {
+            background: linear-gradient(135deg, #f6e05e, #ecc94b);
+            color: #1a202c;
+            border-color: transparent;
+            font-weight: 700;
+            box-shadow: 0 4px 20px rgba(246, 224, 94, 0.15);
+        }
+
+        .controls button.primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #fbd38d, #f6e05e);
+            box-shadow: 0 8px 35px rgba(246, 224, 94, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .controls button.primary:disabled {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.3);
+            box-shadow: none;
+        }
+
+        .controls button .icon {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .controls button .badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0 10px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* ===== 进度指示器 ===== */
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .progress-dots .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .progress-dots .dot.active {
+            background: #f6e05e;
+            box-shadow: 0 0 20px rgba(246, 224, 94, 0.4);
+            border-color: #f6e05e;
+            transform: scale(1.3);
+        }
+
+        .progress-dots .dot.done {
+            background: rgba(104, 211, 145, 0.3);
+            border-color: rgba(104, 211, 145, 0.2);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 768px) {
+            #app {
+                padding: 18px 16px 22px;
+                border-radius: 28px;
+            }
+            .logo h1 {
+                font-size: 20px;
+            }
+            .round-badge {
+                padding: 8px 14px 8px 18px;
+                gap: 10px;
+            }
+            .round-badge .round-num {
+                font-size: 22px;
+                min-width: 28px;
+            }
+            .round-badge .people-count {
+                font-size: 12px;
+                padding: 2px 10px;
+            }
+            .stats-bar {
+                gap: 14px;
+                margin-bottom: 14px;
+            }
+            .stats-bar .stat-item {
+                font-size: 12px;
+            }
+            .stats-bar .stat-item .num {
+                font-size: 15px;
+                min-width: 20px;
+            }
+            #nameGrid {
+                gap: 7px;
+                padding: 12px 4px 6px;
+                min-height: 200px;
+            }
+            .name-card {
+                padding: 5px 12px;
+                min-width: 44px;
+                height: 36px;
+                font-size: 13px;
+                border-radius: 8px;
+            }
+            .controls button {
+                padding: 8px 18px;
+                font-size: 13px;
+            }
+            .controls button .badge {
+                display: none;
+            }
+            .progress-dots .dot {
+                width: 8px;
+                height: 8px;
+            }
+            footer {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .controls {
+                justify-content: center;
+            }
+            .progress-dots {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .name-card {
+                padding: 4px 10px;
+                min-width: 36px;
+                height: 30px;
+                font-size: 11px;
+                border-radius: 6px;
+            }
+            #nameGrid {
+                gap: 5px;
+                padding: 8px 2px 4px;
+            }
+            .controls button {
+                padding: 6px 14px;
+                font-size: 12px;
+            }
+            .round-badge .label {
+                font-size: 11px;
+            }
+            .round-badge .round-num {
+                font-size: 18px;
+                min-width: 22px;
+            }
+        }
+
+        /* ===== 工具类 ===== */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 加载 / 过渡闪烁 */
+        .fade-transition {
+            transition: opacity 0.3s ease;
+        }
+
+        /* 晋级计数器闪烁 */
+        .stat-item .num.pop {
+            animation: popNum 0.5s ease;
+        }
+
+        @keyframes popNum {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.4);
+                color: #f6e05e;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* 装饰粒子 (纯CSS小光点) */
+        .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #f6e05e;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(246, 224, 94, 0.6);
+            pointer-events: none;
+            animation: sparkleFloat 1.2s ease-out forwards;
+        }
+
+        @keyframes sparkleFloat {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(0);
+            }
+        }
+
+        /* ===== 滚动条美化 ===== */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================================ -->
+    <div id="app">
+        <!-- 头部 -->
+        <header>
+            <div class="logo">
+                <h1>🏆 观赛晋级</h1>
+                <div class="sub">· 名单筛选特效 ·</div>
+            </div>
+            <div class="round-badge">
+                <span class="label">📋 场次</span>
+                <span class="round-num active" id="roundDisplay">1</span>
+                <span class="total">/ <span id="totalDisplay">7</span></span>
+                <span class="people-count" id="peopleCountDisplay">👤 80</span>
+            </div>
+        </header>
+
+        <!-- 统计条 -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                📊 当前人数 <span class="num" id="currentCountNum">80</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                ⬆️ 晋级 <span class="num qualify-num" id="qualifyCountNum">0</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                ⬇️ 淘汰 <span class="num eliminate-num" id="eliminateCountNum">0</span>
+            </div>
+        </div>
+
+        <!-- 名字网格 -->
+        <div id="nameGrid">
+            <!-- 由 JS 动态渲染 -->
+        </div>
+
+        <!-- 底部 -->
+        <footer>
+            <div class="controls">
+                <button id="prevBtn" disabled>
+                    <span class="icon">◀</span> 上一场
+                    <span class="badge" id="prevBadge">-</span>
+                </button>
+                <button id="nextBtn" class="primary">
+                    下一场 <span class="icon">▶</span>
+                    <span class="badge" id="nextBadge">-</span>
+                </button>
+                <button id="autoBtn">
+                    <span class="icon">▶</span> 自动播放
+                </button>
+                <button id="resetBtn" title="回到第一场">
+                    <span class="icon">⟲</span> 重置
+                </button>
+            </div>
+            <div class="progress-dots" id="progressDots">
+                <!-- 由 JS 生成 7 个点 -->
+            </div>
+        </footer>
+    </div>
+
+    <!-- ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // =================================================================
+            //  1. 数据生成
+            // =================================================================
+
+            /**
+             * 生成指定数量的不重复中文名字
+             * @param {number} count  需要生成的数量
+             * @param {string[]} existing  已存在的名字集合（用于去重）
+             * @returns {string[]}
+             */
+            function generateNames(count, existing = []) {
+                const surnames = [
+                    '张', '王', '李', '刘', '陈', '杨', '赵', '黄', '周', '吴',
+                    '徐', '孙', '胡', '朱', '高', '林', '何', '郭', '马', '罗',
+                    '梁', '宋', '郑', '谢', '韩', '唐', '冯', '于', '董', '萧',
+                    '程', '曹', '袁', '邓', '许', '傅', '沈', '曾', '彭', '吕',
+                    '苏', '卢', '蒋', '蔡', '贾', '丁', '魏', '薛', '叶', '阎',
+                    '余', '潘', '杜', '戴', '夏', '钟', '汪', '田', '任', '姜',
+                    '范', '方', '石', '姚', '谭', '廖', '邹', '熊', '金', '陆',
+                    '郝', '孔', '白', '崔', '康', '毛', '邱', '秦', '江', '史',
+                    '顾', '侯', '邵', '孟', '龙', '万', '段', '雷', '钱', '汤'
+                ];
+
+                const givenParts = [
+                    '伟', '芳', '秀英', '敏', '静', '丽', '强', '磊', '军', '洋',
+                    '勇', '艳', '杰', '娜', '涛', '明', '超', '秀兰', '霞', '平',
+                    '刚', '桂英', '慧', '建', '文', '华', '飞', '玉兰', '斌', '宇',
+                    '鑫', '浩', '然', '博', '辉', '晨', '曦', '瑶', '怡', '彤',
+                    '琳', '嘉', '欣', '萌', '萱', '瑜', '琪', '轩', '皓', '宁',
+                    '安', '逸', '辰', '阳', '云', '帆', '泽', '瑞', '恒', '瑾',
+                    '琼', '琅', '璇', '玑', '琦', '玮', '琰', '琬', '珂', '玥',
+                    '鹏', '程', '锦', '绣', '思', '涵', '韵', '灵', '峰', '峻'
+                ];
+
+                const used = new Set(existing);
+                const result = [];
+
+                // 为了增加多样性，用姓氏 + 1~2 个 givenParts
+                while (result.length < count) {
+                    const surname = surnames[Math.floor(Math.random() * surnames.length)];
+                    // 随机决定用 1 个还是 2 个 givenPart
+                    const partsCount = Math.random() < 0.55 ? 1 : 2;
+                    let given = '';
+                    for (let i = 0; i < partsCount; i++) {
+                        given += givenParts[Math.floor(Math.random() * givenParts.length)];
+                    }
+                    // 避免太长的名字（最多3个字）
+                    if (given.length > 3) given = given.slice(0, 3);
+                    const full = surname + given;
+                    if (!used.has(full) && full.length >= 2) {
+                        used.add(full);
+                        result.push(full);
+                    }
+                    // 安全阀：如果循环太久还没凑够，放宽限制
+                    if (result.length > 0 && result.length % 20 === 0) {
+                        // 增加一些单字名
+                        const single = surnames[Math.floor(Math.random() * surnames.length)] +
+                            givenParts[Math.floor(Math.random() * givenParts.length)];
+                        if (!used.has(single) && single.length >= 2) {
+                            used.add(single);
+                            result.push(single);
+                        }
+                    }
+                }
+
+                return result;
+            }
+
+            /**
+             * 从上一轮名单中随机挑选子集
+             * @param {string[]} prevList  上一轮名单
+             * @param {number}   keepCount  保留人数
+             * @returns {string[]}
+             */
+            function pickSubset(prevList, keepCount) {
+                if (keepCount >= prevList.length) return [...prevList];
+                const shuffled = [...prevList];
+                // Fisher–Yates 洗牌
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled.slice(0, keepCount);
+            }
+
+            // ---- 各场人数配置 ----
+            const ROUND_SIZES = [80, 70, 60, 45, 35, 25, 15];
+            const TOTAL_ROUNDS = ROUND_SIZES.length;
+
+            // ---- 生成全部名单 ----
+            function buildAllRounds() {
+                // 先生成第一场 80 人
+                const firstRound = generateNames(ROUND_SIZES[0]);
+                const rounds = [firstRound];
+
+                for (let i = 1; i < TOTAL_ROUNDS; i++) {
+                    const prev = rounds[i - 1];
+                    const next = pickSubset(prev, ROUND_SIZES[i]);
+                    rounds.push(next);
+                }
+
+                return rounds;
+            }
+
+            const allRounds = buildAllRounds();
+
+            // =================================================================
+            //  2. 状态管理
+            // =================================================================
+
+            const state = {
+                currentRound: 0, // 0-based index
+                isAnimating: false,
+                autoPlayTimer: null,
+                isAutoPlaying: false,
+            };
+
+            // =================================================================
+            //  3. DOM 引用
+            // =================================================================
+
+            const grid = document.getElementById('nameGrid');
+            const roundDisplay = document.getElementById('roundDisplay');
+            const totalDisplay = document.getElementById('totalDisplay');
+            const peopleCountDisplay = document.getElementById('peopleCountDisplay');
+            const currentCountNum = document.getElementById('currentCountNum');
+            const qualifyCountNum = document.getElementById('qualifyCountNum');
+            const eliminateCountNum = document.getElementById('eliminateCountNum');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const autoBtn = document.getElementById('autoBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const prevBadge = document.getElementById('prevBadge');
+            const nextBadge = document.getElementById('nextBadge');
+            const progressDots = document.getElementById('progressDots');
+
+            // =================================================================
+            //  4. 渲染函数
+            // =================================================================
+
+            /**
+             * 渲染名字卡片
+             * @param {string[]} names       要显示的名字列表
+             * @param {Object}   options     渲染选项
+             * @param {Set}      options.qualifySet  晋级集合 (名字)
+             * @param {Set}      options.eliminateSet 淘汰集合 (名字)
+             * @param {Set}      options.reappearSet  回归集合 (名字) 用于上一场
+             * @param {string}   options.extraClass   额外类名
+             */
+            function renderCards(names, options = {}) {
+                const {
+                    qualifySet = new Set(),
+                        eliminateSet = new Set(),
+                        reappearSet = new Set(),
+                        extraClass = '',
+                } = options;
+
+                // 清空网格
+                grid.innerHTML = '';
+
+                if (!names || names.length === 0) {
+                    grid.innerHTML = '<div class="empty-hint">✨ 暂无名单</div>';
+                    return;
+                }
+
+                // 对名字进行排序（保持稳定顺序，便于对比）
+                const sorted = [...names];
+
+                // 生成卡片
+                const fragment = document.createDocumentFragment();
+
+                sorted.forEach(name => {
+                    const card = document.createElement('div');
+                    card.className = 'name-card';
+                    card.textContent = name;
+                    card.dataset.name = name;
+
+                    // 应用状态类
+                    if (qualifySet.has(name)) {
+                        card.classList.add('qualify');
+                        // 如果是晋级特效，加一个小勾
+                        const mark = document.createElement('span');
+                        mark.className = 'check-mark';
+                        mark.textContent = ' ✓';
+                        card.appendChild(mark);
+                    }
+
+                    if (eliminateSet.has(name)) {
+                        card.classList.add('eliminate');
+                    }
+
+                    if (reappearSet.has(name)) {
+                        card.classList.add('reappear');
+                    }
+
+                    if (extraClass) {
+                        card.classList.add(extraClass);
+                    }
+
+                    fragment.appendChild(card);
+                });
+
+                grid.appendChild(fragment);
+
+                // 更新统计
+                const total = names.length;
+                currentCountNum.textContent = total;
+                peopleCountDisplay.textContent = `👤 ${total}`;
+
+                const qualifyCount = qualifySet.size;
+                const eliminateCount = eliminateSet.size;
+                qualifyCountNum.textContent = qualifyCount;
+                eliminateCountNum.textContent = eliminateCount;
+
+                // 触发数字弹出动画
+                if (qualifyCount > 0) {
+                    qualifyCountNum.classList.remove('pop');
+                    void qualifyCountNum.offsetWidth;
+                    qualifyCountNum.classList.add('pop');
+                }
+                if (eliminateCount > 0) {
+                    eliminateCountNum.classList.remove('pop');
+                    void eliminateCountNum.offsetWidth;
+                    eliminateCountNum.classList.add('pop');
+                }
+            }
+
+            /**
+             * 更新场次显示和进度点
+             */
+            function updateRoundUI() {
+                const idx = state.currentRound;
+                const total = TOTAL_ROUNDS;
+                roundDisplay.textContent = idx + 1;
+                totalDisplay.textContent = total;
+                roundDisplay.classList.toggle('active', true);
+
+                // 更新进度点
+                const dots = progressDots.querySelectorAll('.dot');
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === idx);
+                    dot.classList.toggle('done', i < idx);
+                });
+
+                // 更新按钮状态
+                prevBtn.disabled = idx === 0 || state.isAnimating;
+                nextBtn.disabled = idx === total - 1 || state.isAnimating;
+
+                // 更新 badge
+                if (idx > 0) {
+                    prevBadge.textContent = allRounds[idx - 1].length;
+                } else {
+                    prevBadge.textContent = '-';
+                }
+                if (idx < total - 1) {
+                    nextBadge.textContent = allRounds[idx + 1].length;
+                } else {
+                    nextBadge.textContent = '-';
+                }
+
+                // 自动播放按钮文字
+                if (state.isAutoPlaying) {
+                    autoBtn.innerHTML = '<span class="icon">⏸</span> 暂停';
+                } else {
+                    autoBtn.innerHTML = '<span class="icon">▶</span> 自动播放';
+                }
+            }
+
+            /**
+             * 初始化进度点
+             */
+            function initDots() {
+                progressDots.innerHTML = '';
+                for (let i = 0; i < TOTAL_ROUNDS; i++) {
+                    const dot = document.createElement('span');
+                    dot.className = 'dot';
+                    if (i === 0) dot.classList.add('active');
+                    progressDots.appendChild(dot);
+                }
+            }
+
+            /**
+             * 刷新当前场次（无动画）
+             */
+            function renderCurrentRound() {
+                const names = allRounds[state.currentRound];
+                renderCards(names, {
+                    qualifySet: new Set(),
+                    eliminateSet: new Set(),
+                    reappearSet: new Set(),
+                });
+                updateRoundUI();
+            }
+
+            // =================================================================
+            //  5. 晋级特效 (核心)
+            // =================================================================
+
+            /**
+             * 播放晋级特效：从 currentRound 到 currentRound + 1
+             */
+            function playQualifyEffect() {
+                if (state.isAnimating) return;
+                const from = state.currentRound;
+                const to = from + 1;
+                if (to >= TOTAL_ROUNDS) return;
+
+                state.isAnimating = true;
+                nextBtn.disabled = true;
+                prevBtn.disabled = true;
+
+                const prevNames = allRounds[from];
+                const nextNames = allRounds[to];
+                const nextSet = new Set(nextNames);
+
+                // 标记晋级 & 淘汰
+                const qualifySet = new Set();
+                const eliminateSet = new Set();
+
+                prevNames.forEach(name => {
+                    if (nextSet.has(name)) {
+                        qualifySet.add(name);
+                    } else {
+                        eliminateSet.add(name);
+                    }
+                });
+
+                // 第一阶段：显示当前场次，并标记晋级/淘汰
+                renderCards(prevNames, {
+                    qualifySet,
+                    eliminateSet,
+                    extraClass: '',
+                });
+
+                // 更新统计显示晋级/淘汰数
+                qualifyCountNum.textContent = qualifySet.size;
+                eliminateCountNum.textContent = eliminateSet.size;
+
+                // 等待动画播放完成 (eliminate 动画 0.9s, qualify 1.2s)
+                // 用 setTimeout 控制节奏
+                setTimeout(() => {
+                    // 第二阶段：只显示晋级的人（即下一场名单），并加上晋级高亮
+                    // 但为了视觉连贯，我们让晋级卡片保留，淘汰卡片移除
+                    // 直接重新渲染下一场，但给晋级卡片添加金色高亮
+                    const glowSet = new Set(nextNames);
+                    renderCards(nextNames, {
+                        qualifySet: glowSet,
+                        eliminateSet: new Set(),
+                        extraClass: 'qualify-glow',
+                    });
+
+                    // 更新状态
+                    state.currentRound = to;
+                    updateRoundUI();
+
+                    // 统计清零（因为已经进入下一场）
+                    qualifyCountNum.textContent = 0;
+                    eliminateCountNum.textContent = 0;
+
+                    // 自动移除 glow 效果 (1.4s 后恢复正常)
+                    setTimeout(() => {
+                        // 重新渲染为普通状态（但保留晋级标记）
+                        const normalQualify = new Set(nextNames);
+                        renderCards(nextNames, {
+                            qualifySet: normalQualify,
+                            eliminateSet: new Set(),
+                            extraClass: '',
+                        });
+                        // 更新统计
+                        qualifyCountNum.textContent = 0;
+                        eliminateCountNum.textContent = 0;
+                        currentCountNum.textContent = nextNames.length;
+                        peopleCountDisplay.textContent = `👤 ${nextNames.length}`;
+
+                        state.isAnimating = false;
+                        updateRoundUI();
+                    }, 1400);
+
+                }, 1100); // 等待淘汰动画完成
+            }
+
+            /**
+             * 播放回退特效：从 currentRound 到 currentRound - 1
+             */
+            function playReappearEffect() {
+                if (state.isAnimating) return;
+                const from = state.currentRound;
+                const to = from - 1;
+                if (to < 0) return;
+
+                state.isAnimating = true;
+                nextBtn.disabled = true;
+                prevBtn.disabled = true;
+
+                const currentNames = allRounds[from];
+                const prevNames = allRounds[to];
+                const prevSet = new Set(prevNames);
+
+                // 在当前场次中，哪些人是在上一场中存在的（即保留者）
+                const keepSet = new Set();
+                const reappearSet = new Set();
+
+                prevNames.forEach(name => {
+                    if (currentNames.includes(name)) {
+                        keepSet.add(name);
+                    } else {
+                        reappearSet.add(name);
+                    }
+                });
+
+                // 第一阶段：显示当前场次，标记保留者（绿色）和回归者（从下方出现）
+                // 但回归者在当前场次并不存在，所以我们需要先显示上一场的所有人
+                // 更好的方式：直接显示上一场，然后标记回归者（从下方出现）
+                renderCards(prevNames, {
+                    qualifySet: keepSet,
+                    eliminateSet: new Set(),
+                    reappearSet: reappearSet,
+                });
+
+                // 更新统计
+                qualifyCountNum.textContent = keepSet.size;
+                eliminateCountNum.textContent = reappearSet.size;
+                currentCountNum.textContent = prevNames.length;
+                peopleCountDisplay.textContent = `👤 ${prevNames.length}`;
+
+                // 等待回归动画完成 (0.7s)
+                setTimeout(() => {
+                    // 更新状态
+                    state.currentRound = to;
+                    updateRoundUI();
+
+                    // 重新渲染为普通状态，保留晋级标记（但去掉回归动画）
+                    const normalQualify = new Set(prevNames);
+                    renderCards(prevNames, {
+                        qualifySet: normalQualify,
+                        eliminateSet: new Set(),
+                        reappearSet: new Set(),
+                        extraClass: '',
+                    });
+
+                    qualifyCountNum.textContent = 0;
+                    eliminateCountNum.textContent = 0;
+
+                    state.isAnimating = false;
+                    updateRoundUI();
+                }, 900);
+            }
+
+            // =================================================================
+            //  6. 交互控制
+            // =================================================================
+
+            function goToNext() {
+                if (state.isAnimating) return;
+                if (state.currentRound >= TOTAL_ROUNDS - 1) return;
+                playQualifyEffect();
+            }
+
+            function goToPrev() {
+                if (state.isAnimating) return;
+                if (state.currentRound <= 0) return;
+                playReappearEffect();
+            }
+
+            function resetToFirst() {
+                if (state.isAnimating) return;
+                if (state.isAutoPlaying) {
+                    stopAutoPlay();
+                }
+                state.currentRound = 0;
+                renderCurrentRound();
+                updateRoundUI();
+            }
+
+            // ---- 自动播放 ----
+            function toggleAutoPlay() {
+                if (state.isAutoPlaying) {
+                    stopAutoPlay();
+                } else {
+                    startAutoPlay();
+                }
+            }
+
+            function startAutoPlay() {
+                if (state.isAutoPlaying) return;
+                state.isAutoPlaying = true;
+                autoBtn.innerHTML = '<span class="icon">⏸</span> 暂停';
+                // 如果已经在最后一场，重置到第一场
+                if (state.currentRound >= TOTAL_ROUNDS - 1) {
+                    state.currentRound = 0;
+                    renderCurrentRound();
+                    updateRoundUI();
+                }
+                // 延迟启动，避免与当前动画冲突
+                setTimeout(() => {
+                    if (state.isAutoPlaying) {
+                        autoPlayStep();
+                    }
+                }, 400);
+            }
+
+            function stopAutoPlay() {
+                state.isAutoPlaying = false;
+                if (state.autoPlayTimer) {
+                    clearTimeout(state.autoPlayTimer);
+                    state.autoPlayTimer = null;
+                }
+                autoBtn.innerHTML = '<span class="icon">▶</span> 自动播放';
+                // 取消正在进行的动画
+                if (state.isAnimating) {
+                    // 等待动画结束再允许操作
+                }
+            }
+
+            function autoPlayStep() {
+                if (!state.isAutoPlaying) return;
+                if (state.isAnimating) {
+                    state.autoPlayTimer = setTimeout(autoPlayStep, 300);
+                    return;
+                }
+
+                if (state.currentRound >= TOTAL_ROUNDS - 1) {
+                    // 播放完毕，停止
+                    stopAutoPlay();
+                    return;
+                }
+
+                // 执行晋级
+                playQualifyEffect();
+
+                // 等待动画完成再继续
+                const checkDone = () => {
+                    if (!state.isAnimating) {
+                        // 动画完成，继续下一步
+                        if (state.isAutoPlaying && state.currentRound < TOTAL_ROUNDS - 1) {
+                            state.autoPlayTimer = setTimeout(autoPlayStep, 600);
+                        } else if (state.isAutoPlaying && state.currentRound >= TOTAL_ROUNDS - 1) {
+                            stopAutoPlay();
+                        }
+                    } else {
+                        state.autoPlayTimer = setTimeout(checkDone, 300);
+                    }
+                };
+
+                state.autoPlayTimer = setTimeout(checkDone, 1200);
+            }
+
+            // =================================================================
+            //  7. 初始化
+            // =================================================================
+
+            function init() {
+                initDots();
+                renderCurrentRound();
+                updateRoundUI();
+
+                // 绑定事件
+                nextBtn.addEventListener('click', goToNext);
+                prevBtn.addEventListener('click', goToPrev);
+                resetBtn.addEventListener('click', resetToFirst);
+                autoBtn.addEventListener('click', toggleAutoPlay);
+
+                // 键盘快捷键
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowRight' || e.key === ' ') {
+                        e.preventDefault();
+                        goToNext();
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        goToPrev();
+                    } else if (e.key === 'r') {
+                        resetToFirst();
+                    }
+                });
+
+                // 窗口自适应
+                window.addEventListener('resize', () => {
+                    // 不需要特殊处理
+                });
+
+                console.log('🏆 观赛晋级特效已启动！');
+                console.log(`📋 共 ${TOTAL_ROUNDS} 场，人数: ${ROUND_SIZES.join(' → ')}`);
+                console.log('⌨️  快捷键: ← 上一场 | → / Space 下一场 | r 重置');
+            }
+
+            // 页面加载完成后初始化
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+
+</body>
+</html>
