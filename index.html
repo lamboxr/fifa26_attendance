@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🏆 观赛名单 · 晋级特效</title>
+    <title>🏆 观赛晋级 · 固定名单特效</title>
     <style>
-        /* ===== 全局重置 & 基础 ===== */
+        /* ===== 全局样式（与之前相同，保留完整） ===== */
         * {
             margin: 0;
             padding: 0;
@@ -22,7 +22,6 @@
             padding: 20px;
         }
 
-        /* ===== 主容器 ===== */
         #app {
             width: 100%;
             max-width: 1200px;
@@ -36,7 +35,6 @@
             transition: all 0.3s ease;
         }
 
-        /* ===== 头部 ===== */
         header {
             display: flex;
             justify-content: space-between;
@@ -122,7 +120,6 @@
             margin-left: 4px;
         }
 
-        /* ===== 统计条 ===== */
         .stats-bar {
             display: flex;
             gap: 24px;
@@ -159,7 +156,6 @@
             background: rgba(255, 255, 255, 0.08);
         }
 
-        /* ===== 名字网格 ===== */
         #nameGrid {
             display: flex;
             flex-wrap: wrap;
@@ -174,7 +170,6 @@
             position: relative;
         }
 
-        /* ===== 名字卡片 ===== */
         .name-card {
             display: flex;
             align-items: center;
@@ -202,7 +197,6 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
 
-        /* ---- 晋级状态 ---- */
         .name-card.qualify {
             background: rgba(104, 211, 145, 0.18);
             border-color: rgba(104, 211, 145, 0.5);
@@ -237,7 +231,6 @@
             color: #68d391;
         }
 
-        /* ---- 淘汰状态 ---- */
         .name-card.eliminate {
             background: rgba(252, 129, 129, 0.12);
             border-color: rgba(252, 129, 129, 0.3);
@@ -264,7 +257,6 @@
             }
         }
 
-        /* ---- 回归状态 (上一场) ---- */
         .name-card.reappear {
             animation: reappearUp 0.7s ease-out forwards;
         }
@@ -290,7 +282,6 @@
             }
         }
 
-        /* ---- 晋级成功 特殊高亮 ---- */
         .name-card.qualify-glow {
             background: rgba(246, 224, 94, 0.15);
             border-color: #f6e05e;
@@ -318,7 +309,6 @@
             }
         }
 
-        /* ---- 空状态 ---- */
         .empty-hint {
             color: rgba(255, 255, 255, 0.15);
             font-size: 18px;
@@ -326,7 +316,6 @@
             letter-spacing: 2px;
         }
 
-        /* ===== 底部控制 ===== */
         footer {
             margin-top: 28px;
             display: flex;
@@ -411,7 +400,6 @@
             font-weight: 500;
         }
 
-        /* ===== 进度指示器 ===== */
         .progress-dots {
             display: flex;
             gap: 8px;
@@ -439,7 +427,6 @@
             border-color: rgba(104, 211, 145, 0.2);
         }
 
-        /* ===== 响应式 ===== */
         @media (max-width: 768px) {
             #app {
                 padding: 18px 16px 22px;
@@ -532,17 +519,10 @@
             }
         }
 
-        /* ===== 工具类 ===== */
-        .hidden {
-            display: none !important;
-        }
-
-        /* 加载 / 过渡闪烁 */
         .fade-transition {
             transition: opacity 0.3s ease;
         }
 
-        /* 晋级计数器闪烁 */
         .stat-item .num.pop {
             animation: popNum 0.5s ease;
         }
@@ -560,7 +540,6 @@
             }
         }
 
-        /* 装饰粒子 (纯CSS小光点) */
         .sparkle {
             position: absolute;
             width: 4px;
@@ -583,7 +562,6 @@
             }
         }
 
-        /* ===== 滚动条美化 ===== */
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
@@ -603,18 +581,17 @@
 </head>
 <body>
 
-    <!-- ============================================================ -->
     <div id="app">
         <!-- 头部 -->
         <header>
             <div class="logo">
                 <h1>🏆 观赛晋级</h1>
-                <div class="sub">· 名单筛选特效 ·</div>
+                <div class="sub">· 固定名单 · 8场筛选 ·</div>
             </div>
             <div class="round-badge">
                 <span class="label">📋 场次</span>
                 <span class="round-num active" id="roundDisplay">1</span>
-                <span class="total">/ <span id="totalDisplay">7</span></span>
+                <span class="total">/ <span id="totalDisplay">8</span></span>
                 <span class="people-count" id="peopleCountDisplay">👤 80</span>
             </div>
         </header>
@@ -658,7 +635,7 @@
                 </button>
             </div>
             <div class="progress-dots" id="progressDots">
-                <!-- 由 JS 生成 7 个点 -->
+                <!-- 由 JS 生成 8 个点 -->
             </div>
         </footer>
     </div>
@@ -669,124 +646,124 @@
             'use strict';
 
             // =================================================================
-            //  1. 数据生成
+            //  📌 数据配置区 —— 请在此替换为您自己的固定名单
             // =================================================================
 
             /**
-             * 生成指定数量的不重复中文名字
-             * @param {number} count  需要生成的数量
-             * @param {string[]} existing  已存在的名字集合（用于去重）
-             * @returns {string[]}
+             * 方式一：直接定义完整的 8 场名单（推荐）
+             * 每个子数组代表一场的名单，顺序从第1场到第8场。
+             * 注意：每场名单必须是上一场的子集（即下一场的人名必须全部在上一场中出现）。
              */
-            function generateNames(count, existing = []) {
-                const surnames = [
-                    '张', '王', '李', '刘', '陈', '杨', '赵', '黄', '周', '吴',
-                    '徐', '孙', '胡', '朱', '高', '林', '何', '郭', '马', '罗',
-                    '梁', '宋', '郑', '谢', '韩', '唐', '冯', '于', '董', '萧',
-                    '程', '曹', '袁', '邓', '许', '傅', '沈', '曾', '彭', '吕',
-                    '苏', '卢', '蒋', '蔡', '贾', '丁', '魏', '薛', '叶', '阎',
-                    '余', '潘', '杜', '戴', '夏', '钟', '汪', '田', '任', '姜',
-                    '范', '方', '石', '姚', '谭', '廖', '邹', '熊', '金', '陆',
-                    '郝', '孔', '白', '崔', '康', '毛', '邱', '秦', '江', '史',
-                    '顾', '侯', '邵', '孟', '龙', '万', '段', '雷', '钱', '汤'
-                ];
+            // const FIXED_ROUNDS = [
+            //   ['张伟', '李娜', ...],  // 第1场 80人
+            //   ['张伟', '李娜', ...],  // 第2场 70人
+            //   // ... 共8场
+            // ];
 
-                const givenParts = [
-                    '伟', '芳', '秀英', '敏', '静', '丽', '强', '磊', '军', '洋',
-                    '勇', '艳', '杰', '娜', '涛', '明', '超', '秀兰', '霞', '平',
-                    '刚', '桂英', '慧', '建', '文', '华', '飞', '玉兰', '斌', '宇',
-                    '鑫', '浩', '然', '博', '辉', '晨', '曦', '瑶', '怡', '彤',
-                    '琳', '嘉', '欣', '萌', '萱', '瑜', '琪', '轩', '皓', '宁',
-                    '安', '逸', '辰', '阳', '云', '帆', '泽', '瑞', '恒', '瑾',
-                    '琼', '琅', '璇', '玑', '琦', '玮', '琰', '琬', '珂', '玥',
-                    '鹏', '程', '锦', '绣', '思', '涵', '韵', '灵', '峰', '峻'
-                ];
+            // =================================================================
+            //  如果尚未提供自己的名单，以下将自动生成一个固定的示例名单（8场）
+            //  您可以直接替换上面的 FIXED_ROUNDS 变量，或修改下面的生成逻辑。
+            // =================================================================
 
-                const used = new Set(existing);
-                const result = [];
+            // --- 固定名字池（用于生成示例数据）---
+            const SURNAMES = [
+                '张', '王', '李', '刘', '陈', '杨', '赵', '黄', '周', '吴',
+                '徐', '孙', '胡', '朱', '高', '林', '何', '郭', '马', '罗'
+            ];
+            const GIVEN_NAMES = [
+                '伟', '芳', '秀英', '敏', '静', '丽', '强', '磊', '军', '洋',
+                '勇', '艳', '杰', '娜', '涛', '明', '超', '秀兰', '霞', '平',
+                '刚', '桂英', '慧', '建', '文', '华', '飞', '玉兰', '斌', '宇'
+            ];
 
-                // 为了增加多样性，用姓氏 + 1~2 个 givenParts
-                while (result.length < count) {
-                    const surname = surnames[Math.floor(Math.random() * surnames.length)];
-                    // 随机决定用 1 个还是 2 个 givenPart
-                    const partsCount = Math.random() < 0.55 ? 1 : 2;
-                    let given = '';
-                    for (let i = 0; i < partsCount; i++) {
-                        given += givenParts[Math.floor(Math.random() * givenParts.length)];
-                    }
-                    // 避免太长的名字（最多3个字）
-                    if (given.length > 3) given = given.slice(0, 3);
+            /**
+             * 生成固定数量的中文名（按顺序组合，确保不重复）
+             */
+            function generateFixedNames(count) {
+                const names = [];
+                let idx = 0;
+                while (names.length < count) {
+                    const surname = SURNAMES[idx % SURNAMES.length];
+                    const given = GIVEN_NAMES[Math.floor(idx / SURNAMES.length) % GIVEN_NAMES.length];
                     const full = surname + given;
-                    if (!used.has(full) && full.length >= 2) {
-                        used.add(full);
-                        result.push(full);
+                    // 避免重复（理论上不会，因为组合唯一）
+                    if (!names.includes(full)) {
+                        names.push(full);
                     }
-                    // 安全阀：如果循环太久还没凑够，放宽限制
-                    if (result.length > 0 && result.length % 20 === 0) {
-                        // 增加一些单字名
-                        const single = surnames[Math.floor(Math.random() * surnames.length)] +
-                            givenParts[Math.floor(Math.random() * givenParts.length)];
-                        if (!used.has(single) && single.length >= 2) {
-                            used.add(single);
-                            result.push(single);
-                        }
-                    }
+                    idx++;
                 }
-
-                return result;
+                return names;
             }
 
             /**
-             * 从上一轮名单中随机挑选子集
-             * @param {string[]} prevList  上一轮名单
-             * @param {number}   keepCount  保留人数
-             * @returns {string[]}
+             * 生成固定排列（用于确定每场晋级哪些人）
+             * 使用步长 7（与80互质）产生一个循环排列
              */
-            function pickSubset(prevList, keepCount) {
-                if (keepCount >= prevList.length) return [...prevList];
-                const shuffled = [...prevList];
-                // Fisher–Yates 洗牌
-                for (let i = shuffled.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            function getFixedPermutation(length) {
+                const step = 7;
+                const perm = [];
+                let val = 0;
+                for (let i = 0; i < length; i++) {
+                    perm.push(val);
+                    val = (val + step) % length;
                 }
-                return shuffled.slice(0, keepCount);
+                return perm;
             }
 
-            // ---- 各场人数配置 ----
-            const ROUND_SIZES = [80, 70, 60, 45, 35, 25, 15];
-            const TOTAL_ROUNDS = ROUND_SIZES.length;
+            /**
+             * 构建固定示例数据（8场）
+             * 第1场 80人，后续每场人数递减，且都是上一场的子集。
+             */
+            function buildExampleRounds() {
+                const sizes = [80, 70, 60, 50, 40, 30, 20, 10]; // 8场
+                const first = generateFixedNames(sizes[0]);
+                const perm = getFixedPermutation(sizes[0]);
 
-            // ---- 生成全部名单 ----
-            function buildAllRounds() {
-                // 先生成第一场 80 人
-                const firstRound = generateNames(ROUND_SIZES[0]);
-                const rounds = [firstRound];
-
-                for (let i = 1; i < TOTAL_ROUNDS; i++) {
-                    const prev = rounds[i - 1];
-                    const next = pickSubset(prev, ROUND_SIZES[i]);
-                    rounds.push(next);
+                const rounds = [];
+                for (let i = 0; i < sizes.length; i++) {
+                    const count = sizes[i];
+                    // 取排列的前 count 个索引对应的名字
+                    const selected = perm.slice(0, count).map(idx => first[idx]);
+                    rounds.push(selected);
                 }
-
                 return rounds;
             }
 
-            const allRounds = buildAllRounds();
+            // --- 最终使用的名单数据 ---
+            // 如果用户已定义 FIXED_ROUNDS，则使用之；否则使用示例数据
+            let allRounds;
+            if (typeof FIXED_ROUNDS !== 'undefined' && Array.isArray(FIXED_ROUNDS) && FIXED_ROUNDS.length === 8) {
+                allRounds = FIXED_ROUNDS;
+            } else {
+                // 生成固定示例
+                allRounds = buildExampleRounds();
+                console.log('📌 使用自动生成的固定示例名单（8场），您可替换 FIXED_ROUNDS 变量。');
+            }
+
+            // 校验：确保每场都是上一场的子集（开发辅助）
+            for (let i = 1; i < allRounds.length; i++) {
+                const prev = new Set(allRounds[i - 1]);
+                const curr = allRounds[i];
+                const allInPrev = curr.every(name => prev.has(name));
+                if (!allInPrev) {
+                    console.warn(`⚠️ 第 ${i+1} 场名单不是第 ${i} 场的子集，请检查数据。`);
+                }
+            }
 
             // =================================================================
-            //  2. 状态管理
+            //  状态管理
             // =================================================================
 
+            const TOTAL_ROUNDS = allRounds.length; // 8
             const state = {
-                currentRound: 0, // 0-based index
+                currentRound: 0,
                 isAnimating: false,
                 autoPlayTimer: null,
                 isAutoPlaying: false,
             };
 
             // =================================================================
-            //  3. DOM 引用
+            //  DOM 引用
             // =================================================================
 
             const grid = document.getElementById('nameGrid');
@@ -805,18 +782,9 @@
             const progressDots = document.getElementById('progressDots');
 
             // =================================================================
-            //  4. 渲染函数
+            //  渲染函数
             // =================================================================
 
-            /**
-             * 渲染名字卡片
-             * @param {string[]} names       要显示的名字列表
-             * @param {Object}   options     渲染选项
-             * @param {Set}      options.qualifySet  晋级集合 (名字)
-             * @param {Set}      options.eliminateSet 淘汰集合 (名字)
-             * @param {Set}      options.reappearSet  回归集合 (名字) 用于上一场
-             * @param {string}   options.extraClass   额外类名
-             */
             function renderCards(names, options = {}) {
                 const {
                     qualifySet = new Set(),
@@ -825,7 +793,6 @@
                         extraClass = '',
                 } = options;
 
-                // 清空网格
                 grid.innerHTML = '';
 
                 if (!names || names.length === 0) {
@@ -833,10 +800,7 @@
                     return;
                 }
 
-                // 对名字进行排序（保持稳定顺序，便于对比）
                 const sorted = [...names];
-
-                // 生成卡片
                 const fragment = document.createDocumentFragment();
 
                 sorted.forEach(name => {
@@ -845,10 +809,8 @@
                     card.textContent = name;
                     card.dataset.name = name;
 
-                    // 应用状态类
                     if (qualifySet.has(name)) {
                         card.classList.add('qualify');
-                        // 如果是晋级特效，加一个小勾
                         const mark = document.createElement('span');
                         mark.className = 'check-mark';
                         mark.textContent = ' ✓';
@@ -872,7 +834,6 @@
 
                 grid.appendChild(fragment);
 
-                // 更新统计
                 const total = names.length;
                 currentCountNum.textContent = total;
                 peopleCountDisplay.textContent = `👤 ${total}`;
@@ -882,7 +843,6 @@
                 qualifyCountNum.textContent = qualifyCount;
                 eliminateCountNum.textContent = eliminateCount;
 
-                // 触发数字弹出动画
                 if (qualifyCount > 0) {
                     qualifyCountNum.classList.remove('pop');
                     void qualifyCountNum.offsetWidth;
@@ -895,9 +855,6 @@
                 }
             }
 
-            /**
-             * 更新场次显示和进度点
-             */
             function updateRoundUI() {
                 const idx = state.currentRound;
                 const total = TOTAL_ROUNDS;
@@ -905,18 +862,15 @@
                 totalDisplay.textContent = total;
                 roundDisplay.classList.toggle('active', true);
 
-                // 更新进度点
                 const dots = progressDots.querySelectorAll('.dot');
                 dots.forEach((dot, i) => {
                     dot.classList.toggle('active', i === idx);
                     dot.classList.toggle('done', i < idx);
                 });
 
-                // 更新按钮状态
                 prevBtn.disabled = idx === 0 || state.isAnimating;
                 nextBtn.disabled = idx === total - 1 || state.isAnimating;
 
-                // 更新 badge
                 if (idx > 0) {
                     prevBadge.textContent = allRounds[idx - 1].length;
                 } else {
@@ -928,7 +882,6 @@
                     nextBadge.textContent = '-';
                 }
 
-                // 自动播放按钮文字
                 if (state.isAutoPlaying) {
                     autoBtn.innerHTML = '<span class="icon">⏸</span> 暂停';
                 } else {
@@ -936,9 +889,6 @@
                 }
             }
 
-            /**
-             * 初始化进度点
-             */
             function initDots() {
                 progressDots.innerHTML = '';
                 for (let i = 0; i < TOTAL_ROUNDS; i++) {
@@ -949,9 +899,6 @@
                 }
             }
 
-            /**
-             * 刷新当前场次（无动画）
-             */
             function renderCurrentRound() {
                 const names = allRounds[state.currentRound];
                 renderCards(names, {
@@ -963,12 +910,9 @@
             }
 
             // =================================================================
-            //  5. 晋级特效 (核心)
+            //  晋级 / 回退特效
             // =================================================================
 
-            /**
-             * 播放晋级特效：从 currentRound 到 currentRound + 1
-             */
             function playQualifyEffect() {
                 if (state.isAnimating) return;
                 const from = state.currentRound;
@@ -983,7 +927,6 @@
                 const nextNames = allRounds[to];
                 const nextSet = new Set(nextNames);
 
-                // 标记晋级 & 淘汰
                 const qualifySet = new Set();
                 const eliminateSet = new Set();
 
@@ -995,23 +938,16 @@
                     }
                 });
 
-                // 第一阶段：显示当前场次，并标记晋级/淘汰
                 renderCards(prevNames, {
                     qualifySet,
                     eliminateSet,
                     extraClass: '',
                 });
 
-                // 更新统计显示晋级/淘汰数
                 qualifyCountNum.textContent = qualifySet.size;
                 eliminateCountNum.textContent = eliminateSet.size;
 
-                // 等待动画播放完成 (eliminate 动画 0.9s, qualify 1.2s)
-                // 用 setTimeout 控制节奏
                 setTimeout(() => {
-                    // 第二阶段：只显示晋级的人（即下一场名单），并加上晋级高亮
-                    // 但为了视觉连贯，我们让晋级卡片保留，淘汰卡片移除
-                    // 直接重新渲染下一场，但给晋级卡片添加金色高亮
                     const glowSet = new Set(nextNames);
                     renderCards(nextNames, {
                         qualifySet: glowSet,
@@ -1019,24 +955,19 @@
                         extraClass: 'qualify-glow',
                     });
 
-                    // 更新状态
                     state.currentRound = to;
                     updateRoundUI();
 
-                    // 统计清零（因为已经进入下一场）
                     qualifyCountNum.textContent = 0;
                     eliminateCountNum.textContent = 0;
 
-                    // 自动移除 glow 效果 (1.4s 后恢复正常)
                     setTimeout(() => {
-                        // 重新渲染为普通状态（但保留晋级标记）
                         const normalQualify = new Set(nextNames);
                         renderCards(nextNames, {
                             qualifySet: normalQualify,
                             eliminateSet: new Set(),
                             extraClass: '',
                         });
-                        // 更新统计
                         qualifyCountNum.textContent = 0;
                         eliminateCountNum.textContent = 0;
                         currentCountNum.textContent = nextNames.length;
@@ -1046,12 +977,9 @@
                         updateRoundUI();
                     }, 1400);
 
-                }, 1100); // 等待淘汰动画完成
+                }, 1100);
             }
 
-            /**
-             * 播放回退特效：从 currentRound 到 currentRound - 1
-             */
             function playReappearEffect() {
                 if (state.isAnimating) return;
                 const from = state.currentRound;
@@ -1066,7 +994,6 @@
                 const prevNames = allRounds[to];
                 const prevSet = new Set(prevNames);
 
-                // 在当前场次中，哪些人是在上一场中存在的（即保留者）
                 const keepSet = new Set();
                 const reappearSet = new Set();
 
@@ -1078,28 +1005,21 @@
                     }
                 });
 
-                // 第一阶段：显示当前场次，标记保留者（绿色）和回归者（从下方出现）
-                // 但回归者在当前场次并不存在，所以我们需要先显示上一场的所有人
-                // 更好的方式：直接显示上一场，然后标记回归者（从下方出现）
                 renderCards(prevNames, {
                     qualifySet: keepSet,
                     eliminateSet: new Set(),
                     reappearSet: reappearSet,
                 });
 
-                // 更新统计
                 qualifyCountNum.textContent = keepSet.size;
                 eliminateCountNum.textContent = reappearSet.size;
                 currentCountNum.textContent = prevNames.length;
                 peopleCountDisplay.textContent = `👤 ${prevNames.length}`;
 
-                // 等待回归动画完成 (0.7s)
                 setTimeout(() => {
-                    // 更新状态
                     state.currentRound = to;
                     updateRoundUI();
 
-                    // 重新渲染为普通状态，保留晋级标记（但去掉回归动画）
                     const normalQualify = new Set(prevNames);
                     renderCards(prevNames, {
                         qualifySet: normalQualify,
@@ -1117,7 +1037,7 @@
             }
 
             // =================================================================
-            //  6. 交互控制
+            //  交互控制
             // =================================================================
 
             function goToNext() {
@@ -1155,13 +1075,11 @@
                 if (state.isAutoPlaying) return;
                 state.isAutoPlaying = true;
                 autoBtn.innerHTML = '<span class="icon">⏸</span> 暂停';
-                // 如果已经在最后一场，重置到第一场
                 if (state.currentRound >= TOTAL_ROUNDS - 1) {
                     state.currentRound = 0;
                     renderCurrentRound();
                     updateRoundUI();
                 }
-                // 延迟启动，避免与当前动画冲突
                 setTimeout(() => {
                     if (state.isAutoPlaying) {
                         autoPlayStep();
@@ -1176,10 +1094,6 @@
                     state.autoPlayTimer = null;
                 }
                 autoBtn.innerHTML = '<span class="icon">▶</span> 自动播放';
-                // 取消正在进行的动画
-                if (state.isAnimating) {
-                    // 等待动画结束再允许操作
-                }
             }
 
             function autoPlayStep() {
@@ -1190,18 +1104,14 @@
                 }
 
                 if (state.currentRound >= TOTAL_ROUNDS - 1) {
-                    // 播放完毕，停止
                     stopAutoPlay();
                     return;
                 }
 
-                // 执行晋级
                 playQualifyEffect();
 
-                // 等待动画完成再继续
                 const checkDone = () => {
                     if (!state.isAnimating) {
-                        // 动画完成，继续下一步
                         if (state.isAutoPlaying && state.currentRound < TOTAL_ROUNDS - 1) {
                             state.autoPlayTimer = setTimeout(autoPlayStep, 600);
                         } else if (state.isAutoPlaying && state.currentRound >= TOTAL_ROUNDS - 1) {
@@ -1216,7 +1126,7 @@
             }
 
             // =================================================================
-            //  7. 初始化
+            //  初始化
             // =================================================================
 
             function init() {
@@ -1224,13 +1134,11 @@
                 renderCurrentRound();
                 updateRoundUI();
 
-                // 绑定事件
                 nextBtn.addEventListener('click', goToNext);
                 prevBtn.addEventListener('click', goToPrev);
                 resetBtn.addEventListener('click', resetToFirst);
                 autoBtn.addEventListener('click', toggleAutoPlay);
 
-                // 键盘快捷键
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'ArrowRight' || e.key === ' ') {
                         e.preventDefault();
@@ -1243,17 +1151,12 @@
                     }
                 });
 
-                // 窗口自适应
-                window.addEventListener('resize', () => {
-                    // 不需要特殊处理
-                });
-
-                console.log('🏆 观赛晋级特效已启动！');
-                console.log(`📋 共 ${TOTAL_ROUNDS} 场，人数: ${ROUND_SIZES.join(' → ')}`);
+                console.log(`🏆 观赛晋级特效已启动（共 ${TOTAL_ROUNDS} 场）`);
+                console.log('📋 各场人数:', allRounds.map(r => r.length).join(' → '));
                 console.log('⌨️  快捷键: ← 上一场 | → / Space 下一场 | r 重置');
+                console.log('📌 如需使用自己的名单，请修改代码顶部的 FIXED_ROUNDS 变量。');
             }
 
-            // 页面加载完成后初始化
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', init);
             } else {
