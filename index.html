@@ -461,7 +461,7 @@
             z-index: 2;
         }
 
-        /* ===== 比分牌样式（修正版） ===== */
+        /* ===== 比分牌样式 ===== */
         #scoreboard {
             position: absolute;
             top: 50%;
@@ -477,7 +477,6 @@
         }
 
         #scoreboard .score-card {
-            /* 浅蓝色半透明背景，与白色背景区分 */
             background: rgba(220, 240, 255, 0.92);
             backdrop-filter: blur(4px);
             border: 0.15vw solid #2E86C1;
@@ -522,7 +521,6 @@
             gap: 0.35vw;
         }
 
-        /* 国旗增加浅色背景和圆角，使其在浅蓝背景上突出 */
         #scoreboard .score-teams .team .flag-img {
             height: 2.4vw;
             width: auto;
@@ -869,7 +867,7 @@
             's');
 
             // =================================================================
-            //  📌 比赛数据（已修正，包含 winner 字段）
+            //  📌 比赛数据
             // =================================================================
             const MATCH_DATA = {
                 "matchDetails": {
@@ -1485,7 +1483,7 @@
             }
 
             // =================================================================
-            //  比分牌控制（修正第八场显示）
+            //  比分牌控制
             // =================================================================
             function updateScoreboardContent(roundIndex) {
                 const round = roundIndex + 1;
@@ -1496,13 +1494,12 @@
                 const hostInfo = countries[match.host];
                 const guestInfo = countries[match.guest];
 
-                // --- 第一行：比赛轮次 name ---
+                // 第一行：比赛轮次
                 const roundName = match.name || `第${round}场`;
                 scoreRound.textContent = roundName;
 
-                // --- 第二行：日期 ---
+                // 第二行：日期
                 let dateStr;
-                // 第八场显示 Today，其他显示具体日期
                 if (round === 8) {
                     dateStr = `Today`;
                 } else {
@@ -1515,7 +1512,7 @@
                 }
                 scoreDate.textContent = dateStr;
 
-                // --- 第三行：对阵信息 ---
+                // 第三行：对阵
                 let html = '';
 
                 // 主队（名称 + 国旗）
@@ -1525,15 +1522,14 @@
                     `<img class="flag-img" src="assets/flags/${match.host}.webp" alt="${match.host}" onerror="this.style.display='none'" />`;
                 html += `</span>`;
 
-                // 判断是否未开球（hostscore === -1 && guestscore === -1）
+                // 判断是否未开球
                 const isUnplayed = (match.hostscore === -1 && match.guestscore === -1);
 
                 if (!isUnplayed && match.hostscore !== undefined && match.guestscore !== undefined) {
                     const hs = match.hostscore;
                     const gs = match.guestscore;
-                    const winner = match.winner; // "host" 或 "guest"
+                    const winner = match.winner;
 
-                    // 根据 winner 决定颜色
                     let hostScoreClass = 'score';
                     let guestScoreClass = 'score';
                     if (winner === 'host') {
@@ -1543,7 +1539,6 @@
                         hostScoreClass += ' lose';
                         guestScoreClass += ' win';
                     } else {
-                        // 兜底：按分数高低
                         if (hs > gs) {
                             hostScoreClass += ' win';
                             guestScoreClass += ' lose';
@@ -1551,7 +1546,6 @@
                             hostScoreClass += ' lose';
                             guestScoreClass += ' win';
                         } else {
-                            // 平局都显示深蓝
                             hostScoreClass += ' win';
                             guestScoreClass += ' win';
                         }
@@ -1561,7 +1555,6 @@
                     html += `<span class="score-dash">-</span>`;
                     html += `<span class="${guestScoreClass}">${gs}</span>`;
                 } else {
-                    // 未开球或比分缺失：显示 VS
                     html += `<span class="vs">VS</span>`;
                 }
 
@@ -1587,8 +1580,6 @@
                         `transform ${SCOREBOARD_MOVE_IN_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
                     scoreboard.style.transform = 'translateY(-50%) translateX(0)';
 
-                    const totalTime = SCOREBOARD_MOVE_IN_DURATION_MS + SCOREBOARD_STAY_DURATION_MS +
-                        SCOREBOARD_MOVE_OUT_DURATION_MS;
                     state.scoreboardTimer = setTimeout(() => {
                         scoreboard.style.transition =
                             `transform ${SCOREBOARD_MOVE_OUT_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
@@ -1611,7 +1602,7 @@
             }
 
             // =================================================================
-            //  特效
+            //  特效（修正第八场比分牌）
             // =================================================================
             async function playQualifyEffect() {
                 if (state.isAnimating) return;
@@ -1621,8 +1612,10 @@
 
                 state.isAnimating = true;
 
+                // 显示当前场次比分牌
                 await showScoreboard(from);
 
+                // 执行淘汰逻辑
                 const prevNames = FIXED_ROUNDS[from];
                 const nextNames = FIXED_ROUNDS[to];
                 const nextSet = new Set(nextNames);
@@ -1650,6 +1643,7 @@
                     }, totalEliminateDuration + 150);
                 });
 
+                // 第二阶段：高亮晋级名单
                 const glowSet = new Set(nextNames);
                 renderCards(nextNames, {
                     qualifySet: glowSet,
@@ -1660,18 +1654,28 @@
                 state.currentRound = to;
                 updateRoundUI();
 
-                await new Promise(resolve => {
-                    setTimeout(() => {
+                // 第三阶段：恢复正常样式 + 最终场显示比分牌和头像
+                await new Promise((resolve) => {
+                    setTimeout(async () => {
                         const normalQualify = new Set(nextNames);
                         const isFinalStage = (to === TOTAL_ROUNDS - 1);
 
+                        // 移除高亮，显示普通蓝色样式（不带头像）
                         renderCards(nextNames, {
                             qualifySet: normalQualify,
                             skipLayout: true,
-                            showAvatars: isFinalStage,
+                            showAvatars: false,
                         });
 
                         if (isFinalStage) {
+                            // ★ 显示最后一场的比分牌
+                            await showScoreboard(to);
+                            // 比分牌移出后，添加头像
+                            renderCards(nextNames, {
+                                qualifySet: normalQualify,
+                                skipLayout: true,
+                                showAvatars: true,
+                            });
                             setTimeout(() => {
                                 showAvatarsSequentially();
                             }, 400);
@@ -1855,11 +1859,9 @@
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级 (比分牌修正版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
+                console.log(`🇦🇷 阿根廷观赛晋级 (第八场比分牌已修复) 共 ${TOTAL_ROUNDS} 场`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
-                console.log(`🏆 比分牌移入: ${SCOREBOARD_MOVE_IN_DURATION_MS}ms，停留: ${SCOREBOARD_STAY_DURATION_MS}ms，移出: ${SCOREBOARD_MOVE_OUT_DURATION_MS}ms`);
-                console.log('🎯 第八场显示 VS，日期显示 Today');
-                console.log('🎨 比分牌卡片背景为浅蓝色半透明，国旗背景优化');
+                console.log('🎯 第八场将先显示决赛比分牌，再逐个展示头像');
                 console.log('⌨️  按 空格键 开始自动播放 | 刷新页面重置');
             }
 
