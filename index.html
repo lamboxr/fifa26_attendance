@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🏆 观赛晋级 · 固定名单 + 自动暂停</title>
+    <title>🇦🇷 阿根廷观赛 · 名单晋级</title>
     <style>
-        /* ===== 全局样式（保持与之前一致） ===== */
+        /* ===== 全局重置 & 阿根廷蓝白主题 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -15,26 +15,47 @@
         body {
             font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
             min-height: 100vh;
-            background: radial-gradient(ellipse at 50% 20%, #0b1a2e, #050a14);
+            background: linear-gradient(145deg, #6CB4EE 0%, #D6EAF8 50%, #FFFFFF 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
+        }
+
+        /* 装饰性条纹（球衣风格） */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(90deg,
+                    rgba(255, 255, 255, 0.08) 0px,
+                    rgba(255, 255, 255, 0.08) 40px,
+                    rgba(108, 180, 238, 0.06) 40px,
+                    rgba(108, 180, 238, 0.06) 80px);
+            pointer-events: none;
+            z-index: 0;
         }
 
         #app {
             width: 100%;
             max-width: 1200px;
-            background: rgba(10, 20, 40, 0.65);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             border-radius: 40px;
             padding: 30px 35px 35px;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 20px 60px rgba(0, 40, 80, 0.25), 0 0 0 1px rgba(108, 180, 238, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
 
+        /* ===== 头部 ===== */
         header {
             display: flex;
             justify-content: space-between;
@@ -42,89 +63,88 @@
             flex-wrap: wrap;
             margin-bottom: 28px;
             padding-bottom: 18px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 2px solid rgba(108, 180, 238, 0.3);
         }
 
         .logo h1 {
             font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #f6e05e, #fbd38d, #f6e05e);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            color: #1A3A5C;
             letter-spacing: 1px;
-            animation: shimmerGold 4s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        .logo h1 .flag {
+            font-size: 32px;
+        }
         .logo .sub {
             font-size: 13px;
-            color: rgba(255, 255, 255, 0.3);
+            color: #4A7A9C;
             letter-spacing: 2px;
             margin-top: 2px;
-            -webkit-text-fill-color: rgba(255, 255, 255, 0.3);
-        }
-
-        @keyframes shimmerGold {
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
+            font-weight: 500;
         }
 
         .round-badge {
             display: flex;
             align-items: center;
             gap: 18px;
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(108, 180, 238, 0.12);
             padding: 10px 22px 10px 26px;
             border-radius: 60px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(108, 180, 238, 0.25);
         }
 
         .round-badge .label {
-            color: rgba(255, 255, 255, 0.4);
+            color: #1A3A5C;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             letter-spacing: 1px;
         }
 
         .round-badge .round-num {
             font-size: 28px;
             font-weight: 800;
-            color: #fff;
+            color: #1A3A5C;
             min-width: 36px;
             text-align: center;
             transition: 0.3s;
         }
 
         .round-badge .round-num.active {
-            color: #f6e05e;
-            text-shadow: 0 0 20px rgba(246, 224, 94, 0.3);
+            color: #2E86C1;
+            text-shadow: 0 0 20px rgba(46, 134, 193, 0.3);
         }
 
         .round-badge .total {
-            color: rgba(255, 255, 255, 0.25);
+            color: #4A7A9C;
             font-size: 16px;
+            font-weight: 500;
         }
 
         .round-badge .people-count {
-            color: rgba(255, 255, 255, 0.6);
+            color: #1A3A5C;
             font-size: 14px;
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(108, 180, 238, 0.15);
             padding: 4px 14px;
             border-radius: 30px;
-            font-weight: 500;
+            font-weight: 600;
             margin-left: 4px;
         }
 
+        /* ===== 统计条 ===== */
         .stats-bar {
             display: flex;
             gap: 24px;
             margin-bottom: 22px;
             flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 10px 18px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(108, 180, 238, 0.15);
         }
 
         .stats-bar .stat-item {
@@ -132,30 +152,31 @@
             align-items: center;
             gap: 8px;
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.45);
+            color: #1A3A5C;
             font-weight: 500;
         }
 
         .stats-bar .stat-item .num {
             font-weight: 700;
             font-size: 18px;
-            color: #fff;
+            color: #1A3A5C;
             min-width: 28px;
             text-align: center;
         }
 
         .stats-bar .stat-item .num.qualify-num {
-            color: #68d391;
+            color: #2E86C1;
         }
         .stats-bar .stat-item .num.eliminate-num {
-            color: #fc8181;
+            color: #E74C3C;
         }
 
         .stats-bar .stat-divider {
             width: 1px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(108, 180, 238, 0.2);
         }
 
+        /* ===== 名字网格 ===== */
         #nameGrid {
             display: flex;
             flex-wrap: wrap;
@@ -164,12 +185,13 @@
             min-height: 320px;
             padding: 18px 8px 10px;
             border-radius: 24px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(108, 180, 238, 0.1);
             transition: all 0.4s ease;
             position: relative;
         }
 
+        /* ===== 名字卡片 ===== */
         .name-card {
             display: flex;
             align-items: center;
@@ -178,49 +200,50 @@
             min-width: 60px;
             height: 44px;
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
+            border: 1px solid rgba(108, 180, 238, 0.25);
+            color: #1A3A5C;
             font-size: 15px;
             font-weight: 500;
             transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             cursor: default;
             position: relative;
             user-select: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 40, 80, 0.06);
         }
 
         .name-card:hover {
             transform: translateY(-2px) scale(1.02);
-            border-color: rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            border-color: #2E86C1;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 6px 20px rgba(46, 134, 193, 0.15);
         }
 
+        /* ---- 晋级 ---- */
         .name-card.qualify {
-            background: rgba(104, 211, 145, 0.18);
-            border-color: rgba(104, 211, 145, 0.5);
-            color: #68d391;
-            box-shadow: 0 0 25px rgba(104, 211, 145, 0.15), inset 0 0 20px rgba(104, 211, 145, 0.05);
+            background: rgba(46, 134, 193, 0.12);
+            border-color: #2E86C1;
+            color: #1A5276;
+            box-shadow: 0 0 25px rgba(46, 134, 193, 0.15), inset 0 0 20px rgba(46, 134, 193, 0.05);
             animation: qualifyPulse 1.2s ease-in-out;
         }
 
         @keyframes qualifyPulse {
             0% {
                 transform: scale(1);
-                box-shadow: 0 0 0 rgba(104, 211, 145, 0);
+                box-shadow: 0 0 0 rgba(46, 134, 193, 0);
             }
             30% {
                 transform: scale(1.12);
-                box-shadow: 0 0 50px rgba(104, 211, 145, 0.4);
-                border-color: #68d391;
+                box-shadow: 0 0 50px rgba(46, 134, 193, 0.4);
+                border-color: #2E86C1;
             }
             70% {
                 transform: scale(0.96);
             }
             100% {
                 transform: scale(1);
-                box-shadow: 0 0 25px rgba(104, 211, 145, 0.15);
+                box-shadow: 0 0 25px rgba(46, 134, 193, 0.15);
             }
         }
 
@@ -228,13 +251,14 @@
             display: inline-block;
             margin-left: 6px;
             font-size: 13px;
-            color: #68d391;
+            color: #2E86C1;
         }
 
+        /* ---- 淘汰 ---- */
         .name-card.eliminate {
-            background: rgba(252, 129, 129, 0.12);
-            border-color: rgba(252, 129, 129, 0.3);
-            color: #fc8181;
+            background: rgba(231, 76, 60, 0.08);
+            border-color: rgba(231, 76, 60, 0.25);
+            color: #C0392B;
             animation: eliminateFade 0.9s ease-in forwards;
         }
 
@@ -242,21 +266,22 @@
             0% {
                 transform: scale(1);
                 opacity: 1;
-                background: rgba(252, 129, 129, 0.12);
+                background: rgba(231, 76, 60, 0.08);
             }
             40% {
                 transform: scale(0.85);
                 opacity: 0.8;
-                background: rgba(252, 129, 129, 0.25);
+                background: rgba(231, 76, 60, 0.2);
             }
             100% {
                 transform: scale(0.6) translateY(30px);
                 opacity: 0;
-                background: rgba(252, 129, 129, 0);
+                background: rgba(231, 76, 60, 0);
                 border-color: transparent;
             }
         }
 
+        /* ---- 回归 ---- */
         .name-card.reappear {
             animation: reappearUp 0.7s ease-out forwards;
         }
@@ -265,57 +290,59 @@
             0% {
                 transform: translateY(40px) scale(0.7);
                 opacity: 0;
-                background: rgba(104, 211, 145, 0.05);
+                background: rgba(46, 134, 193, 0.05);
             }
             60% {
                 transform: translateY(-6px) scale(1.02);
                 opacity: 1;
-                background: rgba(104, 211, 145, 0.12);
-                border-color: rgba(104, 211, 145, 0.3);
+                background: rgba(46, 134, 193, 0.12);
+                border-color: rgba(46, 134, 193, 0.3);
             }
             100% {
                 transform: translateY(0) scale(1);
                 opacity: 1;
-                background: rgba(255, 255, 255, 0.05);
-                border-color: rgba(255, 255, 255, 0.07);
-                color: rgba(255, 255, 255, 0.8);
+                background: rgba(255, 255, 255, 0.85);
+                border-color: rgba(108, 180, 238, 0.25);
+                color: #1A3A5C;
             }
         }
 
+        /* ---- 晋级高亮（金色改为蓝色） ---- */
         .name-card.qualify-glow {
-            background: rgba(246, 224, 94, 0.15);
-            border-color: #f6e05e;
-            color: #f6e05e;
-            box-shadow: 0 0 40px rgba(246, 224, 94, 0.2), inset 0 0 30px rgba(246, 224, 94, 0.05);
-            animation: glowGold 1.4s ease-in-out;
+            background: rgba(46, 134, 193, 0.2);
+            border-color: #2E86C1;
+            color: #1A5276;
+            box-shadow: 0 0 40px rgba(46, 134, 193, 0.25), inset 0 0 30px rgba(46, 134, 193, 0.08);
+            animation: glowBlue 1.4s ease-in-out;
         }
 
-        @keyframes glowGold {
+        @keyframes glowBlue {
             0% {
                 transform: scale(1);
-                box-shadow: 0 0 0 rgba(246, 224, 94, 0);
+                box-shadow: 0 0 0 rgba(46, 134, 193, 0);
             }
             25% {
                 transform: scale(1.15);
-                box-shadow: 0 0 60px rgba(246, 224, 94, 0.5);
+                box-shadow: 0 0 60px rgba(46, 134, 193, 0.5);
             }
             60% {
                 transform: scale(0.95);
-                box-shadow: 0 0 30px rgba(246, 224, 94, 0.2);
+                box-shadow: 0 0 30px rgba(46, 134, 193, 0.2);
             }
             100% {
                 transform: scale(1);
-                box-shadow: 0 0 40px rgba(246, 224, 94, 0.15);
+                box-shadow: 0 0 40px rgba(46, 134, 193, 0.15);
             }
         }
 
         .empty-hint {
-            color: rgba(255, 255, 255, 0.15);
+            color: #4A7A9C;
             font-size: 18px;
             padding: 60px 20px;
             letter-spacing: 2px;
         }
 
+        /* ===== 底部 ===== */
         footer {
             margin-top: 28px;
             display: flex;
@@ -324,7 +351,7 @@
             flex-wrap: wrap;
             gap: 16px;
             padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 2px solid rgba(108, 180, 238, 0.2);
         }
 
         .controls {
@@ -344,17 +371,18 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 255, 255, 0.06);
-            color: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.7);
+            color: #1A3A5C;
+            border: 1px solid rgba(108, 180, 238, 0.25);
             backdrop-filter: blur(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .controls button:hover:not(:disabled) {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
+            background: #ffffff;
+            border-color: #2E86C1;
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(46, 134, 193, 0.15);
         }
 
         .controls button:active:not(:disabled) {
@@ -362,28 +390,28 @@
         }
 
         .controls button:disabled {
-            opacity: 0.3;
+            opacity: 0.4;
             cursor: not-allowed;
             transform: none !important;
         }
 
         .controls button.primary {
-            background: linear-gradient(135deg, #f6e05e, #ecc94b);
-            color: #1a202c;
+            background: linear-gradient(135deg, #2E86C1, #1A5276);
+            color: #fff;
             border-color: transparent;
             font-weight: 700;
-            box-shadow: 0 4px 20px rgba(246, 224, 94, 0.15);
+            box-shadow: 0 4px 20px rgba(46, 134, 193, 0.3);
         }
 
         .controls button.primary:hover:not(:disabled) {
-            background: linear-gradient(135deg, #fbd38d, #f6e05e);
-            box-shadow: 0 8px 35px rgba(246, 224, 94, 0.3);
+            background: linear-gradient(135deg, #3498DB, #1A5276);
+            box-shadow: 0 8px 35px rgba(46, 134, 193, 0.4);
             transform: translateY(-2px);
         }
 
         .controls button.primary:disabled {
-            background: rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.3);
+            background: rgba(108, 180, 238, 0.3);
+            color: rgba(255, 255, 255, 0.5);
             box-shadow: none;
         }
 
@@ -393,13 +421,20 @@
         }
 
         .controls button .badge {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(108, 180, 238, 0.15);
             padding: 0 10px;
             border-radius: 30px;
             font-size: 12px;
             font-weight: 500;
+            color: #1A3A5C;
         }
 
+        .controls button.primary .badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        /* ===== 进度点 ===== */
         .progress-dots {
             display: flex;
             gap: 8px;
@@ -410,23 +445,24 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(108, 180, 238, 0.25);
             transition: all 0.4s ease;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(108, 180, 238, 0.2);
         }
 
         .progress-dots .dot.active {
-            background: #f6e05e;
-            box-shadow: 0 0 20px rgba(246, 224, 94, 0.4);
-            border-color: #f6e05e;
+            background: #2E86C1;
+            box-shadow: 0 0 20px rgba(46, 134, 193, 0.4);
+            border-color: #2E86C1;
             transform: scale(1.3);
         }
 
         .progress-dots .dot.done {
-            background: rgba(104, 211, 145, 0.3);
-            border-color: rgba(104, 211, 145, 0.2);
+            background: rgba(46, 134, 193, 0.3);
+            border-color: rgba(46, 134, 193, 0.2);
         }
 
+        /* ===== 响应式 ===== */
         @media (max-width: 768px) {
             #app {
                 padding: 18px 16px 22px;
@@ -450,6 +486,7 @@
             .stats-bar {
                 gap: 14px;
                 margin-bottom: 14px;
+                padding: 8px 14px;
             }
             .stats-bar .stat-item {
                 font-size: 12px;
@@ -519,10 +556,7 @@
             }
         }
 
-        .fade-transition {
-            transition: opacity 0.3s ease;
-        }
-
+        /* ===== 工具类 ===== */
         .stat-item .num.pop {
             animation: popNum 0.5s ease;
         }
@@ -533,32 +567,10 @@
             }
             50% {
                 transform: scale(1.4);
-                color: #f6e05e;
+                color: #2E86C1;
             }
             100% {
                 transform: scale(1);
-            }
-        }
-
-        .sparkle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #f6e05e;
-            border-radius: 50%;
-            box-shadow: 0 0 12px rgba(246, 224, 94, 0.6);
-            pointer-events: none;
-            animation: sparkleFloat 1.2s ease-out forwards;
-        }
-
-        @keyframes sparkleFloat {
-            0% {
-                opacity: 1;
-                transform: translate(0, 0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(var(--tx), var(--ty)) scale(0);
             }
         }
 
@@ -567,15 +579,15 @@
             height: 4px;
         }
         ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(108, 180, 238, 0.05);
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
+            background: #2E86C1;
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.25);
+            background: #1A5276;
         }
     </style>
 </head>
@@ -585,8 +597,10 @@
         <!-- 头部 -->
         <header>
             <div class="logo">
-                <h1>🏆 观赛晋级</h1>
-                <div class="sub">· 固定名单 · 8场筛选 ·</div>
+                <h1>
+                    <span class="flag">🇦🇷</span> 观赛晋级
+                </h1>
+                <div class="sub">· 阿根廷球迷 · 8场筛选 ·</div>
             </div>
             <div class="round-badge">
                 <span class="label">📋 场次</span>
@@ -648,7 +662,7 @@
             // =================================================================
             //  ⚙️ 自动播放配置（修改此值即可调整暂停时长）
             // =================================================================
-            const AUTO_PAUSE_SECONDS = 8; // 每次晋级后暂停的秒数，例如 3 表示暂停 3 秒
+            const AUTO_PAUSE_SECONDS = 3; // 每次晋级后暂停的秒数
 
             // =================================================================
             //  📌 数据配置区 —— 您的固定名单（8场）
@@ -724,7 +738,7 @@
             //  状态管理
             // =================================================================
 
-            const TOTAL_ROUNDS = FIXED_ROUNDS.length; // 8
+            const TOTAL_ROUNDS = FIXED_ROUNDS.length;
             const AUTO_PAUSE_MS = AUTO_PAUSE_SECONDS * 1000;
 
             const state = {
@@ -1014,7 +1028,6 @@
 
             function goToNext() {
                 if (state.isAnimating) return;
-                // 手动操作时停止自动播放，避免冲突
                 if (state.isAutoPlaying) stopAutoPlay();
                 if (state.currentRound >= TOTAL_ROUNDS - 1) return;
                 playQualifyEffect();
@@ -1035,7 +1048,7 @@
                 updateRoundUI();
             }
 
-            // ---- 自动播放（含暂停配置） ----
+            // ---- 自动播放 ----
             function toggleAutoPlay() {
                 if (state.isAutoPlaying) {
                     stopAutoPlay();
@@ -1081,26 +1094,20 @@
                     return;
                 }
 
-                // 执行晋级
                 playQualifyEffect();
 
-                // 等待动画彻底完成（包括最后的 state.isAnimating = false）
                 const checkDone = () => {
                     if (!state.isAnimating) {
-                        // 动画已完成，此时进入暂停状态
                         if (state.isAutoPlaying && state.currentRound < TOTAL_ROUNDS - 1) {
-                            // ⭐ 关键：暂停 AUTO_PAUSE_MS 毫秒后再进行下一步
                             state.autoPlayTimer = setTimeout(autoPlayStep, AUTO_PAUSE_MS);
                         } else if (state.isAutoPlaying && state.currentRound >= TOTAL_ROUNDS - 1) {
                             stopAutoPlay();
                         }
                     } else {
-                        // 如果还在动画中，继续轮询
                         state.autoPlayTimer = setTimeout(checkDone, 300);
                     }
                 };
 
-                // 在 playQualifyEffect 内部有 1100ms + 1400ms 的动画，这里给足够的缓冲时间再开始轮询
                 state.autoPlayTimer = setTimeout(checkDone, 1200);
             }
 
@@ -1130,7 +1137,7 @@
                     }
                 });
 
-                console.log(`🏆 观赛晋级特效已启动（共 ${TOTAL_ROUNDS} 场）`);
+                console.log(`🇦🇷 阿根廷观赛晋级已启动（共 ${TOTAL_ROUNDS} 场）`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
                 console.log(`⏸️ 自动播放每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
                 console.log('⌨️  快捷键: ← 上一场 | → / Space 下一场 | r 重置');
