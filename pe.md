@@ -445,3 +445,147 @@
 2. 第一行更改为：比赛轮次 :日期 周几 时间
 3. 因为网页中国旗emoji无法正常显示，改为引用图片，地址在assets/flags, 图片名称是三字母简称 扩展名webp
 4. 获胜比分失败比分的颜色样式组合没有统一，获胜方比分是黄色，失败方比分是深蓝色，参考第一场
+
+---
+我改成了
+
+```
+    height: 94vh;
+    max-height: 94vh;
+```
+
+
+
+---
+
+比赛信息还有bug
+
+1. 比分牌的显示有问题，颜色不统一，我直接在比赛信息中添加一个字段：winner, host表示主队（左侧的）获胜， guest表示客队获胜（右边的），获胜的队伍比分是深蓝色，另一个队伍的比分就是灰色
+2. 比分信息牌，把第一行中的场次信息“name",单独作为一行，插入到第一行只上，字号颜色可以突出点
+3. 第八场比赛的比赛信息没有显示，请注意，第八场没有开球，所以只第三行用'VS' 代替比分
+
+```
+{
+	"matchDetails": {
+		"1": {
+			"name": "J组第一轮",
+			"host": "ARG",
+			"guest": "ALG",
+			"month": 5,
+			"day": 17,
+			"hour": 9,
+			"min": 0,
+			"dayOfWeek": "三",
+			"hostscore": 3,
+			"guestscore": 0,
+			"winner": "host"
+		},
+		"2": {
+			"name": "J组第二轮",
+			"host": "ARG",
+			"guest": "AUT",
+			"month": 5,
+			"day": 23,
+			"hour": 1,
+			"min": 0,
+			"dayOfWeek": "二",
+			"hostscore": 2,
+			"guestscore": 0,
+			"winner": "host"
+		},
+		"3": {
+			"name": "J组第三轮",
+			"host": "JOR",
+			"guest": "ARG",
+			"month": 5,
+			"day": 28,
+			"hour": 10,
+			"min": 0,
+			"dayOfWeek": "日",
+			"hostscore": 1,
+			"guestscore": 3,
+			"winner": "guest"
+		},
+		"4": {
+			"name": "1/16决赛",
+			"host": "ARG",
+			"guest": "CPV",
+			"month": 6,
+			"day": 4,
+			"hour": 6,
+			"min": 0,
+			"dayOfWeek": "六",
+			"hostscore": 3,
+			"guestscore": 2,
+			"winner": "host"
+		},
+		"5": {
+			"name": "1/8决赛",
+			"host": "ARG",
+			"guest": "EGY",
+			"month": 6,
+			"day": 8,
+			"hour": 0,
+			"min": 0,
+			"dayOfWeek": "三",
+			"hostscore": 3,
+			"guestscore": 2,
+			"winner": "host"
+		},
+		"6": {
+			"name": "1/4决赛",
+			"host": "ARG",
+			"guest": "SUI",
+			"month": 6,
+			"day": 12,
+			"hour": 9,
+			"min": 0,
+			"dayOfWeek": "日",
+			"hostscore": 3,
+			"guestscore": 1,
+			"winner": "host"
+		},
+		"7": {
+			"name": "半决赛",
+			"host": "ENG",
+			"guest": "ARG",
+			"month": 6,
+			"day": 16,
+			"hour": 3,
+			"min": 0,
+			"dayOfWeek": "四",
+			"hostscore": 1,
+			"guestscore": 2,
+			"winner": "guest"
+		},
+		"8": {
+			"name": "决赛",
+			"host": "ESP",
+			"guest": "ARG",
+			"month": 6,
+			"day": 20,
+			"hour": 3,
+			"min": 0,
+			"dayOfWeek": "一"
+			"hostscore": -1,
+			"guestscore": -1,
+			"winner": ""
+		}
+	},
+	"country_infos": {
+		"ARG": {"name": "阿根廷", "flag": "🇦🇷"},
+		"ALG": {"name": "阿尔及利亚", "flag": "🇩🇿"},
+		"AUT": {"name": "奥地利", "flag": "🇦🇹"},
+		"JOR": {"name": "约旦", "flag": "🇯🇴"},
+		"CPV": {"name": "佛得角", "flag": "🇨🇻"},
+		"EGY": {"name": "埃及", "flag": "🇪🇬"},
+		"SUI": {"name": "瑞士", "flag": "🇨🇭"},
+		"ENG": {"name": "英格兰", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
+		"ESP": {"name": "西班牙", "flag": "🇪🇸"}
+	},
+}
+```
+
+现在加入一个环节
+
+把一段感谢词，已打字动效的形式，一个字一个字的添加在画面中，结束后，再来展示后续的八场名单环节（含赛事信息）
