@@ -204,7 +204,7 @@
             overflow: hidden;
         }
 
-        /* ===== 名字卡片 — 正常样式 ===== */
+        /* ===== 名字卡片 ===== */
         .name-card {
             position: absolute;
             display: inline-flex;
@@ -239,13 +239,19 @@
             gap: 0.4vw;
         }
 
-        /* ---- 待淘汰状态（保持正常样式，用于神秘感） ---- */
-        .name-card[data-eliminate="true"] {
-            /* 保持与正常卡片完全相同的样式，不提前暴露淘汰样式 */
-            background: rgba(255, 255, 255, 0.88);
-            border-color: rgba(108, 180, 238, 0.26);
-            color: #1A3A5C;
-            box-shadow: 0 0.12vw 0.6vw rgba(0, 40, 80, 0.04);
+        /* ---- 蓝色保留样式（晋级/当前轮次） ---- */
+        .name-card.qualify {
+            background: rgba(46, 134, 193, 0.14);
+            border-color: #2E86C1;
+            color: #1A5276;
+            box-shadow: 0 0 1.8vw rgba(46, 134, 193, 0.08), inset 0 0 1.4vw rgba(46, 134, 193, 0.03);
+        }
+
+        .name-card.qualify .check-mark {
+            display: inline-block;
+            margin-left: 0.30vw;
+            font-size: 0.9vw;
+            color: #2E86C1;
         }
 
         .name-card:hover {
@@ -298,14 +304,9 @@
             display: inline-block;
         }
 
-        /* ---- 晋级 ---- */
-        .name-card.qualify {
-            background: rgba(46, 134, 193, 0.12);
-            border-color: #2E86C1;
-            color: #1A5276;
-            box-shadow: 0 0 1.8vw rgba(46, 134, 193, 0.08), inset 0 0 1.4vw rgba(46, 134, 193, 0.03);
+        /* ---- 高亮脉冲（晋级动画） ---- */
+        .name-card.qualify-pulse {
             animation: qualifyPulse 1.2s ease-in-out;
-            z-index: 10;
         }
         @keyframes qualifyPulse {
             0% {
@@ -325,35 +326,29 @@
                 box-shadow: 0 0 1.8vw rgba(46, 134, 193, 0.08);
             }
         }
-        .name-card.qualify .check-mark {
-            display: inline-block;
-            margin-left: 0.30vw;
-            font-size: 0.9vw;
-            color: #2E86C1;
-        }
 
-        /* ---- 淘汰样式（仅在添加 eliminate 类后触发） ---- */
+        /* ---- 淘汰样式（直接从蓝色变为红色） ---- */
         .name-card.eliminate {
-            background: rgba(231, 76, 60, 0.12) !important;
-            border-color: rgba(231, 76, 60, 0.50) !important;
+            background: rgba(231, 76, 60, 0.15) !important;
+            border-color: rgba(231, 76, 60, 0.60) !important;
             color: #C0392B !important;
             animation: eliminateFade var(--eliminate-duration, 0.9s) ease-in forwards;
             pointer-events: none;
             z-index: 5;
-            box-shadow: 0 0 1.8vw rgba(231, 76, 60, 0.15) !important;
+            box-shadow: 0 0 2.0vw rgba(231, 76, 60, 0.20) !important;
         }
         @keyframes eliminateFade {
             0% {
                 transform: scale(1);
                 opacity: 1;
-                background: rgba(231, 76, 60, 0.12);
-                border-color: rgba(231, 76, 60, 0.50);
+                background: rgba(231, 76, 60, 0.15);
+                border-color: rgba(231, 76, 60, 0.60);
             }
             40% {
                 transform: scale(0.78);
                 opacity: 0.8;
-                background: rgba(231, 76, 60, 0.20);
-                border-color: rgba(231, 76, 60, 0.60);
+                background: rgba(231, 76, 60, 0.25);
+                border-color: rgba(231, 76, 60, 0.70);
             }
             100% {
                 transform: scale(0.30) translateY(4vh);
@@ -389,12 +384,12 @@
             }
         }
 
-        /* ---- 晋级高亮 ---- */
+        /* ---- 晋级高亮（最终确认） ---- */
         .name-card.qualify-glow {
-            background: rgba(46, 134, 193, 0.16);
+            background: rgba(46, 134, 193, 0.20);
             border-color: #2E86C1;
             color: #1A5276;
-            box-shadow: 0 0 4.0vw rgba(46, 134, 193, 0.18), inset 0 0 2.0vw rgba(46, 134, 193, 0.05);
+            box-shadow: 0 0 4.0vw rgba(46, 134, 193, 0.20), inset 0 0 2.0vw rgba(46, 134, 193, 0.06);
             animation: glowBlue 1.5s ease-in-out;
             z-index: 20;
         }
@@ -413,7 +408,7 @@
             }
             100% {
                 transform: scale(1);
-                box-shadow: 0 0 4.0vw rgba(46, 134, 193, 0.08);
+                box-shadow: 0 0 4.0vw rgba(46, 134, 193, 0.10);
             }
         }
 
@@ -665,15 +660,13 @@
             // =================================================================
             //  ⚙️ 可配置参数
             // =================================================================
-            const AUTO_PAUSE_SECONDS = 2.5; // 每次晋级后暂停秒数
-            const AVATAR_INTERVAL_MS = 380; // 头像逐个显示间隔（毫秒）
+            const AUTO_PAUSE_SECONDS = 2.5;
+            const AVATAR_INTERVAL_MS = 380;
 
-            // ---- 淘汰动画参数 ----
-            const ELIMINATE_ANIMATION_DURATION_MS = 1500; // 单个标签消失动画时长（毫秒）
-            const ELIMINATE_INTERVAL_MS = 300; // 标签与标签开始消失的间隔（毫秒）
-            const ELIMINATE_INITIAL_DELAY_MS = 300; // 第一个标签开始消失前的初始延迟（毫秒）
+            const ELIMINATE_ANIMATION_DURATION_MS = 1500;
+            const ELIMINATE_INTERVAL_MS = 300;
+            const ELIMINATE_INITIAL_DELAY_MS = 300;
 
-            // ---- 将淘汰动画时长注入 CSS 变量 ----
             document.documentElement.style.setProperty('--eliminate-duration', (ELIMINATE_ANIMATION_DURATION_MS / 1000) +
             's');
 
@@ -681,7 +674,6 @@
             //  📌 固定名单（8场）
             // =================================================================
             const FIXED_ROUNDS = [
-                // 第一场（76人，去重后）
                 [
                     "武汉阿根廷球迷俱乐部", "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", ".",
                     "Flash", "张誉", "BLEO", "百事可乐", "烟枪", "边路一条虫", "热血的心",
@@ -696,7 +688,6 @@
                     "🔫", "moonfizz", "小王哥", "AKhArLequIn", "冯玄", "芹泽多摩雄呀",
                     "张迪", "MITNY", "诺言", "无", "初心", "杨文"
                 ],
-                // 第二场（34人）
                 [
                     "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", ".", "张誉", "BLEO",
                     "百事可乐", "烟枪", "LYTTEOTW", "沐沐小无邪", "托尼·史塔克", "28号zz",
@@ -705,38 +696,32 @@
                     "我爱罐装可乐", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "冯玄", "芹泽多摩雄呀",
                     "张迪", "杨文"
                 ],
-                // 第三场（20人）
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "秋天的丝瓜", "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "豆包👶🏻的傻大爸", "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥",
                     "张迪", "杨文"
                 ],
-                // 第四场（19人）
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "秋天的丝瓜", "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第五场（18人）
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第六场（18人）
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第七场（16人）
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "胡嵩", "流浪猫",
                     "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘", "🐑雨点",
                     "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第八场（16人，最终获奖者）
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "胡嵩", "流浪猫",
                     "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘", "🐑雨点",
@@ -759,7 +744,7 @@
                 hasStarted: false,
                 avatarsShown: false,
                 avatarTimer: null,
-                eliminateTimers: [], // 存储所有淘汰定时器
+                eliminateTimers: [],
             };
 
             // =================================================================
@@ -844,7 +829,6 @@
                     });
                 }
 
-                // 防重叠
                 for (let iter = 0; iter < 8; iter++) {
                     let anyOverlap = false;
                     for (let i = 0; i < positions.length; i++) {
@@ -899,7 +883,7 @@
             }
 
             // =================================================================
-            //  构建卡片内容（头像 + 名字）
+            //  构建卡片内容
             // =================================================================
             function buildCardContent(name, showAvatar) {
                 const fragment = document.createDocumentFragment();
@@ -928,7 +912,7 @@
             }
 
             // =================================================================
-            //  逐个显示头像（顺序随机）
+            //  逐个显示头像
             // =================================================================
             function showAvatarsSequentially() {
                 if (state.avatarTimer) {
@@ -941,16 +925,12 @@
                 cards.forEach(card => {
                     const avatar = card.querySelector('.avatar');
                     if (avatar && !avatar.classList.contains('hidden')) {
-                        avatarItems.push({
-                            card: card,
-                            avatar: avatar
-                        });
+                        avatarItems.push({ card, avatar });
                     }
                 });
 
                 if (avatarItems.length === 0) return;
 
-                // 随机打乱
                 for (let i = avatarItems.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [avatarItems[i], avatarItems[j]] = [avatarItems[j], avatarItems[i]];
@@ -976,14 +956,13 @@
             }
 
             // =================================================================
-            //  逐个淘汰：每个标签在轮到它时才变为淘汰样式
+            //  逐个淘汰：直接从蓝色变为红色
             // =================================================================
             function staggerEliminateCards() {
-                // 清理之前的定时器
                 state.eliminateTimers.forEach(t => clearTimeout(t));
                 state.eliminateTimers = [];
 
-                // 找到所有待淘汰的卡片（带有 data-eliminate="true" 属性）
+                // 找到所有标记为待淘汰的卡片（data-eliminate="true"）
                 const eliminateCards = grid.querySelectorAll('[data-eliminate="true"]');
                 if (eliminateCards.length === 0) return 0;
 
@@ -991,10 +970,10 @@
                 const totalCards = eliminateCards.length;
 
                 eliminateCards.forEach((card) => {
-                    // 计算延迟：初始延迟 + 索引 * 间隔
                     const delay = ELIMINATE_INITIAL_DELAY_MS + index * ELIMINATE_INTERVAL_MS;
                     const timer = setTimeout(() => {
-                        // 在轮到该标签时，才添加 eliminate 类，触发淘汰样式 + 消失动画
+                        // 直接从蓝色（qualify）变为红色（eliminate）
+                        card.classList.remove('qualify', 'qualify-pulse');
                         card.classList.add('eliminate');
                         card.removeAttribute('data-eliminate');
                     }, delay);
@@ -1002,10 +981,8 @@
                     index++;
                 });
 
-                // 返回总耗时：最后一个的延迟 + 动画时长 + 缓冲
                 const maxDelay = ELIMINATE_INITIAL_DELAY_MS + (totalCards - 1) * ELIMINATE_INTERVAL_MS;
-                const totalDuration = maxDelay + ELIMINATE_ANIMATION_DURATION_MS + 150;
-                return totalDuration;
+                return maxDelay + ELIMINATE_ANIMATION_DURATION_MS + 150;
             }
 
             // =================================================================
@@ -1019,6 +996,7 @@
                         extraClass = '',
                         skipLayout = false,
                         showAvatars = false,
+                        isFinal = false,
                 } = options;
 
                 // ---- 更新模式 ----
@@ -1032,13 +1010,12 @@
 
                     for (const [name, el] of existing) {
                         if (newSet.has(name)) {
-                            // 重置卡片
                             el.className = 'name-card';
                             el.innerHTML = '';
                             const content = buildCardContent(name, showAvatars);
                             el.appendChild(content);
 
-                            // 状态标记
+                            // 晋级者：蓝色 + 对勾
                             if (qualifySet.has(name)) {
                                 el.classList.add('qualify');
                                 const mark = document.createElement('span');
@@ -1046,16 +1023,16 @@
                                 mark.textContent = ' ✓';
                                 el.appendChild(mark);
                             }
-                            if (eliminateSet.has(name)) {
-                                // 关键：淘汰标签只加 data-eliminate 属性，不加 eliminate 类
-                                // 保持正常样式，直到 stagggerEliminateCards 触发时才变为淘汰样式
+                            // 待淘汰者：蓝色（与晋级者一致，无对勾）
+                            else if (eliminateSet.has(name)) {
+                                el.classList.add('qualify');
                                 el.setAttribute('data-eliminate', 'true');
-                                // 确保没有 eliminate 类
-                                el.classList.remove('eliminate');
-                            } else {
-                                el.removeAttribute('data-eliminate');
-                                el.classList.remove('eliminate');
                             }
+                            // 其他情况（如回归者）
+                            else {
+                                // 保持默认白色
+                            }
+
                             if (reappearSet.has(name)) {
                                 el.classList.add('reappear');
                             }
@@ -1063,13 +1040,10 @@
                                 el.classList.add(extraClass);
                             }
 
-                            // 保留位置
                             el.style.position = 'absolute';
                             el.style.visibility = 'visible';
                             el.style.opacity = '1';
                         } else {
-                            // 不在新名单中，移除卡片（并清理其定时器）
-                            // 注意：如果该卡片正在等待淘汰，它的定时器会在状态切换时被清理
                             el.remove();
                         }
                     }
@@ -1096,6 +1070,7 @@
                     const content = buildCardContent(name, showAvatars);
                     card.appendChild(content);
 
+                    // 晋级者：蓝色 + 对勾
                     if (qualifySet.has(name)) {
                         card.classList.add('qualify');
                         const mark = document.createElement('span');
@@ -1103,10 +1078,12 @@
                         mark.textContent = ' ✓';
                         card.appendChild(mark);
                     }
-                    if (eliminateSet.has(name)) {
-                        // 只加 data-eliminate，不加 eliminate 类
+                    // 待淘汰者：蓝色（与晋级者一致，无对勾）
+                    else if (eliminateSet.has(name)) {
+                        card.classList.add('qualify');
                         card.setAttribute('data-eliminate', 'true');
                     }
+
                     if (reappearSet.has(name)) {
                         card.classList.add('reappear');
                     }
@@ -1170,9 +1147,8 @@
 
             function updateRoundUI() {
                 const idx = state.currentRound;
-                const total = TOTAL_ROUNDS;
                 roundDisplay.textContent = idx + 1;
-                totalDisplay.textContent = total;
+                totalDisplay.textContent = TOTAL_ROUNDS;
                 roundDisplay.classList.toggle('active', true);
             }
 
@@ -1190,14 +1166,13 @@
                     clearTimeout(state.avatarTimer);
                     state.avatarTimer = null;
                 }
-                // 清理淘汰定时器
                 state.eliminateTimers.forEach(t => clearTimeout(t));
                 state.eliminateTimers = [];
                 updateRoundUI();
             }
 
             // =================================================================
-            //  特效（逐个淘汰，每个标签在轮到它时才变为淘汰样式）
+            //  特效
             // =================================================================
             function playQualifyEffect() {
                 if (state.isAnimating) return;
@@ -1217,7 +1192,7 @@
                     else eliminateSet.add(name);
                 });
 
-                // --- 第一阶段：标记淘汰（仅 data-eliminate，无样式变化） ---
+                // 第一阶段：所有人都显示为蓝色（晋级者带对勾，待淘汰者无对勾）
                 renderCards(prevNames, {
                     qualifySet,
                     eliminateSet,
@@ -1225,16 +1200,15 @@
                     showAvatars: false,
                 });
 
-                // 开始逐个淘汰：每个标签在轮到它时才变为淘汰样式并消失
+                // 开始逐个淘汰：直接从蓝色变为红色
                 const totalEliminateDuration = staggerEliminateCards();
 
-                // 等待淘汰全部完成，进入第二阶段
+                // 等待淘汰全部完成
                 setTimeout(() => {
-                    // 清理所有未执行的淘汰定时器
                     state.eliminateTimers.forEach(t => clearTimeout(t));
                     state.eliminateTimers = [];
 
-                    // 第二阶段：高亮晋级名单（淘汰者已消失）
+                    // 第二阶段：高亮晋级名单
                     const glowSet = new Set(nextNames);
                     renderCards(nextNames, {
                         qualifySet: glowSet,
@@ -1435,13 +1409,10 @@
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级 (神秘淘汰版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
+                console.log(`🇦🇷 阿根廷观赛晋级 (蓝→红直切版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
-                console.log(`⏸️ 每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
-                console.log(`⏳ 单个淘汰动画时长: ${ELIMINATE_ANIMATION_DURATION_MS}ms`);
-                console.log(`⏳ 标签消失间隔: ${ELIMINATE_INTERVAL_MS}ms`);
-                console.log(`⏳ 初始延迟: ${ELIMINATE_INITIAL_DELAY_MS}ms`);
-                console.log('🎭 每个标签在轮到它时才变为淘汰样式，保持神秘感');
+                console.log(`⏳ 淘汰间隔: ${ELIMINATE_INTERVAL_MS}ms，从蓝色直接变红`);
+                console.log('🎭 无白色中间状态，淘汰者直接从蓝色变为红色消失');
                 console.log('⌨️  按 空格键 开始自动播放 | 刷新页面重置');
                 console.log('📁 阿根廷国旗图片: ./assets/argentina-flag.png');
                 console.log('📁 头像图片: ./assets/avatars/名字.jpg');
