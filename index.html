@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>🇦🇷 阿根廷 · 观赛名单晋级</title>
     <style>
-        /* ===== 全局重置 & 阿根廷蓝白主题 ===== */
+        /* ===== 全局样式（主题保持不变） ===== */
         * {
             margin: 0;
             padding: 0;
@@ -23,7 +23,6 @@
             position: relative;
         }
 
-        /* 装饰性条纹（球衣风格） */
         body::before {
             content: '';
             position: fixed;
@@ -50,12 +49,10 @@
             padding: 30px 35px 35px;
             box-shadow: 0 20px 60px rgba(0, 40, 80, 0.25), 0 0 0 1px rgba(108, 180, 238, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
             position: relative;
             z-index: 1;
         }
 
-        /* ===== 头部 ===== */
         header {
             display: flex;
             justify-content: space-between;
@@ -75,7 +72,6 @@
             align-items: center;
             gap: 10px;
         }
-
         .logo h1 .flag {
             font-size: 32px;
         }
@@ -96,14 +92,12 @@
             border-radius: 60px;
             border: 1px solid rgba(108, 180, 238, 0.25);
         }
-
         .round-badge .label {
             color: #1A3A5C;
             font-size: 13px;
             font-weight: 600;
             letter-spacing: 1px;
         }
-
         .round-badge .round-num {
             font-size: 28px;
             font-weight: 800;
@@ -112,18 +106,15 @@
             text-align: center;
             transition: 0.3s;
         }
-
         .round-badge .round-num.active {
             color: #2E86C1;
             text-shadow: 0 0 20px rgba(46, 134, 193, 0.3);
         }
-
         .round-badge .total {
             color: #4A7A9C;
             font-size: 16px;
             font-weight: 500;
         }
-
         .round-badge .people-count {
             color: #1A3A5C;
             font-size: 14px;
@@ -134,7 +125,6 @@
             margin-left: 4px;
         }
 
-        /* ===== 统计条 ===== */
         .stats-bar {
             display: flex;
             gap: 24px;
@@ -146,7 +136,6 @@
             backdrop-filter: blur(4px);
             border: 1px solid rgba(108, 180, 238, 0.15);
         }
-
         .stats-bar .stat-item {
             display: flex;
             align-items: center;
@@ -155,7 +144,6 @@
             color: #1A3A5C;
             font-weight: 500;
         }
-
         .stats-bar .stat-item .num {
             font-weight: 700;
             font-size: 18px;
@@ -163,14 +151,12 @@
             min-width: 28px;
             text-align: center;
         }
-
         .stats-bar .stat-item .num.qualify-num {
             color: #2E86C1;
         }
         .stats-bar .stat-item .num.eliminate-num {
             color: #E74C3C;
         }
-
         .stats-bar .stat-divider {
             width: 1px;
             background: rgba(108, 180, 238, 0.2);
@@ -219,7 +205,6 @@
             z-index: 1;
             will-change: left, top, transform;
         }
-
         .name-card:hover {
             transform: scale(1.08) rotate(0deg) !important;
             border-color: #2E86C1;
@@ -228,7 +213,6 @@
             z-index: 100;
         }
 
-        /* ---- 晋级 ---- */
         .name-card.qualify {
             background: rgba(46, 134, 193, 0.14);
             border-color: #2E86C1;
@@ -237,7 +221,6 @@
             animation: qualifyPulse 1.2s ease-in-out;
             z-index: 10;
         }
-
         @keyframes qualifyPulse {
             0% {
                 transform: scale(1);
@@ -256,7 +239,6 @@
                 box-shadow: 0 0 25px rgba(46, 134, 193, 0.12);
             }
         }
-
         .name-card.qualify .check-mark {
             display: inline-block;
             margin-left: 5px;
@@ -264,7 +246,6 @@
             color: #2E86C1;
         }
 
-        /* ---- 淘汰 ---- */
         .name-card.eliminate {
             background: rgba(231, 76, 60, 0.08);
             border-color: rgba(231, 76, 60, 0.25);
@@ -273,7 +254,6 @@
             pointer-events: none;
             z-index: 5;
         }
-
         @keyframes eliminateFade {
             0% {
                 transform: scale(1);
@@ -293,12 +273,10 @@
             }
         }
 
-        /* ---- 回归 ---- */
         .name-card.reappear {
             animation: reappearUp 0.8s ease-out forwards;
             z-index: 8;
         }
-
         @keyframes reappearUp {
             0% {
                 transform: translateY(50px) scale(0.6);
@@ -320,7 +298,6 @@
             }
         }
 
-        /* ---- 晋级高亮（蓝光） ---- */
         .name-card.qualify-glow {
             background: rgba(46, 134, 193, 0.20);
             border-color: #2E86C1;
@@ -329,7 +306,6 @@
             animation: glowBlue 1.4s ease-in-out;
             z-index: 20;
         }
-
         @keyframes glowBlue {
             0% {
                 transform: scale(1);
@@ -349,7 +325,6 @@
             }
         }
 
-        /* ---- 空状态 ---- */
         .empty-hint {
             position: absolute;
             top: 50%;
@@ -360,7 +335,6 @@
             letter-spacing: 2px;
         }
 
-        /* ===== 底部 ===== */
         footer {
             margin-top: 28px;
             display: flex;
@@ -371,13 +345,11 @@
             padding-top: 20px;
             border-top: 2px solid rgba(108, 180, 238, 0.2);
         }
-
         .controls {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
         }
-
         .controls button {
             padding: 10px 28px;
             border: none;
@@ -395,24 +367,20 @@
             backdrop-filter: blur(4px);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
-
         .controls button:hover:not(:disabled) {
             background: #ffffff;
             border-color: #2E86C1;
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(46, 134, 193, 0.15);
         }
-
         .controls button:active:not(:disabled) {
             transform: scale(0.96);
         }
-
         .controls button:disabled {
             opacity: 0.4;
             cursor: not-allowed;
             transform: none !important;
         }
-
         .controls button.primary {
             background: linear-gradient(135deg, #2E86C1, #1A5276);
             color: #fff;
@@ -420,24 +388,20 @@
             font-weight: 700;
             box-shadow: 0 4px 20px rgba(46, 134, 193, 0.3);
         }
-
         .controls button.primary:hover:not(:disabled) {
             background: linear-gradient(135deg, #3498DB, #1A5276);
             box-shadow: 0 8px 35px rgba(46, 134, 193, 0.4);
             transform: translateY(-2px);
         }
-
         .controls button.primary:disabled {
             background: rgba(108, 180, 238, 0.3);
             color: rgba(255, 255, 255, 0.5);
             box-shadow: none;
         }
-
         .controls button .icon {
             font-size: 18px;
             line-height: 1;
         }
-
         .controls button .badge {
             background: rgba(108, 180, 238, 0.15);
             padding: 0 10px;
@@ -446,19 +410,16 @@
             font-weight: 500;
             color: #1A3A5C;
         }
-
         .controls button.primary .badge {
             background: rgba(255, 255, 255, 0.2);
             color: #fff;
         }
 
-        /* ===== 进度点 ===== */
         .progress-dots {
             display: flex;
             gap: 8px;
             align-items: center;
         }
-
         .progress-dots .dot {
             width: 10px;
             height: 10px;
@@ -467,20 +428,17 @@
             transition: all 0.4s ease;
             border: 1px solid rgba(108, 180, 238, 0.2);
         }
-
         .progress-dots .dot.active {
             background: #2E86C1;
             box-shadow: 0 0 20px rgba(46, 134, 193, 0.4);
             border-color: #2E86C1;
             transform: scale(1.3);
         }
-
         .progress-dots .dot.done {
             background: rgba(46, 134, 193, 0.3);
             border-color: rgba(46, 134, 193, 0.2);
         }
 
-        /* ===== 响应式 ===== */
         @media (max-width: 768px) {
             #app {
                 padding: 18px 16px 22px;
@@ -547,7 +505,6 @@
                 justify-content: center;
             }
         }
-
         @media (max-width: 480px) {
             #nameGrid {
                 min-height: 280px;
@@ -573,11 +530,9 @@
             }
         }
 
-        /* ===== 工具类 ===== */
         .stat-item .num.pop {
             animation: popNum 0.5s ease;
         }
-
         @keyframes popNum {
             0% {
                 transform: scale(1);
@@ -590,7 +545,6 @@
                 transform: scale(1);
             }
         }
-
         ::-webkit-scrollbar {
             width: 4px;
             height: 4px;
@@ -611,12 +565,9 @@
 <body>
 
     <div id="app">
-        <!-- 头部 -->
         <header>
             <div class="logo">
-                <h1>
-                    <span class="flag">🇦🇷</span> 观赛晋级
-                </h1>
+                <h1><span class="flag">🇦🇷</span> 观赛晋级</h1>
                 <div class="sub">· 阿根廷球迷 · 8场筛选 ·</div>
             </div>
             <div class="round-badge">
@@ -627,66 +578,40 @@
             </div>
         </header>
 
-        <!-- 统计条 -->
         <div class="stats-bar">
-            <div class="stat-item">
-                📊 当前人数 <span class="num" id="currentCountNum">76</span>
-            </div>
+            <div class="stat-item">📊 当前人数 <span class="num" id="currentCountNum">76</span></div>
             <div class="stat-divider"></div>
-            <div class="stat-item">
-                ⬆️ 晋级 <span class="num qualify-num" id="qualifyCountNum">0</span>
-            </div>
+            <div class="stat-item">⬆️ 晋级 <span class="num qualify-num" id="qualifyCountNum">0</span></div>
             <div class="stat-divider"></div>
-            <div class="stat-item">
-                ⬇️ 淘汰 <span class="num eliminate-num" id="eliminateCountNum">0</span>
-            </div>
+            <div class="stat-item">⬇️ 淘汰 <span class="num eliminate-num" id="eliminateCountNum">0</span></div>
         </div>
 
-        <!-- 名字网格 -->
-        <div id="nameGrid">
-            <!-- 由 JS 动态渲染 -->
-        </div>
+        <div id="nameGrid"></div>
 
-        <!-- 底部 -->
         <footer>
             <div class="controls">
-                <button id="prevBtn" disabled>
-                    <span class="icon">◀</span> 上一场
-                    <span class="badge" id="prevBadge">-</span>
-                </button>
-                <button id="nextBtn" class="primary">
-                    下一场 <span class="icon">▶</span>
-                    <span class="badge" id="nextBadge">-</span>
-                </button>
-                <button id="autoBtn">
-                    <span class="icon">▶</span> 自动播放
-                </button>
-                <button id="resetBtn" title="回到第一场">
-                    <span class="icon">⟲</span> 重置
-                </button>
+                <button id="prevBtn" disabled><span class="icon">◀</span> 上一场 <span class="badge" id="prevBadge">-</span></button>
+                <button id="nextBtn" class="primary">下一场 <span class="icon">▶</span> <span class="badge" id="nextBadge">-</span></button>
+                <button id="autoBtn"><span class="icon">▶</span> 自动播放</button>
+                <button id="resetBtn" title="回到第一场"><span class="icon">⟲</span> 重置</button>
             </div>
-            <div class="progress-dots" id="progressDots">
-                <!-- 由 JS 生成 8 个点 -->
-            </div>
+            <div class="progress-dots" id="progressDots"></div>
         </footer>
     </div>
 
-    <!-- ============================================================ -->
     <script>
         (function() {
             'use strict';
 
             // =================================================================
-            //  ⚙️ 自动播放配置（修改此值即可调整暂停时长）
+            //  ⚙️ 自动播放配置
             // =================================================================
-            const AUTO_PAUSE_SECONDS = 3; // 每次晋级后暂停的秒数
+            const AUTO_PAUSE_SECONDS = 3;
 
             // =================================================================
-            //  📌 数据配置区 —— 您的固定名单（8场）
+            //  📌 固定名单（8场）
             // =================================================================
-
             const FIXED_ROUNDS = [
-                // 第一场（共76人，按表格顺序去重）
                 [
                     "武汉阿根廷球迷俱乐部", "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", "百事可乐",
                     "烟枪", "边路一条虫", "热血的心", "LYTTEOTW", "清浅5.11", "沐沐小无邪",
@@ -702,7 +627,6 @@
                     "🔫", ".", "小王哥", "AKhArLequIn", "冯玄", "芹泽多摩雄呀",
                     "张迪", "MITNY", "杨文"
                 ],
-                // 第二场（34人）
                 [
                     "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", "百事可乐", "烟枪",
                     "LYTTEOTW", "沐沐小无邪", "托尼·史塔克", "28号zz", "🇦🇷kun", "胡嵩",
@@ -711,39 +635,33 @@
                     "我爱罐装可乐", "张誉", "潇潇暮雨", "Lesliexscape🧀", ".", "小王哥",
                     "冯玄", "芹泽多摩雄呀", "张迪", "杨文"
                 ],
-                // 第三场（20人）
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
                     "🐑雨点", "秋天的丝瓜", "流浪猫", "史涛维", "锡锅", "豆包👶🏻的傻大爸",
                     "Arhbo", "🙊陈聘聘", "张誉", "潇潇暮雨", "Lesliexscape🧀", "小王哥",
                     "张迪", "杨文"
                 ],
-                // 第四场（19人，比第三场少“豆包👶🏻的傻大爸”）
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
                     "🐑雨点", "秋天的丝瓜", "流浪猫", "史涛维", "锡锅", "Arhbo",
                     "🙊陈聘聘", "张誉", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪",
                     "杨文"
                 ],
-                // 第五场（17人，比第四场少“秋天的丝瓜”和“张誉”）
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
                     "🐑雨点", "流浪猫", "史涛维", "锡锅", "Arhbo", "🙊陈聘聘",
                     "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第六场（17人，与第五场相同）
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
                     "🐑雨点", "流浪猫", "史涛维", "锡锅", "Arhbo", "🙊陈聘聘",
                     "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第七场（16人，比第六场少“史涛维”）
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
                     "🐑雨点", "流浪猫", "锡锅", "Arhbo", "🙊陈聘聘",
                     "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第八场（16人，与第七场相同）
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
                     "🐑雨点", "流浪猫", "锡锅", "Arhbo", "🙊陈聘聘",
@@ -754,7 +672,6 @@
             // =================================================================
             //  状态管理
             // =================================================================
-
             const TOTAL_ROUNDS = FIXED_ROUNDS.length;
             const AUTO_PAUSE_MS = AUTO_PAUSE_SECONDS * 1000;
 
@@ -763,13 +680,11 @@
                 isAnimating: false,
                 autoPlayTimer: null,
                 isAutoPlaying: false,
-                layoutReady: false,
             };
 
             // =================================================================
             //  DOM 引用
             // =================================================================
-
             const grid = document.getElementById('nameGrid');
             const roundDisplay = document.getElementById('roundDisplay');
             const totalDisplay = document.getElementById('totalDisplay');
@@ -786,76 +701,54 @@
             const progressDots = document.getElementById('progressDots');
 
             // =================================================================
-            //  核心：散落聚集布局算法
+            //  布局算法（散落聚集）
             // =================================================================
-
             function applyScatterLayout(container, cards, count) {
                 if (!cards || cards.length === 0) return;
 
                 const rect = container.getBoundingClientRect();
-                // 使用容器实际宽高，若为0则使用父容器宽高
                 let w = rect.width || container.clientWidth || 800;
                 let h = rect.height || container.clientHeight || 500;
-
-                // 减去内边距
                 const pad = 20;
                 w = Math.max(w - pad * 2, 200);
                 h = Math.max(h - pad * 2, 200);
 
-                // 计算聚集区域（中心区域，根据卡片数量动态调整）
+                // 聚集区域系数，人数越多越分散
                 const density = Math.min(count / 80, 1);
-                const scaleFactor = 0.55 + density * 0.30; // 0.55 ~ 0.85
+                const scaleFactor = 0.50 + density * 0.35;
                 const areaW = w * scaleFactor;
                 const areaH = h * scaleFactor;
                 const offsetX = (w - areaW) / 2 + pad;
                 const offsetY = (h - areaH) / 2 + pad;
 
-                // 计算网格行列
+                // 计算网格
                 const aspect = areaW / areaH;
                 let cols = Math.ceil(Math.sqrt(count * aspect));
                 let rows = Math.ceil(count / cols);
-                // 调整使行列比例接近容器比例
-                if (cols > 0 && rows > 0) {
-                    const idealCols = Math.ceil(Math.sqrt(count * aspect));
-                    const idealRows = Math.ceil(count / idealCols);
-                    if (idealCols * idealRows >= count && idealCols > 0 && idealRows > 0) {
-                        cols = idealCols;
-                        rows = idealRows;
-                    }
-                }
-                // 确保至少1行1列
                 cols = Math.max(cols, 1);
                 rows = Math.max(rows, 1);
 
-                const cellW = areaW / (cols + 0.5);
-                const cellH = areaH / (rows + 0.5);
-                const randOffsetX = cellW * 0.30;
-                const randOffsetY = cellH * 0.30;
+                const cellW = areaW / (cols + 0.6);
+                const cellH = areaH / (rows + 0.6);
+                const randOffsetX = Math.min(cellW * 0.35, 40);
+                const randOffsetY = Math.min(cellH * 0.35, 40);
 
-                // 获取每个卡片的尺寸
+                // 测量卡片尺寸
                 const cardData = cards.map((card, i) => {
                     const cw = card.offsetWidth || 60;
                     const ch = card.offsetHeight || 32;
                     return { el: card, w: cw, h: ch };
                 });
 
-                // 计算位置，使用网格 + 随机偏移
                 const positions = [];
-                const usedPositions = [];
-
                 for (let i = 0; i < cardData.length; i++) {
                     const col = i % cols;
                     const row = Math.floor(i / cols);
-
-                    // 基础网格位置
                     let baseX = offsetX + (col + 0.5) * cellW;
                     let baseY = offsetY + (row + 0.5) * cellH;
-
-                    // 随机偏移（但保持在一定范围内，避免重叠）
                     let shiftX = (Math.random() - 0.5) * randOffsetX * 2;
                     let shiftY = (Math.random() - 0.5) * randOffsetY * 2;
-
-                    // 限制偏移范围，避免卡片超出边界
+                    // 限制偏移
                     const maxShiftX = Math.min(cellW * 0.3, 30);
                     const maxShiftY = Math.min(cellH * 0.3, 30);
                     shiftX = Math.max(-maxShiftX, Math.min(maxShiftX, shiftX));
@@ -863,16 +756,11 @@
 
                     let x = baseX + shiftX;
                     let y = baseY + shiftY;
-
-                    // 边界约束（确保卡片不超出容器）
                     const cw = cardData[i].w;
                     const ch = cardData[i].h;
                     x = Math.max(cw / 2 + pad, Math.min(w - cw / 2 - pad, x));
                     y = Math.max(ch / 2 + pad, Math.min(h - ch / 2 - pad, y));
-
-                    // 随机旋转
                     const rot = (Math.random() - 0.5) * 14;
-
                     positions.push({
                         x: x - cw / 2,
                         y: y - ch / 2,
@@ -882,7 +770,6 @@
                     });
                 }
 
-                // 应用位置
                 for (let i = 0; i < cardData.length; i++) {
                     const card = cardData[i].el;
                     const pos = positions[i];
@@ -897,48 +784,84 @@
                     card.style.opacity = '1';
                 }
 
-                // 根据卡片数量调整容器高度
                 const maxBottom = positions.reduce((max, p) => Math.max(max, p.y + p.h), 0);
                 const newHeight = Math.max(maxBottom + pad, 320);
                 container.style.minHeight = newHeight + 'px';
                 container.style.height = 'auto';
-
-                // 标记布局完成
-                state.layoutReady = true;
             }
 
             // =================================================================
-            //  渲染函数（支持散落布局）
+            //  渲染核心（支持更新模式，避免特效时重新布局）
             // =================================================================
-
             function renderCards(names, options = {}) {
                 const {
                     qualifySet = new Set(),
                         eliminateSet = new Set(),
                         reappearSet = new Set(),
                         extraClass = '',
-                        skipLayout = false,
+                        skipLayout = false, // 为 true 时保留现有卡片位置，只更新类和内容
                 } = options;
 
-                // 清空容器
-                grid.innerHTML = '';
+                // ---- 更新模式（保留位置） ----
+                if (skipLayout && grid.children.length > 0) {
+                    // 构建现有卡片映射
+                    const existing = new Map();
+                    for (const child of grid.children) {
+                        const name = child.dataset.name;
+                        if (name) existing.set(name, child);
+                    }
+                    const newSet = new Set(names);
 
-                if (!names || names.length === 0) {
-                    grid.innerHTML = '<div class="empty-hint">✨ 暂无名单</div>';
-                    grid.style.minHeight = '200px';
+                    // 更新保留的卡片，移除不在新名单中的卡片
+                    for (const [name, el] of existing) {
+                        if (newSet.has(name)) {
+                            // 重置内容和类
+                            el.className = 'name-card';
+                            el.textContent = name;
+                            if (qualifySet.has(name)) {
+                                el.classList.add('qualify');
+                                const mark = document.createElement('span');
+                                mark.className = 'check-mark';
+                                mark.textContent = ' ✓';
+                                el.appendChild(mark);
+                            }
+                            if (eliminateSet.has(name)) {
+                                el.classList.add('eliminate');
+                            }
+                            if (reappearSet.has(name)) {
+                                el.classList.add('reappear');
+                            }
+                            if (extraClass) {
+                                el.classList.add(extraClass);
+                            }
+                            // 位置保持不变（style 已经存在）
+                        } else {
+                            // 不在新名单中，移除
+                            el.remove();
+                        }
+                    }
+
+                    // 更新统计
+                    updateStats(names, qualifySet, eliminateSet);
                     return;
                 }
 
-                // 创建卡片
+                // ---- 完全重建模式（用于初始化和切换场次） ----
+                grid.innerHTML = '';
+                if (!names || names.length === 0) {
+                    grid.innerHTML = '<div class="empty-hint">✨ 暂无名单</div>';
+                    grid.style.minHeight = '200px';
+                    updateStats(names, qualifySet, eliminateSet);
+                    return;
+                }
+
                 const fragment = document.createDocumentFragment();
                 const cards = [];
-
                 names.forEach(name => {
                     const card = document.createElement('div');
                     card.className = 'name-card';
                     card.textContent = name;
                     card.dataset.name = name;
-
                     if (qualifySet.has(name)) {
                         card.classList.add('qualify');
                         const mark = document.createElement('span');
@@ -946,39 +869,59 @@
                         mark.textContent = ' ✓';
                         card.appendChild(mark);
                     }
-
                     if (eliminateSet.has(name)) {
                         card.classList.add('eliminate');
                     }
-
                     if (reappearSet.has(name)) {
                         card.classList.add('reappear');
                     }
-
                     if (extraClass) {
                         card.classList.add(extraClass);
                     }
-
-                    // 初始状态隐藏，布局后显示
                     card.style.opacity = '0';
                     card.style.visibility = 'hidden';
-
                     fragment.appendChild(card);
                     cards.push(card);
                 });
-
                 grid.appendChild(fragment);
+                updateStats(names, qualifySet, eliminateSet);
 
-                // 更新统计
-                const total = names.length;
+                // 应用散落布局
+                if (!skipLayout) {
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            cards.forEach(c => {
+                                c.style.visibility = 'visible';
+                                c.style.opacity = '0';
+                            });
+                            void grid.offsetHeight;
+                            applyScatterLayout(grid, cards, names.length);
+                            cards.forEach((c, i) => {
+                                setTimeout(() => {
+                                    c.style.opacity = '1';
+                                    c.style.transition = 'opacity 0.35s ease';
+                                }, i * 6 + 20);
+                            });
+                        });
+                    });
+                } else {
+                    // skipLayout 为 true 但无现有卡片（极少情况），直接显示
+                    cards.forEach(c => {
+                        c.style.visibility = 'visible';
+                        c.style.opacity = '1';
+                    });
+                }
+            }
+
+            // ---- 更新统计信息 ----
+            function updateStats(names, qualifySet, eliminateSet) {
+                const total = names ? names.length : 0;
                 currentCountNum.textContent = total;
                 peopleCountDisplay.textContent = `👤 ${total}`;
-
-                const qualifyCount = qualifySet.size;
-                const eliminateCount = eliminateSet.size;
+                const qualifyCount = qualifySet ? qualifySet.size : 0;
+                const eliminateCount = eliminateSet ? eliminateSet.size : 0;
                 qualifyCountNum.textContent = qualifyCount;
                 eliminateCountNum.textContent = eliminateCount;
-
                 if (qualifyCount > 0) {
                     qualifyCountNum.classList.remove('pop');
                     void qualifyCountNum.offsetWidth;
@@ -989,46 +932,11 @@
                     void eliminateCountNum.offsetWidth;
                     eliminateCountNum.classList.add('pop');
                 }
-
-                // 应用散落布局
-                if (!skipLayout) {
-                    // 使用 requestAnimationFrame 确保 DOM 已渲染
-                    requestAnimationFrame(() => {
-                        // 再等一帧让浏览器完成布局
-                        requestAnimationFrame(() => {
-                            // 先让卡片可见（但透明），以便测量尺寸
-                            cards.forEach(c => {
-                                c.style.visibility = 'visible';
-                                c.style.opacity = '0';
-                            });
-                            // 强制回流以获取尺寸
-                            void grid.offsetHeight;
-                            // 应用布局
-                            applyScatterLayout(grid, cards, names.length);
-                            // 淡入
-                            cards.forEach((c, i) => {
-                                setTimeout(() => {
-                                    c.style.opacity = '1';
-                                    c.style.transition = 'opacity 0.35s ease';
-                                }, i * 6 + 20);
-                            });
-                        });
-                    });
-                } else {
-                    // 跳过布局时，直接显示卡片（用于特效中间状态）
-                    cards.forEach(c => {
-                        c.style.visibility = 'visible';
-                        c.style.opacity = '1';
-                    });
-                }
-
-                updateRoundUI();
             }
 
             // =================================================================
             //  UI 更新
             // =================================================================
-
             function updateRoundUI() {
                 const idx = state.currentRound;
                 const total = TOTAL_ROUNDS;
@@ -1044,23 +952,12 @@
 
                 prevBtn.disabled = idx === 0 || state.isAnimating;
                 nextBtn.disabled = idx === total - 1 || state.isAnimating;
+                prevBadge.textContent = idx > 0 ? FIXED_ROUNDS[idx - 1].length : '-';
+                nextBadge.textContent = idx < total - 1 ? FIXED_ROUNDS[idx + 1].length : '-';
 
-                if (idx > 0) {
-                    prevBadge.textContent = FIXED_ROUNDS[idx - 1].length;
-                } else {
-                    prevBadge.textContent = '-';
-                }
-                if (idx < total - 1) {
-                    nextBadge.textContent = FIXED_ROUNDS[idx + 1].length;
-                } else {
-                    nextBadge.textContent = '-';
-                }
-
-                if (state.isAutoPlaying) {
-                    autoBtn.innerHTML = '<span class="icon">⏸</span> 暂停';
-                } else {
-                    autoBtn.innerHTML = '<span class="icon">▶</span> 自动播放';
-                }
+                autoBtn.innerHTML = state.isAutoPlaying ?
+                    '<span class="icon">⏸</span> 暂停' :
+                    '<span class="icon">▶</span> 自动播放';
             }
 
             function initDots() {
@@ -1079,14 +976,14 @@
                     qualifySet: new Set(),
                     eliminateSet: new Set(),
                     reappearSet: new Set(),
+                    skipLayout: false, // 初始加载需要布局
                 });
                 updateRoundUI();
             }
 
             // =================================================================
-            //  晋级 / 回退特效（保持原有逻辑，适配散落布局）
+            //  特效函数（全程保持位置不变）
             // =================================================================
-
             function playQualifyEffect() {
                 if (state.isAnimating) return;
                 const from = state.currentRound;
@@ -1100,63 +997,41 @@
                 const prevNames = FIXED_ROUNDS[from];
                 const nextNames = FIXED_ROUNDS[to];
                 const nextSet = new Set(nextNames);
-
                 const qualifySet = new Set();
                 const eliminateSet = new Set();
-
                 prevNames.forEach(name => {
-                    if (nextSet.has(name)) {
-                        qualifySet.add(name);
-                    } else {
-                        eliminateSet.add(name);
-                    }
+                    if (nextSet.has(name)) qualifySet.add(name);
+                    else eliminateSet.add(name);
                 });
 
-                // 第一阶段：显示晋级/淘汰标记（不重新布局，保留位置）
+                // 第一阶段：显示当前场次，标记晋级/淘汰（保留位置）
                 renderCards(prevNames, {
                     qualifySet,
                     eliminateSet,
-                    skipLayout: true, // 保留现有布局
+                    skipLayout: true,
                 });
 
-                qualifyCountNum.textContent = qualifySet.size;
-                eliminateCountNum.textContent = eliminateSet.size;
-
-                // 等待淘汰动画完成
+                // 第二阶段：只显示晋级名单，加高亮（保留位置，移除淘汰卡片）
                 setTimeout(() => {
-                    // 第二阶段：显示晋级后的名单，带高亮（重新布局）
                     const glowSet = new Set(nextNames);
                     renderCards(nextNames, {
                         qualifySet: glowSet,
-                        eliminateSet: new Set(),
                         extraClass: 'qualify-glow',
-                        skipLayout: false,
+                        skipLayout: true,
                     });
-
                     state.currentRound = to;
                     updateRoundUI();
 
-                    qualifyCountNum.textContent = 0;
-                    eliminateCountNum.textContent = 0;
-
-                    // 第三阶段：恢复正常样式（不重新布局）
+                    // 第三阶段：移除高亮（保留位置）
                     setTimeout(() => {
                         const normalQualify = new Set(nextNames);
                         renderCards(nextNames, {
                             qualifySet: normalQualify,
-                            eliminateSet: new Set(),
-                            extraClass: '',
                             skipLayout: true,
                         });
-                        qualifyCountNum.textContent = 0;
-                        eliminateCountNum.textContent = 0;
-                        currentCountNum.textContent = nextNames.length;
-                        peopleCountDisplay.textContent = `👤 ${nextNames.length}`;
-
                         state.isAnimating = false;
                         updateRoundUI();
                     }, 1400);
-
                 }, 1100);
             }
 
@@ -1170,52 +1045,30 @@
                 nextBtn.disabled = true;
                 prevBtn.disabled = true;
 
-                const currentNames = FIXED_ROUNDS[from];
                 const prevNames = FIXED_ROUNDS[to];
-                const prevSet = new Set(prevNames);
-
+                const currentNames = FIXED_ROUNDS[from];
                 const keepSet = new Set();
                 const reappearSet = new Set();
-
                 prevNames.forEach(name => {
-                    if (currentNames.includes(name)) {
-                        keepSet.add(name);
-                    } else {
-                        reappearSet.add(name);
-                    }
+                    if (currentNames.includes(name)) keepSet.add(name);
+                    else reappearSet.add(name);
                 });
 
-                // 显示上一场名单，标记回归者（重新布局）
+                // 回退时人数增加，允许重新布局
                 renderCards(prevNames, {
                     qualifySet: keepSet,
-                    eliminateSet: new Set(),
                     reappearSet: reappearSet,
                     skipLayout: false,
                 });
+                state.currentRound = to;
+                updateRoundUI();
 
-                qualifyCountNum.textContent = keepSet.size;
-                eliminateCountNum.textContent = reappearSet.size;
-                currentCountNum.textContent = prevNames.length;
-                peopleCountDisplay.textContent = `👤 ${prevNames.length}`;
-
-                // 等待回归动画完成
                 setTimeout(() => {
-                    state.currentRound = to;
-                    updateRoundUI();
-
-                    // 恢复正常样式（不重新布局）
                     const normalQualify = new Set(prevNames);
                     renderCards(prevNames, {
                         qualifySet: normalQualify,
-                        eliminateSet: new Set(),
-                        reappearSet: new Set(),
-                        extraClass: '',
-                        skipLayout: true,
+                        skipLayout: false, // 重新布局使卡片均匀分布
                     });
-
-                    qualifyCountNum.textContent = 0;
-                    eliminateCountNum.textContent = 0;
-
                     state.isAnimating = false;
                     updateRoundUI();
                 }, 900);
@@ -1224,7 +1077,6 @@
             // =================================================================
             //  交互控制
             // =================================================================
-
             function goToNext() {
                 if (state.isAnimating) return;
                 if (state.isAutoPlaying) stopAutoPlay();
@@ -1249,11 +1101,8 @@
 
             // ---- 自动播放 ----
             function toggleAutoPlay() {
-                if (state.isAutoPlaying) {
-                    stopAutoPlay();
-                } else {
-                    startAutoPlay();
-                }
+                if (state.isAutoPlaying) stopAutoPlay();
+                else startAutoPlay();
             }
 
             function startAutoPlay() {
@@ -1266,9 +1115,7 @@
                     updateRoundUI();
                 }
                 setTimeout(() => {
-                    if (state.isAutoPlaying) {
-                        autoPlayStep();
-                    }
+                    if (state.isAutoPlaying) autoPlayStep();
                 }, 500);
             }
 
@@ -1287,18 +1134,15 @@
                     state.autoPlayTimer = setTimeout(autoPlayStep, 300);
                     return;
                 }
-
                 if (state.currentRound >= TOTAL_ROUNDS - 1) {
                     stopAutoPlay();
                     return;
                 }
-
                 playQualifyEffect();
 
                 const checkDone = () => {
                     if (!state.isAnimating) {
                         if (state.isAutoPlaying && state.currentRound < TOTAL_ROUNDS - 1) {
-                            // 暂停 AUTO_PAUSE_MS 后再继续
                             state.autoPlayTimer = setTimeout(autoPlayStep, AUTO_PAUSE_MS);
                         } else if (state.isAutoPlaying && state.currentRound >= TOTAL_ROUNDS - 1) {
                             stopAutoPlay();
@@ -1307,56 +1151,45 @@
                         state.autoPlayTimer = setTimeout(checkDone, 300);
                     }
                 };
-
                 state.autoPlayTimer = setTimeout(checkDone, 1200);
             }
 
             // =================================================================
-            //  窗口尺寸变化时重新布局
+            //  窗口大小变化处理
             // =================================================================
-
             let resizeTimer = null;
 
             function handleResize() {
-                if (resizeTimer) {
-                    clearTimeout(resizeTimer);
-                }
+                if (resizeTimer) clearTimeout(resizeTimer);
                 resizeTimer = setTimeout(() => {
-                    // 如果当前没有动画，重新布局当前卡片
                     if (!state.isAnimating) {
-                        const currentNames = FIXED_ROUNDS[state.currentRound];
+                        const names = FIXED_ROUNDS[state.currentRound];
                         const cards = grid.querySelectorAll('.name-card');
-                        if (cards.length > 0) {
-                            // 重新应用布局
+                        if (cards.length > 0 && cards.length === names.length) {
+                            // 重新布局但不重建卡片
                             const cardArray = Array.from(cards);
-                            // 保存当前的类状态
+                            // 保留当前类状态
                             const classMap = {};
                             cardArray.forEach(c => {
-                                classMap[c.dataset.name] = {
+                                const name = c.dataset.name;
+                                classMap[name] = {
                                     qualify: c.classList.contains('qualify'),
                                     eliminate: c.classList.contains('eliminate'),
                                     reappear: c.classList.contains('reappear'),
                                     glow: c.classList.contains('qualify-glow'),
                                 };
                             });
-                            // 重新渲染（保留类状态）
-                            const qualifySet = new Set();
-                            const eliminateSet = new Set();
-                            const reappearSet = new Set();
-                            let extraClass = '';
+                            // 重新应用布局（会重置位置）
+                            applyScatterLayout(grid, cardArray, names.length);
+                            // 恢复类（但位置已更新）
                             cardArray.forEach(c => {
                                 const name = c.dataset.name;
-                                if (classMap[name]?.qualify) qualifySet.add(name);
-                                if (classMap[name]?.eliminate) eliminateSet.add(name);
-                                if (classMap[name]?.reappear) reappearSet.add(name);
-                                if (classMap[name]?.glow) extraClass = 'qualify-glow';
-                            });
-                            renderCards(currentNames, {
-                                qualifySet,
-                                eliminateSet,
-                                reappearSet,
-                                extraClass,
-                                skipLayout: false,
+                                const cls = classMap[name] || {};
+                                c.className = 'name-card';
+                                if (cls.qualify) c.classList.add('qualify');
+                                if (cls.eliminate) c.classList.add('eliminate');
+                                if (cls.reappear) c.classList.add('reappear');
+                                if (cls.glow) c.classList.add('qualify-glow');
                             });
                         }
                     }
@@ -1367,7 +1200,6 @@
             // =================================================================
             //  初始化
             // =================================================================
-
             function init() {
                 initDots();
                 renderCurrentRound();
@@ -1378,7 +1210,6 @@
                 resetBtn.addEventListener('click', resetToFirst);
                 autoBtn.addEventListener('click', toggleAutoPlay);
 
-                // 键盘快捷键
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'ArrowRight' || e.key === ' ') {
                         e.preventDefault();
@@ -1391,14 +1222,13 @@
                     }
                 });
 
-                // 窗口尺寸变化重新布局
                 window.addEventListener('resize', handleResize);
 
                 console.log(`🇦🇷 阿根廷观赛晋级已启动（共 ${TOTAL_ROUNDS} 场）`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
                 console.log(`⏸️ 自动播放每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
                 console.log('⌨️  快捷键: ← 上一场 | → / Space 下一场 | r 重置');
-                console.log('🎯 卡片采用散落聚集布局，每次刷新位置随机变化');
+                console.log('🎯 卡片散落布局，特效时位置保持不变');
             }
 
             if (document.readyState === 'loading') {
