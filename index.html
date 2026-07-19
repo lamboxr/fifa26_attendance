@@ -581,7 +581,6 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            /* 左对齐 */
             padding: 3vh 4vw;
             border-radius: inherit;
             transition: opacity 1s ease;
@@ -994,22 +993,27 @@
             'use strict';
 
             // =================================================================
-            //  ⚙️ 可配置参数
+            //  ⚙️ 可配置参数（已按需求更新）
             // =================================================================
-            const AUTO_PAUSE_SECONDS = 2.5;
-            const AVATAR_INTERVAL_MS = 380;
 
-            const ELIMINATE_ANIMATION_DURATION_MS = 900;
-            const ELIMINATE_INTERVAL_MS = 80;
-            const ELIMINATE_INITIAL_DELAY_MS = 300;
+            // ---- 名单环节通用参数 ----
+            const AUTO_PAUSE_SECONDS = 2.5; // 每轮晋级后暂停秒数
+            const AVATAR_INTERVAL_MS = 380; // 头像逐个显示间隔（毫秒）
 
-            const SCOREBOARD_MOVE_IN_DURATION_MS = 600;
-            const SCOREBOARD_STAY_DURATION_MS = 2000;
-            const SCOREBOARD_MOVE_OUT_DURATION_MS = 600;
+            // ---- 淘汰动画参数 ----
+            const ELIMINATE_ANIMATION_DURATION_MS = 1500; // 单个标签消失动画时长（毫秒）
+            const ELIMINATE_INTERVAL_MS = 300; // 标签与标签开始消失的间隔（毫秒）
+            const ELIMINATE_INITIAL_DELAY_MS = 300; // 第一个标签开始消失前的初始延迟（毫秒）
 
-            // ---- 感谢词配置 ----
-            const THANKS_TYPING_INTERVAL_MS = 30; // 每行每个字符间隔
-            const THANKS_PAUSE_AFTER_MS = 10000; // 感谢词结束后停顿毫秒
+            // ---- 比分牌动画参数 ----
+            const SCOREBOARD_MOVE_IN_DURATION_MS = 600; // 比分牌移入时长（毫秒）
+            const SCOREBOARD_STAY_DURATION_MS = 2000; // 比分牌停留时长（毫秒）
+            const SCOREBOARD_MOVE_OUT_DURATION_MS = 600; // 比分牌移出时长（毫秒）
+
+            // ---- 感谢词打字配置 ----
+            const THANKS_CHAR_INTERVAL_MS = 100; // 同一行内每个字符的打印间隔（毫秒）
+            const THANKS_LINE_INTERVAL_MS = 1000; // 行与行之间的停顿间隔（毫秒）
+            const THANKS_PAUSE_AFTER_MS = 10000; // 全部结束后停顿毫秒
 
             document.documentElement.style.setProperty('--eliminate-duration', (ELIMINATE_ANIMATION_DURATION_MS / 1000) +
             's');
@@ -1138,22 +1142,22 @@
             };
 
             // =================================================================
-            //  📌 感谢词模板（8行）
+            //  📌 感谢词模板（已更新第7行文案）
             // =================================================================
             const THANKS_LINES = [
                 '感谢梅西，感谢阿根廷队，为我们带来这一个月无与伦比的激情与快乐——每一粒进球、每一次呐喊，都刻进了我们的记忆深处！',
-                '感谢每一位到场的或守在屏幕前的阿根廷球迷，是你们不离不弃的热爱，给了国家队、给了梅西、给了每一位球员最坚实的后盾！',
+                '感谢每一位到场的或守在屏幕前的阿根廷球迷，是你们不离不弃的热爱，给了阿根廷国家队、给了梅西、给了每一位球员最坚实的后盾！',
                 '感谢我们可爱的{leader}，带着我们一同沉浸在这场足球盛宴里，从小组赛到决赛，让我们一次次见证阿根廷的辉煌时刻，一次次为蓝白条纹热泪盈眶！',
                 '感谢自讨腰包赞助本次活动的{sponsors}！',
                 '感谢武汉阿根廷球迷协会，以及协会球队的每一位兄弟姐妹，是你们让这座城市的阿根廷情结如此滚烫而真实！',
-                '感谢八场比赛全程参与的志愿者们{volunteers}你们的汗水与笑容，是这场旅程不可或缺的光亮！',
-                'Vamos Argentina! Gracias Messi!',
+                '感谢八场比赛全程参与的志愿者们{volunteers}，你们的汗水与笑容，是这场旅程不可或缺的光亮！',
+                'Gracias Messi! Vamos Argentina!',
                 '四年后，我们再聚！'
             ];
 
             const LEADER = ["巴蒂斯图阳"];
             const SPONSORS = ["洪主席"];
-            const VOLUNTEERS = ["烟枪", "福崽崽", "🙊陈聘聘", "李圣", "奎爷"]
+            const VOLUNTEERS = ["烟枪", "福崽崽", "🙊陈聘聘", "李圣", "奎爷"];
 
             // =================================================================
             //  📌 固定名单（8场）
@@ -1765,7 +1769,7 @@
             }
 
             // =================================================================
-            //  感谢词 — 8行左对齐，每行独立打字，位置固定
+            //  感谢词 — 逐行顺序打字，光标跟随，行高固定
             // =================================================================
             function buildThanksLines() {
                 return THANKS_LINES.map(line => {
@@ -1783,115 +1787,116 @@
                 ).join('、');
             }
 
-            function typeThanks() {
+            // 解析一行 HTML 为字符数组（保留标签结构）
+            function parseLineToChars(lineHTML) {
+                const container = document.createElement('div');
+                container.innerHTML = lineHTML;
+                const chars = [];
+
+                function walk(node) {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        const text = node.textContent;
+                        for (let ch of text) {
+                            chars.push(ch);
+                        }
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+                        const tagName = node.tagName.toLowerCase();
+                        const attrs = node.attributes;
+                        let attrStr = '';
+                        for (let attr of attrs) {
+                            attrStr += ` ${attr.name}="${attr.value}"`;
+                        }
+                        chars.push({ type: 'tagStart', tag: tagName, attrs: attrStr });
+                        for (let child of node.childNodes) {
+                            walk(child);
+                        }
+                        chars.push({ type: 'tagEnd', tag: tagName });
+                    }
+                }
+                walk(container);
+                return chars;
+            }
+
+            // 逐行顺序打字，每行固定高度，光标跟随
+            function typeThanksSequentially() {
                 return new Promise((resolve) => {
-                    const lines = buildThanksLines();
-                    // 清空容器
-                    thanksText.innerHTML = '';
+                    const linesHTML = buildThanksLines();
+                    thanksText.innerHTML = ''; // 清空
 
-                    // 为每行创建独立元素
+                    // 预先创建所有行，给每行固定 min-height
                     const lineElements = [];
-                    const allChars = [];
-
-                    lines.forEach((lineHTML, lineIdx) => {
+                    linesHTML.forEach((lineHTML, idx) => {
                         const lineDiv = document.createElement('div');
                         lineDiv.className = 'thanks-line';
-                        // 用 span 包裹内容，cursor 放在最后
+                        // 内容容器
                         const contentSpan = document.createElement('span');
                         contentSpan.className = 'line-content';
-                        contentSpan.innerHTML = ''; // 初始为空
+                        contentSpan.innerHTML = '';
                         lineDiv.appendChild(contentSpan);
-
-                        // 存储每行的字符（包括 HTML 标签）
-                        // 我们需要将 HTML 解析为字符序列，保留标签结构
-                        const container = document.createElement('div');
-                        container.innerHTML = lineHTML;
-                        const chars = [];
-                        function walk(node) {
-                            if (node.nodeType === Node.TEXT_NODE) {
-                                const text = node.textContent;
-                                for (let ch of text) {
-                                    chars.push(ch);
-                                }
-                            } else if (node.nodeType === Node.ELEMENT_NODE) {
-                                const tagName = node.tagName.toLowerCase();
-                                const attrs = node.attributes;
-                                let attrStr = '';
-                                for (let attr of attrs) {
-                                    attrStr += ` ${attr.name}="${attr.value}"`;
-                                }
-                                chars.push({ type: 'tagStart', tag: tagName, attrs: attrStr });
-                                for (let child of node.childNodes) {
-                                    walk(child);
-                                }
-                                chars.push({ type: 'tagEnd', tag: tagName });
-                            }
-                        }
-                        walk(container);
-
-                        // 存储该行信息
-                        const lineInfo = {
-                            element: lineDiv,
-                            contentSpan: contentSpan,
-                            chars: chars,
+                        // 光标（初始隐藏）
+                        const cursor = document.createElement('span');
+                        cursor.className = 'cursor';
+                        cursor.style.display = 'none';
+                        lineDiv.appendChild(cursor);
+                        thanksText.appendChild(lineDiv);
+                        lineElements.push({
+                            div: lineDiv,
+                            content: contentSpan,
+                            cursor: cursor,
+                            chars: parseLineToChars(lineHTML),
                             currentIndex: 0,
                             outputHTML: '',
-                            cursor: null,
-                        };
-                        lineElements.push(lineInfo);
-                        allChars.push(lineInfo);
-
-                        // 添加到主容器
-                        thanksText.appendChild(lineDiv);
+                            done: false,
+                        });
                     });
 
-                    // 所有行同时开始打字
-                    let activeLines = lineElements.length;
-                    let allDone = false;
+                    let activeLineIndex = 0;
 
-                    function typeNextForLine(lineInfo) {
-                        if (lineInfo.currentIndex >= lineInfo.chars.length) {
-                            // 该行完成
-                            if (lineInfo.cursor) {
-                                lineInfo.cursor.remove();
-                                lineInfo.cursor = null;
-                            }
-                            activeLines--;
-                            if (activeLines === 0 && !allDone) {
-                                allDone = true;
-                                resolve();
-                            }
+                    function typeNextLine() {
+                        if (activeLineIndex >= lineElements.length) {
+                            // 所有行完成
+                            resolve();
                             return;
                         }
 
-                        const item = lineInfo.chars[lineInfo.currentIndex];
-                        if (typeof item === 'string') {
-                            lineInfo.outputHTML += item;
-                        } else if (item.type === 'tagStart') {
-                            lineInfo.outputHTML += `<${item.tag}${item.attrs}>`;
-                        } else if (item.type === 'tagEnd') {
-                            lineInfo.outputHTML += `</${item.tag}>`;
+                        const line = lineElements[activeLineIndex];
+                        // 显示该行光标
+                        line.cursor.style.display = 'inline-block';
+
+                        function typeNextChar() {
+                            if (line.currentIndex >= line.chars.length) {
+                                // 该行完成，隐藏光标
+                                line.cursor.style.display = 'none';
+                                line.done = true;
+                                activeLineIndex++;
+                                // 行间停顿（除最后一行）
+                                const delay = (activeLineIndex < lineElements.length) ? THANKS_LINE_INTERVAL_MS : 0;
+                                setTimeout(typeNextLine, delay);
+                                return;
+                            }
+
+                            const item = line.chars[line.currentIndex];
+                            if (typeof item === 'string') {
+                                line.outputHTML += item;
+                            } else if (item.type === 'tagStart') {
+                                line.outputHTML += `<${item.tag}${item.attrs}>`;
+                            } else if (item.type === 'tagEnd') {
+                                line.outputHTML += `</${item.tag}>`;
+                            }
+
+                            line.content.innerHTML = line.outputHTML;
+                            // 确保光标在内容后面（光标元素已经存在，且在content之后）
+                            // 由于光标是独立的span，位置自然在内容后面
+                            line.currentIndex++;
+                            setTimeout(typeNextChar, THANKS_CHAR_INTERVAL_MS);
                         }
 
-                        // 更新内容，保留光标
-                        lineInfo.contentSpan.innerHTML = lineInfo.outputHTML;
-
-                        // 添加光标（如果没有）
-                        if (!lineInfo.cursor) {
-                            const cursor = document.createElement('span');
-                            cursor.className = 'cursor';
-                            lineInfo.element.appendChild(cursor);
-                            lineInfo.cursor = cursor;
-                        }
-
-                        lineInfo.currentIndex++;
-                        setTimeout(() => typeNextForLine(lineInfo), THANKS_TYPING_INTERVAL_MS);
+                        // 延迟开始打字（让光标先出现）
+                        setTimeout(typeNextChar, 50);
                     }
 
-                    // 启动所有行
-                    lineElements.forEach(lineInfo => {
-                        setTimeout(() => typeNextForLine(lineInfo), 100);
-                    });
+                    // 启动第一行
+                    setTimeout(typeNextLine, 100);
                 });
             }
 
@@ -2150,24 +2155,23 @@
                 updateRoundUI();
                 scoreboard.style.transform = 'translateY(-50%) translateX(-100%)';
 
-                // 感谢词打字
-                await typeThanks();
+                // 逐行顺序打字
+                await typeThanksSequentially();
 
-                // 停顿
+                // 全部结束后停顿
                 await new Promise(resolve => setTimeout(resolve, THANKS_PAUSE_AFTER_MS));
 
-                // 隐藏覆盖层
                 thanksOverlay.classList.add('hidden');
                 state.isThanksDone = true;
 
-                // 启动名单流程
                 startAutoPlayInternal();
 
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级 (8行左对齐) 共 ${TOTAL_ROUNDS} 场`);
-                console.log(`⏱️ 感谢词打字间隔 ${THANKS_TYPING_INTERVAL_MS}ms，停顿 ${THANKS_PAUSE_AFTER_MS/1000}s`);
+                console.log(`🇦🇷 参数已更新（淘汰1500ms，间隔300ms）共 ${TOTAL_ROUNDS} 场`);
+                console.log(`⏱️ 字符间隔 ${THANKS_CHAR_INTERVAL_MS}ms，行间隔 ${THANKS_LINE_INTERVAL_MS}ms，结束停顿 ${THANKS_PAUSE_AFTER_MS/1000}s`);
+                console.log('📝 志愿者: 烟枪、福崽崽、🙊陈聘聘、李圣、奎爷');
                 console.log('⌨️  空格键重新播放（感谢词之后）');
             }
 
