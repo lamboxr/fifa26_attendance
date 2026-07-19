@@ -74,7 +74,7 @@
             flex-shrink: 0;
         }
 
-        /* ---- 标题区域：国旗跨两行，主标题副标题首字对齐 ---- */
+        /* ---- 标题区域 ---- */
         .logo {
             display: grid;
             grid-template-columns: auto 1fr;
@@ -224,9 +224,32 @@
             min-height: 0;
             padding: 0.8vh 0.6vw 0.4vh;
             border-radius: 1.4vw;
-            background: rgba(255, 255, 255, 0.06);
-            border: 0.06vw solid rgba(108, 180, 238, 0.03);
             overflow: hidden;
+            /* 背景图片通过伪元素实现，不干扰子元素 */
+        }
+
+        /* ---- 背景图片伪元素 ---- */
+        #nameGrid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('assets/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* 修改下方 opacity 值（0~1）调整背景图片透明度 */
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: 0;
+            border-radius: inherit;
+        }
+
+        /* 确保卡片在伪元素之上 */
+        .name-card {
+            z-index: 1;
         }
 
         /* ===== 名字卡片 ===== */
@@ -255,7 +278,6 @@
             user-select: none;
             box-shadow: 0 0.12vw 0.6vw rgba(0, 40, 80, 0.04);
             white-space: nowrap;
-            z-index: 1;
             will-change: left, top, transform;
             letter-spacing: 0.03vw;
             width: auto;
@@ -445,6 +467,7 @@
             color: #4A7A9C;
             font-size: 1.8vw;
             letter-spacing: 0.15vw;
+            z-index: 2;
         }
 
         /* ===== 底部鸣谢 ===== */
