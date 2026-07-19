@@ -323,7 +323,7 @@
             color: #2E86C1;
         }
 
-        /* ---- 淘汰 ---- */
+        /* ---- 淘汰（逐个延迟在 JS 中控制） ---- */
         .name-card.eliminate {
             background: rgba(231, 76, 60, 0.06);
             border-color: rgba(231, 76, 60, 0.18);
@@ -654,7 +654,8 @@
             //  ⚙️ 配置
             // =================================================================
             const AUTO_PAUSE_SECONDS = 2.5;
-            const AVATAR_INTERVAL_MS = 380; // 每个头像显示间隔（毫秒）
+            const AVATAR_INTERVAL_MS = 380;
+            const ELIMINATE_INTERVAL_MS = 80; // 每个淘汰者间隔（毫秒）
 
             // =================================================================
             //  📌 固定名单（8场）
@@ -954,6 +955,25 @@
             }
 
             // =================================================================
+            //  逐个消除淘汰者（设置 animation-delay）
+            // =================================================================
+            function staggerEliminateCards() {
+                const eliminateCards = grid.querySelectorAll('.name-card.eliminate');
+                if (eliminateCards.length === 0) return 0;
+
+                let index = 0;
+                eliminateCards.forEach((card) => {
+                    const delay = index * ELIMINATE_INTERVAL_MS;
+                    card.style.animationDelay = delay + 'ms';
+                    index++;
+                });
+
+                // 返回最后一个淘汰者的延迟 + 动画时长（900ms）+ 缓冲
+                const maxDelay = (index - 1) * ELIMINATE_INTERVAL_MS;
+                return maxDelay + 900 + 150;
+            }
+
+            // =================================================================
             //  渲染
             // =================================================================
             function renderCards(names, options = {}) {
@@ -1125,7 +1145,7 @@
             }
 
             // =================================================================
-            //  特效
+            //  特效（逐个淘汰）
             // =================================================================
             function playQualifyEffect() {
                 if (state.isAnimating) return;
@@ -1145,7 +1165,7 @@
                     else eliminateSet.add(name);
                 });
 
-                // 第一阶段：显示晋级/淘汰标记
+                // --- 第一阶段：标记晋级/淘汰，设置淘汰延迟 ---
                 renderCards(prevNames, {
                     qualifySet,
                     eliminateSet,
@@ -1153,8 +1173,12 @@
                     showAvatars: false,
                 });
 
-                // 第二阶段：高亮晋级名单
+                // 计算淘汰动画总时长
+                const totalEliminateDuration = staggerEliminateCards();
+
+                // 等待淘汰完成，然后进入第二阶段
                 setTimeout(() => {
+                    // 第二阶段：高亮晋级名单（此时淘汰者已消失）
                     const glowSet = new Set(nextNames);
                     renderCards(nextNames, {
                         qualifySet: glowSet,
@@ -1165,12 +1189,11 @@
                     state.currentRound = to;
                     updateRoundUI();
 
-                    // 第三阶段：恢复正常样式 + 最终场显示头像（保持位置不变）
+                    // 第三阶段：恢复正常样式 + 最终场显示头像
                     setTimeout(() => {
                         const normalQualify = new Set(nextNames);
                         const isFinalStage = (to === TOTAL_ROUNDS - 1);
 
-                        // 始终使用 skipLayout: true 保持位置
                         renderCards(nextNames, {
                             qualifySet: normalQualify,
                             skipLayout: true,
@@ -1178,7 +1201,6 @@
                         });
 
                         if (isFinalStage) {
-                            // 延迟启动头像逐个显示
                             setTimeout(() => {
                                 showAvatarsSequentially();
                             }, 400);
@@ -1199,7 +1221,7 @@
                             }
                         }
                     }, 1400);
-                }, 1100);
+                }, totalEliminateDuration + 150); // 淘汰动画完成后 + 缓冲
             }
 
             // =================================================================
@@ -1353,10 +1375,10 @@
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级 (头像逐个随机版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
+                console.log(`🇦🇷 阿根廷观赛晋级 (逐个淘汰版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
                 console.log(`⏸️ 每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
-                console.log(`🖼️  头像显示间隔 ${AVATAR_INTERVAL_MS}ms，顺序随机`);
+                console.log(`⏳ 淘汰间隔 ${ELIMINATE_INTERVAL_MS}ms，逐个消失`);
                 console.log('⌨️  按 空格键 开始自动播放 | 刷新页面重置');
                 console.log('📁 阿根廷国旗图片: ./assets/argentina-flag.png');
                 console.log('📁 头像图片: ./assets/avatars/名字.jpg');
