@@ -2,27 +2,30 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🇦🇷 阿根廷 · 观赛名单晋级</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+    <title>🇦🇷 阿根廷 · 观赛名单晋级 (大屏版)</title>
     <style>
-        /* ===== 全局样式（主题保持不变） ===== */
+        /* ===== 全局重置 ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html,
         body {
-            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            width: 100%;
             min-height: 100vh;
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
             background: linear-gradient(145deg, #6CB4EE 0%, #D6EAF8 50%, #FFFFFF 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 2vw;
             position: relative;
         }
 
+        /* 球衣条纹装饰 */
         body::before {
             content: '';
             position: fixed;
@@ -32,123 +35,131 @@
             bottom: 0;
             background: repeating-linear-gradient(90deg,
                     rgba(255, 255, 255, 0.08) 0px,
-                    rgba(255, 255, 255, 0.08) 40px,
-                    rgba(108, 180, 238, 0.06) 40px,
-                    rgba(108, 180, 238, 0.06) 80px);
+                    rgba(255, 255, 255, 0.08) 4vw,
+                    rgba(108, 180, 238, 0.06) 4vw,
+                    rgba(108, 180, 238, 0.06) 8vw);
             pointer-events: none;
             z-index: 0;
         }
 
         #app {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1600px;
+            /* 对超大屏限制，但可调 */
+            height: 92vh;
+            /* 充分利用垂直空间 */
             background: rgba(255, 255, 255, 0.88);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
-            border-radius: 40px;
-            padding: 30px 35px 35px;
-            box-shadow: 0 20px 60px rgba(0, 40, 80, 0.25), 0 0 0 1px rgba(108, 180, 238, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 3vw;
+            padding: 2.5vh 3vw 2.5vh;
+            box-shadow: 0 2vh 6vh rgba(0, 40, 80, 0.25), 0 0 0 0.2vw rgba(108, 180, 238, 0.2);
+            border: 0.2vw solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
             position: relative;
             z-index: 1;
         }
 
+        /* ===== 头部 ===== */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 28px;
-            padding-bottom: 18px;
-            border-bottom: 2px solid rgba(108, 180, 238, 0.3);
+            margin-bottom: 1.5vh;
+            padding-bottom: 1.2vh;
+            border-bottom: 0.25vw solid rgba(108, 180, 238, 0.3);
+            flex-shrink: 0;
         }
 
         .logo h1 {
-            font-size: 28px;
+            font-size: 3.2vw;
             font-weight: 800;
             color: #1A3A5C;
-            letter-spacing: 1px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.8vw;
         }
         .logo h1 .flag {
-            font-size: 32px;
+            font-size: 3.8vw;
         }
         .logo .sub {
-            font-size: 13px;
+            font-size: 1.2vw;
             color: #4A7A9C;
-            letter-spacing: 2px;
-            margin-top: 2px;
+            letter-spacing: 0.3vw;
+            margin-top: 0.2vh;
             font-weight: 500;
         }
 
         .round-badge {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 1.8vw;
             background: rgba(108, 180, 238, 0.12);
-            padding: 10px 22px 10px 26px;
-            border-radius: 60px;
-            border: 1px solid rgba(108, 180, 238, 0.25);
+            padding: 0.8vh 2.2vw 0.8vh 2.6vw;
+            border-radius: 6vw;
+            border: 0.15vw solid rgba(108, 180, 238, 0.25);
+            font-size: 1.2vw;
         }
         .round-badge .label {
             color: #1A3A5C;
-            font-size: 13px;
             font-weight: 600;
-            letter-spacing: 1px;
+            letter-spacing: 0.1vw;
         }
         .round-badge .round-num {
-            font-size: 28px;
+            font-size: 2.8vw;
             font-weight: 800;
             color: #1A3A5C;
-            min-width: 36px;
+            min-width: 2.8vw;
             text-align: center;
             transition: 0.3s;
         }
         .round-badge .round-num.active {
             color: #2E86C1;
-            text-shadow: 0 0 20px rgba(46, 134, 193, 0.3);
+            text-shadow: 0 0 2vw rgba(46, 134, 193, 0.3);
         }
         .round-badge .total {
             color: #4A7A9C;
-            font-size: 16px;
+            font-size: 1.6vw;
             font-weight: 500;
         }
         .round-badge .people-count {
             color: #1A3A5C;
-            font-size: 14px;
+            font-size: 1.4vw;
             background: rgba(108, 180, 238, 0.15);
-            padding: 4px 14px;
-            border-radius: 30px;
+            padding: 0.4vh 1.4vw;
+            border-radius: 3vw;
             font-weight: 600;
-            margin-left: 4px;
+            margin-left: 0.4vw;
         }
 
+        /* ===== 统计条 ===== */
         .stats-bar {
             display: flex;
-            gap: 24px;
-            margin-bottom: 22px;
+            gap: 2.4vw;
+            margin-bottom: 1.8vh;
             flex-wrap: wrap;
             background: rgba(255, 255, 255, 0.5);
-            padding: 10px 18px;
-            border-radius: 20px;
+            padding: 0.8vh 1.8vw;
+            border-radius: 2vw;
             backdrop-filter: blur(4px);
-            border: 1px solid rgba(108, 180, 238, 0.15);
+            border: 0.1vw solid rgba(108, 180, 238, 0.15);
+            flex-shrink: 0;
+            font-size: 1.2vw;
         }
         .stats-bar .stat-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 14px;
+            gap: 0.6vw;
             color: #1A3A5C;
             font-weight: 500;
         }
         .stats-bar .stat-item .num {
             font-weight: 700;
-            font-size: 18px;
+            font-size: 1.8vw;
             color: #1A3A5C;
-            min-width: 28px;
+            min-width: 2vw;
             text-align: center;
         }
         .stats-bar .stat-item .num.qualify-num {
@@ -158,38 +169,39 @@
             color: #E74C3C;
         }
         .stats-bar .stat-divider {
-            width: 1px;
+            width: 0.1vw;
             background: rgba(108, 180, 238, 0.2);
         }
 
-        /* ===== 名字网格 — 散落聚集容器 ===== */
+        /* ===== 名字网格 — 占据主要空间 ===== */
         #nameGrid {
             position: relative;
+            flex: 1;
             width: 100%;
-            min-height: 480px;
-            height: auto;
-            padding: 10px;
-            border-radius: 24px;
+            min-height: 0;
+            /* flex 自动撑满 */
+            padding: 1.5vh 1.5vw;
+            border-radius: 2vw;
             background: rgba(255, 255, 255, 0.20);
-            border: 1px solid rgba(108, 180, 238, 0.08);
-            transition: min-height 0.4s ease;
+            border: 0.1vw solid rgba(108, 180, 238, 0.08);
             overflow: visible;
+            /* 保证卡片绝对定位不溢出隐藏 */
         }
 
-        /* ===== 名字卡片 — 绝对定位，自由散落 ===== */
+        /* ===== 名字卡片 — 大尺寸 ===== */
         .name-card {
             position: absolute;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 6px 16px;
-            min-width: 52px;
-            height: 36px;
-            border-radius: 12px;
+            padding: 0.6vh 1.6vw;
+            min-width: 4vw;
+            height: 4.2vh;
+            border-radius: 1.2vw;
             background: rgba(255, 255, 255, 0.85);
-            border: 1px solid rgba(108, 180, 238, 0.30);
+            border: 0.15vw solid rgba(108, 180, 238, 0.30);
             color: #1A3A5C;
-            font-size: 14px;
+            font-size: 1.6vw;
             font-weight: 500;
             transition: left 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
                 top 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -200,16 +212,16 @@
                 opacity 0.5s ease;
             cursor: default;
             user-select: none;
-            box-shadow: 0 2px 8px rgba(0, 40, 80, 0.06);
+            box-shadow: 0 0.2vw 0.8vw rgba(0, 40, 80, 0.06);
             white-space: nowrap;
             z-index: 1;
             will-change: left, top, transform;
         }
         .name-card:hover {
-            transform: scale(1.08) rotate(0deg) !important;
+            transform: scale(1.10) rotate(0deg) !important;
             border-color: #2E86C1;
             background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 8px 28px rgba(46, 134, 193, 0.20);
+            box-shadow: 0 0.8vw 2.8vw rgba(46, 134, 193, 0.20);
             z-index: 100;
         }
 
@@ -217,7 +229,7 @@
             background: rgba(46, 134, 193, 0.14);
             border-color: #2E86C1;
             color: #1A5276;
-            box-shadow: 0 0 25px rgba(46, 134, 193, 0.12), inset 0 0 20px rgba(46, 134, 193, 0.04);
+            box-shadow: 0 0 2.5vw rgba(46, 134, 193, 0.12), inset 0 0 2vw rgba(46, 134, 193, 0.04);
             animation: qualifyPulse 1.2s ease-in-out;
             z-index: 10;
         }
@@ -228,7 +240,7 @@
             }
             30% {
                 transform: scale(1.14);
-                box-shadow: 0 0 50px rgba(46, 134, 193, 0.35);
+                box-shadow: 0 0 5vw rgba(46, 134, 193, 0.35);
                 border-color: #2E86C1;
             }
             70% {
@@ -236,13 +248,13 @@
             }
             100% {
                 transform: scale(1);
-                box-shadow: 0 0 25px rgba(46, 134, 193, 0.12);
+                box-shadow: 0 0 2.5vw rgba(46, 134, 193, 0.12);
             }
         }
         .name-card.qualify .check-mark {
             display: inline-block;
-            margin-left: 5px;
-            font-size: 12px;
+            margin-left: 0.4vw;
+            font-size: 1.2vw;
             color: #2E86C1;
         }
 
@@ -266,7 +278,7 @@
                 background: rgba(231, 76, 60, 0.20);
             }
             100% {
-                transform: scale(0.4) translateY(40px);
+                transform: scale(0.4) translateY(4vh);
                 opacity: 0;
                 background: rgba(231, 76, 60, 0);
                 border-color: transparent;
@@ -279,12 +291,12 @@
         }
         @keyframes reappearUp {
             0% {
-                transform: translateY(50px) scale(0.6);
+                transform: translateY(5vh) scale(0.6);
                 opacity: 0;
                 background: rgba(46, 134, 193, 0.05);
             }
             60% {
-                transform: translateY(-6px) scale(1.04);
+                transform: translateY(-0.6vh) scale(1.04);
                 opacity: 1;
                 background: rgba(46, 134, 193, 0.12);
                 border-color: rgba(46, 134, 193, 0.35);
@@ -302,7 +314,7 @@
             background: rgba(46, 134, 193, 0.20);
             border-color: #2E86C1;
             color: #1A5276;
-            box-shadow: 0 0 45px rgba(46, 134, 193, 0.25), inset 0 0 30px rgba(46, 134, 193, 0.08);
+            box-shadow: 0 0 4.5vw rgba(46, 134, 193, 0.25), inset 0 0 3vw rgba(46, 134, 193, 0.08);
             animation: glowBlue 1.4s ease-in-out;
             z-index: 20;
         }
@@ -313,15 +325,15 @@
             }
             25% {
                 transform: scale(1.18);
-                box-shadow: 0 0 70px rgba(46, 134, 193, 0.45);
+                box-shadow: 0 0 7vw rgba(46, 134, 193, 0.45);
             }
             60% {
                 transform: scale(0.94);
-                box-shadow: 0 0 30px rgba(46, 134, 193, 0.18);
+                box-shadow: 0 0 3vw rgba(46, 134, 193, 0.18);
             }
             100% {
                 transform: scale(1);
-                box-shadow: 0 0 45px rgba(46, 134, 193, 0.15);
+                box-shadow: 0 0 4.5vw rgba(46, 134, 193, 0.15);
             }
         }
 
@@ -331,47 +343,50 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: #4A7A9C;
-            font-size: 18px;
-            letter-spacing: 2px;
+            font-size: 2vw;
+            letter-spacing: 0.2vw;
         }
 
+        /* ===== 底部 ===== */
         footer {
-            margin-top: 28px;
+            margin-top: 1.8vh;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 16px;
-            padding-top: 20px;
-            border-top: 2px solid rgba(108, 180, 238, 0.2);
+            gap: 1.2vw;
+            padding-top: 1.2vh;
+            border-top: 0.2vw solid rgba(108, 180, 238, 0.2);
+            flex-shrink: 0;
         }
+
         .controls {
             display: flex;
-            gap: 12px;
+            gap: 1.2vw;
             flex-wrap: wrap;
         }
         .controls button {
-            padding: 10px 28px;
+            padding: 0.8vh 2.8vw;
             border: none;
-            border-radius: 60px;
-            font-size: 15px;
+            border-radius: 6vw;
+            font-size: 1.4vw;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.25s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.6vw;
             background: rgba(255, 255, 255, 0.7);
             color: #1A3A5C;
-            border: 1px solid rgba(108, 180, 238, 0.25);
+            border: 0.15vw solid rgba(108, 180, 238, 0.25);
             backdrop-filter: blur(4px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 0.2vw 0.8vw rgba(0, 0, 0, 0.04);
         }
         .controls button:hover:not(:disabled) {
             background: #ffffff;
             border-color: #2E86C1;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(46, 134, 193, 0.15);
+            transform: translateY(-0.2vw);
+            box-shadow: 0 0.8vw 2.5vw rgba(46, 134, 193, 0.15);
         }
         .controls button:active:not(:disabled) {
             transform: scale(0.96);
@@ -386,12 +401,12 @@
             color: #fff;
             border-color: transparent;
             font-weight: 700;
-            box-shadow: 0 4px 20px rgba(46, 134, 193, 0.3);
+            box-shadow: 0 0.4vw 2vw rgba(46, 134, 193, 0.3);
         }
         .controls button.primary:hover:not(:disabled) {
             background: linear-gradient(135deg, #3498DB, #1A5276);
-            box-shadow: 0 8px 35px rgba(46, 134, 193, 0.4);
-            transform: translateY(-2px);
+            box-shadow: 0 0.8vw 3.5vw rgba(46, 134, 193, 0.4);
+            transform: translateY(-0.2vw);
         }
         .controls button.primary:disabled {
             background: rgba(108, 180, 238, 0.3);
@@ -399,14 +414,14 @@
             box-shadow: none;
         }
         .controls button .icon {
-            font-size: 18px;
+            font-size: 1.8vw;
             line-height: 1;
         }
         .controls button .badge {
             background: rgba(108, 180, 238, 0.15);
-            padding: 0 10px;
-            border-radius: 30px;
-            font-size: 12px;
+            padding: 0 0.8vw;
+            border-radius: 3vw;
+            font-size: 1.2vw;
             font-weight: 500;
             color: #1A3A5C;
         }
@@ -417,20 +432,20 @@
 
         .progress-dots {
             display: flex;
-            gap: 8px;
+            gap: 0.8vw;
             align-items: center;
         }
         .progress-dots .dot {
-            width: 10px;
-            height: 10px;
+            width: 1vw;
+            height: 1vw;
             border-radius: 50%;
             background: rgba(108, 180, 238, 0.25);
             transition: all 0.4s ease;
-            border: 1px solid rgba(108, 180, 238, 0.2);
+            border: 0.1vw solid rgba(108, 180, 238, 0.2);
         }
         .progress-dots .dot.active {
             background: #2E86C1;
-            box-shadow: 0 0 20px rgba(46, 134, 193, 0.4);
+            box-shadow: 0 0 2vw rgba(46, 134, 193, 0.4);
             border-color: #2E86C1;
             transform: scale(1.3);
         }
@@ -439,97 +454,7 @@
             border-color: rgba(46, 134, 193, 0.2);
         }
 
-        @media (max-width: 768px) {
-            #app {
-                padding: 18px 16px 22px;
-                border-radius: 28px;
-            }
-            .logo h1 {
-                font-size: 20px;
-            }
-            .round-badge {
-                padding: 8px 14px 8px 18px;
-                gap: 10px;
-            }
-            .round-badge .round-num {
-                font-size: 22px;
-                min-width: 28px;
-            }
-            .round-badge .people-count {
-                font-size: 12px;
-                padding: 2px 10px;
-            }
-            .stats-bar {
-                gap: 14px;
-                margin-bottom: 14px;
-                padding: 8px 14px;
-            }
-            .stats-bar .stat-item {
-                font-size: 12px;
-            }
-            .stats-bar .stat-item .num {
-                font-size: 15px;
-                min-width: 20px;
-            }
-            #nameGrid {
-                min-height: 360px;
-                padding: 6px;
-            }
-            .name-card {
-                padding: 4px 12px;
-                min-width: 40px;
-                height: 30px;
-                font-size: 12px;
-                border-radius: 8px;
-            }
-            .controls button {
-                padding: 8px 18px;
-                font-size: 13px;
-            }
-            .controls button .badge {
-                display: none;
-            }
-            .progress-dots .dot {
-                width: 8px;
-                height: 8px;
-            }
-            footer {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 12px;
-            }
-            .controls {
-                justify-content: center;
-            }
-            .progress-dots {
-                justify-content: center;
-            }
-        }
-        @media (max-width: 480px) {
-            #nameGrid {
-                min-height: 280px;
-                padding: 4px;
-            }
-            .name-card {
-                padding: 3px 10px;
-                min-width: 32px;
-                height: 26px;
-                font-size: 10px;
-                border-radius: 6px;
-            }
-            .controls button {
-                padding: 6px 14px;
-                font-size: 12px;
-            }
-            .round-badge .label {
-                font-size: 11px;
-            }
-            .round-badge .round-num {
-                font-size: 18px;
-                min-width: 22px;
-            }
-        }
-
+        /* ===== 工具类 ===== */
         .stat-item .num.pop {
             animation: popNum 0.5s ease;
         }
@@ -545,20 +470,72 @@
                 transform: scale(1);
             }
         }
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
+
+        /* ===== 响应式（小屏保底） ===== */
+        @media (max-width: 1024px) {
+            /* 对于较小屏幕，适度缩小相对单位，但保留可读性 */
+            #app {
+                height: auto;
+                min-height: 90vh;
+                padding: 2vh 2vw;
+            }
+            .logo h1 {
+                font-size: 3.5vw;
+            }
+            .name-card {
+                font-size: 1.8vw;
+                height: 4vh;
+                padding: 0.4vh 1.2vw;
+                border-radius: 1.2vw;
+            }
+            .controls button {
+                font-size: 1.6vw;
+                padding: 0.6vh 2vw;
+            }
         }
-        ::-webkit-scrollbar-track {
-            background: rgba(108, 180, 238, 0.05);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #2E86C1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #1A5276;
+
+        @media (max-width: 600px) {
+            /* 手机端适配 */
+            #app {
+                padding: 1.5vh 1.5vw;
+                border-radius: 4vw;
+            }
+            .logo h1 {
+                font-size: 5vw;
+            }
+            .logo .sub {
+                font-size: 2vw;
+            }
+            .round-badge {
+                font-size: 2vw;
+                padding: 0.4vh 2vw;
+            }
+            .round-badge .round-num {
+                font-size: 4vw;
+                min-width: 4vw;
+            }
+            .stats-bar {
+                font-size: 2vw;
+                gap: 1.5vw;
+            }
+            .stats-bar .stat-item .num {
+                font-size: 2.8vw;
+            }
+            .name-card {
+                font-size: 2.5vw;
+                height: 3.5vh;
+                padding: 0.2vh 1vw;
+                border-radius: 1.5vw;
+                min-width: 5vw;
+            }
+            .controls button {
+                font-size: 2.2vw;
+                padding: 0.4vh 2.5vw;
+            }
+            .progress-dots .dot {
+                width: 1.8vw;
+                height: 1.8vw;
+            }
         }
     </style>
 </head>
@@ -701,7 +678,7 @@
             const progressDots = document.getElementById('progressDots');
 
             // =================================================================
-            //  布局算法（散落聚集）
+            //  布局算法（散落聚集，适配大屏）
             // =================================================================
             function applyScatterLayout(container, cards, count) {
                 if (!cards || cards.length === 0) return;
@@ -709,11 +686,12 @@
                 const rect = container.getBoundingClientRect();
                 let w = rect.width || container.clientWidth || 800;
                 let h = rect.height || container.clientHeight || 500;
-                const pad = 20;
+
+                // 内边距使用相对值
+                const pad = Math.min(w * 0.02, 30);
                 w = Math.max(w - pad * 2, 200);
                 h = Math.max(h - pad * 2, 200);
 
-                // 聚集区域系数，人数越多越分散
                 const density = Math.min(count / 80, 1);
                 const scaleFactor = 0.50 + density * 0.35;
                 const areaW = w * scaleFactor;
@@ -721,7 +699,6 @@
                 const offsetX = (w - areaW) / 2 + pad;
                 const offsetY = (h - areaH) / 2 + pad;
 
-                // 计算网格
                 const aspect = areaW / areaH;
                 let cols = Math.ceil(Math.sqrt(count * aspect));
                 let rows = Math.ceil(count / cols);
@@ -733,10 +710,9 @@
                 const randOffsetX = Math.min(cellW * 0.35, 40);
                 const randOffsetY = Math.min(cellH * 0.35, 40);
 
-                // 测量卡片尺寸
-                const cardData = cards.map((card, i) => {
-                    const cw = card.offsetWidth || 60;
-                    const ch = card.offsetHeight || 32;
+                const cardData = cards.map((card) => {
+                    const cw = card.offsetWidth || 80;
+                    const ch = card.offsetHeight || 40;
                     return { el: card, w: cw, h: ch };
                 });
 
@@ -748,7 +724,6 @@
                     let baseY = offsetY + (row + 0.5) * cellH;
                     let shiftX = (Math.random() - 0.5) * randOffsetX * 2;
                     let shiftY = (Math.random() - 0.5) * randOffsetY * 2;
-                    // 限制偏移
                     const maxShiftX = Math.min(cellW * 0.3, 30);
                     const maxShiftY = Math.min(cellH * 0.3, 30);
                     shiftX = Math.max(-maxShiftX, Math.min(maxShiftX, shiftX));
@@ -785,13 +760,13 @@
                 }
 
                 const maxBottom = positions.reduce((max, p) => Math.max(max, p.y + p.h), 0);
-                const newHeight = Math.max(maxBottom + pad, 320);
+                const newHeight = Math.max(maxBottom + pad, 200);
                 container.style.minHeight = newHeight + 'px';
                 container.style.height = 'auto';
             }
 
             // =================================================================
-            //  渲染核心（支持更新模式，避免特效时重新布局）
+            //  渲染核心
             // =================================================================
             function renderCards(names, options = {}) {
                 const {
@@ -799,12 +774,11 @@
                         eliminateSet = new Set(),
                         reappearSet = new Set(),
                         extraClass = '',
-                        skipLayout = false, // 为 true 时保留现有卡片位置，只更新类和内容
+                        skipLayout = false,
                 } = options;
 
-                // ---- 更新模式（保留位置） ----
+                // ---- 更新模式 ----
                 if (skipLayout && grid.children.length > 0) {
-                    // 构建现有卡片映射
                     const existing = new Map();
                     for (const child of grid.children) {
                         const name = child.dataset.name;
@@ -812,10 +786,8 @@
                     }
                     const newSet = new Set(names);
 
-                    // 更新保留的卡片，移除不在新名单中的卡片
                     for (const [name, el] of existing) {
                         if (newSet.has(name)) {
-                            // 重置内容和类
                             el.className = 'name-card';
                             el.textContent = name;
                             if (qualifySet.has(name)) {
@@ -834,19 +806,15 @@
                             if (extraClass) {
                                 el.classList.add(extraClass);
                             }
-                            // 位置保持不变（style 已经存在）
                         } else {
-                            // 不在新名单中，移除
                             el.remove();
                         }
                     }
-
-                    // 更新统计
                     updateStats(names, qualifySet, eliminateSet);
                     return;
                 }
 
-                // ---- 完全重建模式（用于初始化和切换场次） ----
+                // ---- 重建模式 ----
                 grid.innerHTML = '';
                 if (!names || names.length === 0) {
                     grid.innerHTML = '<div class="empty-hint">✨ 暂无名单</div>';
@@ -886,7 +854,6 @@
                 grid.appendChild(fragment);
                 updateStats(names, qualifySet, eliminateSet);
 
-                // 应用散落布局
                 if (!skipLayout) {
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
@@ -905,7 +872,6 @@
                         });
                     });
                 } else {
-                    // skipLayout 为 true 但无现有卡片（极少情况），直接显示
                     cards.forEach(c => {
                         c.style.visibility = 'visible';
                         c.style.opacity = '1';
@@ -913,7 +879,6 @@
                 }
             }
 
-            // ---- 更新统计信息 ----
             function updateStats(names, qualifySet, eliminateSet) {
                 const total = names ? names.length : 0;
                 currentCountNum.textContent = total;
@@ -976,13 +941,13 @@
                     qualifySet: new Set(),
                     eliminateSet: new Set(),
                     reappearSet: new Set(),
-                    skipLayout: false, // 初始加载需要布局
+                    skipLayout: false,
                 });
                 updateRoundUI();
             }
 
             // =================================================================
-            //  特效函数（全程保持位置不变）
+            //  特效函数
             // =================================================================
             function playQualifyEffect() {
                 if (state.isAnimating) return;
@@ -1004,14 +969,12 @@
                     else eliminateSet.add(name);
                 });
 
-                // 第一阶段：显示当前场次，标记晋级/淘汰（保留位置）
                 renderCards(prevNames, {
                     qualifySet,
                     eliminateSet,
                     skipLayout: true,
                 });
 
-                // 第二阶段：只显示晋级名单，加高亮（保留位置，移除淘汰卡片）
                 setTimeout(() => {
                     const glowSet = new Set(nextNames);
                     renderCards(nextNames, {
@@ -1022,7 +985,6 @@
                     state.currentRound = to;
                     updateRoundUI();
 
-                    // 第三阶段：移除高亮（保留位置）
                     setTimeout(() => {
                         const normalQualify = new Set(nextNames);
                         renderCards(nextNames, {
@@ -1054,7 +1016,6 @@
                     else reappearSet.add(name);
                 });
 
-                // 回退时人数增加，允许重新布局
                 renderCards(prevNames, {
                     qualifySet: keepSet,
                     reappearSet: reappearSet,
@@ -1067,7 +1028,7 @@
                     const normalQualify = new Set(prevNames);
                     renderCards(prevNames, {
                         qualifySet: normalQualify,
-                        skipLayout: false, // 重新布局使卡片均匀分布
+                        skipLayout: false,
                     });
                     state.isAnimating = false;
                     updateRoundUI();
@@ -1166,9 +1127,7 @@
                         const names = FIXED_ROUNDS[state.currentRound];
                         const cards = grid.querySelectorAll('.name-card');
                         if (cards.length > 0 && cards.length === names.length) {
-                            // 重新布局但不重建卡片
                             const cardArray = Array.from(cards);
-                            // 保留当前类状态
                             const classMap = {};
                             cardArray.forEach(c => {
                                 const name = c.dataset.name;
@@ -1179,9 +1138,7 @@
                                     glow: c.classList.contains('qualify-glow'),
                                 };
                             });
-                            // 重新应用布局（会重置位置）
                             applyScatterLayout(grid, cardArray, names.length);
-                            // 恢复类（但位置已更新）
                             cardArray.forEach(c => {
                                 const name = c.dataset.name;
                                 const cls = classMap[name] || {};
@@ -1224,11 +1181,10 @@
 
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级已启动（共 ${TOTAL_ROUNDS} 场）`);
+                console.log(`🇦🇷 阿根廷观赛晋级 (大屏版) 已启动，共 ${TOTAL_ROUNDS} 场`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
                 console.log(`⏸️ 自动播放每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
-                console.log('⌨️  快捷键: ← 上一场 | → / Space 下一场 | r 重置');
-                console.log('🎯 卡片散落布局，特效时位置保持不变');
+                console.log('🎯 所有尺寸已使用相对单位，适配4K大屏幕');
             }
 
             if (document.readyState === 'loading') {
