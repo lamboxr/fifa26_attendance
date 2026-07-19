@@ -47,7 +47,6 @@
             width: 88vw;
             max-width: 88vw;
             height: 94vh;
-            /* 已按用户要求修改 */
             max-height: 94vh;
             background: rgba(255, 255, 255, 0.90);
             backdrop-filter: blur(6px);
@@ -462,7 +461,7 @@
             z-index: 2;
         }
 
-        /* ===== 比分牌样式 ===== */
+        /* ===== 比分牌样式（修正版） ===== */
         #scoreboard {
             position: absolute;
             top: 50%;
@@ -478,18 +477,19 @@
         }
 
         #scoreboard .score-card {
-            background: rgba(255, 255, 255, 0.94);
+            /* 浅蓝色半透明背景，与白色背景区分 */
+            background: rgba(220, 240, 255, 0.92);
             backdrop-filter: blur(4px);
             border: 0.15vw solid #2E86C1;
             border-radius: 1.2vw;
             padding: 1.0vh 2.5vw;
             min-width: 36vw;
             text-align: center;
-            box-shadow: 0 1.2vh 3.5vh rgba(0, 40, 80, 0.25);
+            box-shadow: 0 1.2vh 3.5vh rgba(0, 40, 80, 0.25),
+                inset 0 0 0.5vw rgba(46, 134, 193, 0.10);
             color: #1A3A5C;
         }
 
-        /* ---- 比分牌三行布局 ---- */
         #scoreboard .score-round {
             font-size: 1.4vw;
             font-weight: 700;
@@ -522,12 +522,15 @@
             gap: 0.35vw;
         }
 
+        /* 国旗增加浅色背景和圆角，使其在浅蓝背景上突出 */
         #scoreboard .score-teams .team .flag-img {
             height: 2.4vw;
             width: auto;
             border-radius: 0.2vw;
             display: block;
             box-shadow: 0 0.08vw 0.25vw rgba(0, 0, 0, 0.10);
+            background: rgba(255, 255, 255, 0.6);
+            padding: 0.05vw;
         }
 
         #scoreboard .score-teams .team .name {
@@ -544,13 +547,11 @@
         /* 获胜比分（深蓝色） */
         #scoreboard .score-teams .score.win {
             color: #1A3A5C;
-            /* 深蓝色 */
         }
 
         /* 失败比分（灰色） */
         #scoreboard .score-teams .score.lose {
             color: #999;
-            /* 灰色 */
         }
 
         #scoreboard .score-teams .score-dash {
@@ -566,6 +567,7 @@
             color: #2E86C1;
             margin: 0 0.4vw;
             letter-spacing: 0.1vw;
+            text-shadow: 0 0 0.3vw rgba(46, 134, 193, 0.15);
         }
 
         /* ===== 工具类 ===== */
@@ -1483,7 +1485,7 @@
             }
 
             // =================================================================
-            //  比分牌控制（修正版）
+            //  比分牌控制（修正第八场显示）
             // =================================================================
             function updateScoreboardContent(roundIndex) {
                 const round = roundIndex + 1;
@@ -1494,12 +1496,13 @@
                 const hostInfo = countries[match.host];
                 const guestInfo = countries[match.guest];
 
-                // --- 第一行：比赛轮次 name（突出显示） ---
+                // --- 第一行：比赛轮次 name ---
                 const roundName = match.name || `第${round}场`;
                 scoreRound.textContent = roundName;
 
-                // --- 第二行：日期 周几 时间 ---
+                // --- 第二行：日期 ---
                 let dateStr;
+                // 第八场显示 Today，其他显示具体日期
                 if (round === 8) {
                     dateStr = `Today`;
                 } else {
@@ -1512,17 +1515,17 @@
                 }
                 scoreDate.textContent = dateStr;
 
-                // --- 第三行：主队名称 + 主队国旗 + 比分/VS + 客队国旗 + 客队名称 ---
+                // --- 第三行：对阵信息 ---
                 let html = '';
 
-                // 主队
+                // 主队（名称 + 国旗）
                 html += `<span class="team">`;
                 html += `<span class="name">${hostInfo.name}</span>`;
                 html +=
                     `<img class="flag-img" src="assets/flags/${match.host}.webp" alt="${match.host}" onerror="this.style.display='none'" />`;
                 html += `</span>`;
 
-                // 判断是否是未开球（hostscore === -1）
+                // 判断是否未开球（hostscore === -1 && guestscore === -1）
                 const isUnplayed = (match.hostscore === -1 && match.guestscore === -1);
 
                 if (!isUnplayed && match.hostscore !== undefined && match.guestscore !== undefined) {
@@ -1530,7 +1533,7 @@
                     const gs = match.guestscore;
                     const winner = match.winner; // "host" 或 "guest"
 
-                    // 根据 winner 决定比分颜色
+                    // 根据 winner 决定颜色
                     let hostScoreClass = 'score';
                     let guestScoreClass = 'score';
                     if (winner === 'host') {
@@ -1540,7 +1543,7 @@
                         hostScoreClass += ' lose';
                         guestScoreClass += ' win';
                     } else {
-                        // 无 winner 信息（兜底），按分数高低
+                        // 兜底：按分数高低
                         if (hs > gs) {
                             hostScoreClass += ' win';
                             guestScoreClass += ' lose';
@@ -1548,7 +1551,7 @@
                             hostScoreClass += ' lose';
                             guestScoreClass += ' win';
                         } else {
-                            // 平局，都用 win（深蓝）
+                            // 平局都显示深蓝
                             hostScoreClass += ' win';
                             guestScoreClass += ' win';
                         }
@@ -1562,7 +1565,7 @@
                     html += `<span class="vs">VS</span>`;
                 }
 
-                // 客队
+                // 客队（国旗 + 名称）
                 html += `<span class="team">`;
                 html +=
                     `<img class="flag-img" src="assets/flags/${match.guest}.webp" alt="${match.guest}" onerror="this.style.display='none'" />`;
@@ -1855,7 +1858,8 @@
                 console.log(`🇦🇷 阿根廷观赛晋级 (比分牌修正版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
                 console.log(`🏆 比分牌移入: ${SCOREBOARD_MOVE_IN_DURATION_MS}ms，停留: ${SCOREBOARD_STAY_DURATION_MS}ms，移出: ${SCOREBOARD_MOVE_OUT_DURATION_MS}ms`);
-                console.log('🎯 比分颜色根据 winner 字段控制，场次名称独立突出显示');
+                console.log('🎯 第八场显示 VS，日期显示 Today');
+                console.log('🎨 比分牌卡片背景为浅蓝色半透明，国旗背景优化');
                 console.log('⌨️  按 空格键 开始自动播放 | 刷新页面重置');
             }
 
