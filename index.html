@@ -1,127 +1,1872 @@
-比赛信息还有bug
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FIFA 2026 · 我是全勤王</title>
+    <style>
+        /* ===== 全局重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-1. 比分牌的显示有问题，颜色不统一，我直接在比赛信息中添加一个字段：winner, host表示主队（左侧的）获胜， guest表示客队获胜（右边的），获胜的队伍比分是深蓝色，另一个队伍的比分就是灰色
-2. 比分信息牌，把第一行中的场次信息“name",单独作为一行，插入到第一行只上，字号颜色可以突出点
-3. 第八场比赛的比赛信息没有显示，请注意，第八场没有开球，所以只第三行用'VS' 代替比分
+        html,
+        body {
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(145deg, #6CB4EE 0%, #D6EAF8 50%, #FFFFFF 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1vh 2vw;
+            position: relative;
+        }
 
-```
-{
-	"matchDetails": {
-		"1": {
-			"name": "J组第一轮",
-			"host": "ARG",
-			"guest": "ALG",
-			"month": 5,
-			"day": 17,
-			"hour": 9,
-			"min": 0,
-			"dayOfWeek": "三",
-			"hostscore": 3,
-			"guestscore": 0,
-			"winner": "host"
-		},
-		"2": {
-			"name": "J组第二轮",
-			"host": "ARG",
-			"guest": "AUT",
-			"month": 5,
-			"day": 23,
-			"hour": 1,
-			"min": 0,
-			"dayOfWeek": "二",
-			"hostscore": 2,
-			"guestscore": 0,
-			"winner": "host"
-		},
-		"3": {
-			"name": "J组第三轮",
-			"host": "JOR",
-			"guest": "ARG",
-			"month": 5,
-			"day": 28,
-			"hour": 10,
-			"min": 0,
-			"dayOfWeek": "日",
-			"hostscore": 1,
-			"guestscore": 3,
-			"winner": "guest"
-		},
-		"4": {
-			"name": "1/16决赛",
-			"host": "ARG",
-			"guest": "CPV",
-			"month": 6,
-			"day": 4,
-			"hour": 6,
-			"min": 0,
-			"dayOfWeek": "六",
-			"hostscore": 3,
-			"guestscore": 2,
-			"winner": "host"
-		},
-		"5": {
-			"name": "1/8决赛",
-			"host": "ARG",
-			"guest": "EGY",
-			"month": 6,
-			"day": 8,
-			"hour": 0,
-			"min": 0,
-			"dayOfWeek": "三",
-			"hostscore": 3,
-			"guestscore": 2,
-			"winner": "host"
-		},
-		"6": {
-			"name": "1/4决赛",
-			"host": "ARG",
-			"guest": "SUI",
-			"month": 6,
-			"day": 12,
-			"hour": 9,
-			"min": 0,
-			"dayOfWeek": "日",
-			"hostscore": 3,
-			"guestscore": 1,
-			"winner": "host"
-		},
-		"7": {
-			"name": "半决赛",
-			"host": "ENG",
-			"guest": "ARG",
-			"month": 6,
-			"day": 16,
-			"hour": 3,
-			"min": 0,
-			"dayOfWeek": "四",
-			"hostscore": 1,
-			"guestscore": 2,
-			"winner": "guest"
-		},
-		"8": {
-			"name": "决赛",
-			"host": "ESP",
-			"guest": "ARG",
-			"month": 6,
-			"day": 20,
-			"hour": 3,
-			"min": 0,
-			"dayOfWeek": "一"
-			"hostscore": -1,
-			"guestscore": -1,
-			"winner": ""
-		}
-	},
-	"country_infos": {
-		"ARG": {"name": "阿根廷", "flag": "🇦🇷"},
-		"ALG": {"name": "阿尔及利亚", "flag": "🇩🇿"},
-		"AUT": {"name": "奥地利", "flag": "🇦🇹"},
-		"JOR": {"name": "约旦", "flag": "🇯🇴"},
-		"CPV": {"name": "佛得角", "flag": "🇨🇻"},
-		"EGY": {"name": "埃及", "flag": "🇪🇬"},
-		"SUI": {"name": "瑞士", "flag": "🇨🇭"},
-		"ENG": {"name": "英格兰", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
-		"ESP": {"name": "西班牙", "flag": "🇪🇸"}
-	},
-}
-```
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(90deg,
+                    rgba(255, 255, 255, 0.05) 0px,
+                    rgba(255, 255, 255, 0.05) 6vw,
+                    rgba(108, 180, 238, 0.03) 6vw,
+                    rgba(108, 180, 238, 0.03) 12vw);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== 主容器 ===== */
+        #app {
+            width: 88vw;
+            max-width: 88vw;
+            height: 94vh;
+            /* 已按用户要求修改 */
+            max-height: 94vh;
+            background: rgba(255, 255, 255, 0.90);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 2vw;
+            padding: 1.8vh 2.4vw 1.2vh;
+            box-shadow: 0 2vh 6vh rgba(0, 40, 80, 0.15), 0 0 0 0.12vw rgba(108, 180, 238, 0.10);
+            border: 0.10vw solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* ===== 头部 ===== */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 0.3vh;
+            padding-bottom: 0.3vh;
+            border-bottom: 0.10vw solid rgba(108, 180, 238, 0.15);
+            flex-shrink: 0;
+        }
+
+        .logo {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-template-rows: auto auto;
+            gap: 0.1vh 0.6vw;
+            align-items: center;
+        }
+
+        .flag-wrapper {
+            grid-row: 1 / 3;
+            grid-column: 1;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            min-height: 4.5vh;
+        }
+
+        .flag-wrapper .flag-img {
+            height: 100%;
+            width: auto;
+            max-height: 6vh;
+            object-fit: contain;
+            display: block;
+            border-radius: 0.2vw;
+            box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.08);
+        }
+
+        .title-row {
+            grid-row: 1;
+            grid-column: 2;
+            display: flex;
+            align-items: center;
+            gap: 0.5vw;
+        }
+
+        .title-row h1 {
+            font-size: 2.2vw;
+            font-weight: 800;
+            color: #1A3A5C;
+            letter-spacing: 0.05vw;
+            line-height: 1.2;
+            margin: 0;
+        }
+        .title-row h1 .highlight {
+            color: #2E86C1;
+        }
+
+        .logo .sub {
+            grid-row: 2;
+            grid-column: 2;
+            font-size: 1.4vw;
+            color: #4A7A9C;
+            letter-spacing: 0.20vw;
+            font-weight: 500;
+            margin: 0;
+            padding: 0;
+            line-height: 1.2;
+        }
+
+        .round-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.8vw;
+            background: rgba(108, 180, 238, 0.10);
+            padding: 0.2vh 1.4vw 0.2vh 1.6vw;
+            border-radius: 4vw;
+            border: 0.08vw solid rgba(108, 180, 238, 0.16);
+            font-size: 0.80vw;
+            flex-shrink: 0;
+        }
+        .round-badge .label {
+            color: #1A3A5C;
+            font-weight: 600;
+            letter-spacing: 0.05vw;
+        }
+        .round-badge .round-num {
+            font-size: 1.8vw;
+            font-weight: 800;
+            color: #1A3A5C;
+            min-width: 1.8vw;
+            text-align: center;
+            transition: 0.3s;
+        }
+        .round-badge .round-num.active {
+            color: #2E86C1;
+            text-shadow: 0 0 1.2vw rgba(46, 134, 193, 0.20);
+        }
+        .round-badge .total {
+            color: #4A7A9C;
+            font-size: 1.0vw;
+            font-weight: 500;
+        }
+        .round-badge .people-count {
+            color: #1A3A5C;
+            font-size: 0.9vw;
+            background: rgba(108, 180, 238, 0.12);
+            padding: 0.1vh 0.8vw;
+            border-radius: 2vw;
+            font-weight: 600;
+            margin-left: 0.1vw;
+        }
+
+        /* ===== 统计条 ===== */
+        .stats-bar {
+            display: flex;
+            gap: 1.4vw;
+            margin-bottom: 0.3vh;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.30);
+            padding: 0.15vh 0.8vw;
+            border-radius: 1.0vw;
+            backdrop-filter: blur(4px);
+            border: 0.05vw solid rgba(108, 180, 238, 0.06);
+            flex-shrink: 0;
+            font-size: 0.80vw;
+        }
+        .stats-bar .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3vw;
+            color: #1A3A5C;
+            font-weight: 500;
+        }
+        .stats-bar .stat-item .num {
+            font-weight: 700;
+            font-size: 1.2vw;
+            color: #1A3A5C;
+            min-width: 1.2vw;
+            text-align: center;
+        }
+        .stats-bar .stat-item .num.qualify-num {
+            color: #2E86C1;
+        }
+        .stats-bar .stat-item .num.eliminate-num {
+            color: #E74C3C;
+        }
+        .stats-bar .stat-divider {
+            width: 0.05vw;
+            background: rgba(108, 180, 238, 0.10);
+        }
+
+        /* ===== 名字网格 ===== */
+        #nameGrid {
+            position: relative;
+            flex: 1 1 auto;
+            width: 100%;
+            min-height: 0;
+            padding: 0.6vh 0.5vw 0.3vh;
+            border-radius: 1.2vw;
+            overflow: hidden;
+        }
+
+        /* ---- 背景图片 ---- */
+        #nameGrid::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('assets/bg.jpg');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.25;
+            pointer-events: none;
+            z-index: 0;
+            border-radius: inherit;
+        }
+
+        .name-card {
+            z-index: 1;
+        }
+
+        /* ===== 名字卡片 ===== */
+        .name-card {
+            position: absolute;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25vh 1.0vw;
+            height: 3.6vh;
+            min-height: 24px;
+            border-radius: 0.8vw;
+            background: rgba(255, 255, 255, 0.88);
+            border: 0.08vw solid rgba(108, 180, 238, 0.26);
+            color: #1A3A5C;
+            font-size: 1.2vw;
+            font-weight: 500;
+            transition: left 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
+                top 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
+                transform 0.4s ease,
+                background 0.3s ease,
+                border-color 0.3s ease,
+                box-shadow 0.3s ease,
+                opacity 0.5s ease;
+            cursor: default;
+            user-select: none;
+            box-shadow: 0 0.10vw 0.5vw rgba(0, 40, 80, 0.04);
+            white-space: nowrap;
+            will-change: left, top, transform;
+            letter-spacing: 0.03vw;
+            width: auto;
+            max-width: none;
+            overflow: visible;
+            gap: 0.35vw;
+        }
+
+        .name-card.qualify {
+            background: rgba(46, 134, 193, 0.14);
+            border-color: #2E86C1;
+            color: #1A5276;
+            box-shadow: 0 0 1.5vw rgba(46, 134, 193, 0.08), inset 0 0 1.2vw rgba(46, 134, 193, 0.03);
+        }
+
+        .name-card.qualify .check-mark {
+            display: inline-block;
+            margin-left: 0.25vw;
+            font-size: 0.8vw;
+            color: #2E86C1;
+        }
+
+        .name-card:hover {
+            transform: scale(1.08) rotate(0deg) !important;
+            border-color: #2E86C1;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 0.4vw 1.8vw rgba(46, 134, 193, 0.14);
+            z-index: 100;
+        }
+
+        /* ===== 头像 ===== */
+        .name-card .avatar {
+            width: 2.4vh;
+            height: 2.4vh;
+            min-width: 2.4vh;
+            min-height: 2.4vh;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 0.08vw solid rgba(108, 180, 238, 0.20);
+            background: rgba(200, 220, 240, 0.20);
+            display: inline-block;
+            opacity: 0;
+            transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(0.6);
+        }
+
+        .name-card .avatar.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .name-card .avatar.hidden {
+            display: none;
+        }
+
+        .name-card .avatar-placeholder {
+            width: 2.4vh;
+            height: 2.4vh;
+            min-width: 2.4vh;
+            min-height: 2.4vh;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: rgba(200, 220, 240, 0.20);
+            border: 0.08vw solid rgba(108, 180, 238, 0.10);
+            display: inline-block;
+        }
+
+        .name-card .name-text {
+            display: inline-block;
+        }
+
+        .name-card.qualify-pulse {
+            animation: qualifyPulse 1.2s ease-in-out;
+        }
+        @keyframes qualifyPulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(46, 134, 193, 0);
+            }
+            30% {
+                transform: scale(1.10);
+                box-shadow: 0 0 3.0vw rgba(46, 134, 193, 0.25);
+                border-color: #2E86C1;
+            }
+            70% {
+                transform: scale(0.96);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 1.5vw rgba(46, 134, 193, 0.08);
+            }
+        }
+
+        .name-card.eliminate {
+            background: rgba(231, 76, 60, 0.15) !important;
+            border-color: rgba(231, 76, 60, 0.60) !important;
+            color: #C0392B !important;
+            animation: eliminateFade var(--eliminate-duration, 0.9s) ease-in forwards;
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: 0 0 1.8vw rgba(231, 76, 60, 0.20) !important;
+        }
+        @keyframes eliminateFade {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+                background: rgba(231, 76, 60, 0.15);
+                border-color: rgba(231, 76, 60, 0.60);
+            }
+            40% {
+                transform: scale(0.78);
+                opacity: 0.8;
+                background: rgba(231, 76, 60, 0.25);
+                border-color: rgba(231, 76, 60, 0.70);
+            }
+            100% {
+                transform: scale(0.30) translateY(3.5vh);
+                opacity: 0;
+                background: rgba(231, 76, 60, 0);
+                border-color: transparent;
+            }
+        }
+
+        .name-card.reappear {
+            animation: reappearUp 0.8s ease-out forwards;
+            z-index: 8;
+        }
+        @keyframes reappearUp {
+            0% {
+                transform: translateY(4vh) scale(0.50);
+                opacity: 0;
+                background: rgba(46, 134, 193, 0.04);
+            }
+            60% {
+                transform: translateY(-0.3vh) scale(1.04);
+                opacity: 1;
+                background: rgba(46, 134, 193, 0.10);
+                border-color: rgba(46, 134, 193, 0.26);
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+                background: rgba(255, 255, 255, 0.88);
+                border-color: rgba(108, 180, 238, 0.26);
+                color: #1A3A5C;
+            }
+        }
+
+        .name-card.qualify-glow {
+            background: rgba(46, 134, 193, 0.20);
+            border-color: #2E86C1;
+            color: #1A5276;
+            box-shadow: 0 0 3.5vw rgba(46, 134, 193, 0.20), inset 0 0 1.8vw rgba(46, 134, 193, 0.06);
+            animation: glowBlue 1.5s ease-in-out;
+            z-index: 20;
+        }
+        @keyframes glowBlue {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 rgba(46, 134, 193, 0);
+            }
+            25% {
+                transform: scale(1.14);
+                box-shadow: 0 0 5vw rgba(46, 134, 193, 0.35);
+            }
+            60% {
+                transform: scale(0.94);
+                box-shadow: 0 0 2.0vw rgba(46, 134, 193, 0.12);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 3.5vw rgba(46, 134, 193, 0.10);
+            }
+        }
+
+        .empty-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #4A7A9C;
+            font-size: 1.6vw;
+            letter-spacing: 0.12vw;
+            z-index: 2;
+        }
+
+        /* ===== 比分牌样式 ===== */
+        #scoreboard {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            transform: translateY(-50%) translateX(-100%);
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 200;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #scoreboard .score-card {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(4px);
+            border: 0.15vw solid #2E86C1;
+            border-radius: 1.2vw;
+            padding: 1.0vh 2.5vw;
+            min-width: 36vw;
+            text-align: center;
+            box-shadow: 0 1.2vh 3.5vh rgba(0, 40, 80, 0.25);
+            color: #1A3A5C;
+        }
+
+        /* ---- 比分牌三行布局 ---- */
+        #scoreboard .score-round {
+            font-size: 1.4vw;
+            font-weight: 700;
+            color: #2E86C1;
+            letter-spacing: 0.1vw;
+            margin-bottom: 0.15vh;
+            text-shadow: 0 0 0.3vw rgba(46, 134, 193, 0.15);
+        }
+
+        #scoreboard .score-date {
+            font-size: 1.0vw;
+            font-weight: 500;
+            color: #4A7A9C;
+            letter-spacing: 0.08vw;
+            margin-bottom: 0.3vh;
+        }
+
+        #scoreboard .score-teams {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.0vw;
+            font-size: 1.8vw;
+            font-weight: 700;
+        }
+
+        #scoreboard .score-teams .team {
+            display: flex;
+            align-items: center;
+            gap: 0.35vw;
+        }
+
+        #scoreboard .score-teams .team .flag-img {
+            height: 2.4vw;
+            width: auto;
+            border-radius: 0.2vw;
+            display: block;
+            box-shadow: 0 0.08vw 0.25vw rgba(0, 0, 0, 0.10);
+        }
+
+        #scoreboard .score-teams .team .name {
+            font-size: 1.5vw;
+            font-weight: 600;
+        }
+
+        #scoreboard .score-teams .score {
+            font-size: 2.2vw;
+            font-weight: 800;
+            margin: 0 0.15vw;
+        }
+
+        /* 获胜比分（深蓝色） */
+        #scoreboard .score-teams .score.win {
+            color: #1A3A5C;
+            /* 深蓝色 */
+        }
+
+        /* 失败比分（灰色） */
+        #scoreboard .score-teams .score.lose {
+            color: #999;
+            /* 灰色 */
+        }
+
+        #scoreboard .score-teams .score-dash {
+            color: #1A3A5C;
+            font-weight: 300;
+            margin: 0 0.15vw;
+            font-size: 1.8vw;
+        }
+
+        #scoreboard .score-teams .vs {
+            font-size: 2.0vw;
+            font-weight: 700;
+            color: #2E86C1;
+            margin: 0 0.4vw;
+            letter-spacing: 0.1vw;
+        }
+
+        /* ===== 工具类 ===== */
+        .stat-item .num.pop {
+            animation: popNum 0.5s ease;
+        }
+        @keyframes popNum {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.35);
+                color: #2E86C1;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        * {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 1200px) {
+            #app {
+                width: 92vw;
+                height: 94vh;
+                max-height: 94vh;
+                padding: 1.6vh 2.0vw 1.0vh;
+            }
+            .title-row h1 {
+                font-size: 2.6vw;
+            }
+            .logo .sub {
+                font-size: 1.6vw;
+            }
+            .name-card {
+                font-size: 1.4vw;
+                height: 3.4vh;
+                padding: 0.25vh 0.9vw;
+            }
+            .name-card .avatar {
+                width: 2.2vh;
+                height: 2.2vh;
+                min-width: 2.2vh;
+                min-height: 2.2vh;
+            }
+            #scoreboard .score-teams {
+                font-size: 1.6vw;
+            }
+            #scoreboard .score-teams .score {
+                font-size: 2.0vw;
+            }
+            #scoreboard .score-teams .team .flag-img {
+                height: 2.2vw;
+            }
+            #scoreboard .score-teams .team .name {
+                font-size: 1.4vw;
+            }
+            #scoreboard .score-date {
+                font-size: 0.9vw;
+            }
+            #scoreboard .score-round {
+                font-size: 1.2vw;
+            }
+            #scoreboard .score-card {
+                padding: 0.8vh 2.2vw;
+                min-width: 40vw;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5vh 1.5vw;
+            }
+            #app {
+                width: 98vw;
+                height: auto;
+                min-height: 90vh;
+                padding: 1.2vh 1.5vw 0.8vh;
+                border-radius: 2.5vw;
+            }
+            .title-row h1 {
+                font-size: 3.2vw;
+            }
+            .logo .sub {
+                font-size: 2.0vw;
+            }
+            .flag-wrapper .flag-img {
+                max-height: 4.5vh;
+            }
+            .round-badge {
+                font-size: 1.2vw;
+                padding: 0.15vh 1.0vw;
+                gap: 0.6vw;
+            }
+            .round-badge .round-num {
+                font-size: 2.6vw;
+                min-width: 2.4vw;
+            }
+            .stats-bar {
+                font-size: 1.2vw;
+                gap: 1.0vw;
+                padding: 0.1vh 0.6vw;
+            }
+            .stats-bar .stat-item .num {
+                font-size: 1.8vw;
+            }
+            .name-card {
+                font-size: 1.8vw;
+                height: 3.0vh;
+                padding: 0.15vh 0.8vw;
+                border-radius: 1.0vw;
+                min-height: 20px;
+                gap: 0.25vw;
+            }
+            .name-card .avatar {
+                width: 2.0vh;
+                height: 2.0vh;
+                min-width: 2.0vh;
+                min-height: 2.0vh;
+            }
+            #nameGrid {
+                padding: 0.4vh 0.3vw;
+                min-height: 160px;
+            }
+            #scoreboard .score-teams {
+                font-size: 2.4vw;
+                gap: 0.6vw;
+            }
+            #scoreboard .score-teams .score {
+                font-size: 2.8vw;
+            }
+            #scoreboard .score-teams .team .flag-img {
+                height: 2.8vw;
+            }
+            #scoreboard .score-teams .team .name {
+                font-size: 2.0vw;
+            }
+            #scoreboard .score-date {
+                font-size: 1.2vw;
+            }
+            #scoreboard .score-round {
+                font-size: 1.6vw;
+            }
+            #scoreboard .score-card {
+                padding: 0.6vh 3vw;
+                min-width: 55vw;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.3vh 1vw;
+            }
+            #app {
+                padding: 0.6vh 0.8vw 0.5vh;
+                border-radius: 2vw;
+            }
+            .title-row h1 {
+                font-size: 4.0vw;
+            }
+            .logo .sub {
+                font-size: 2.4vw;
+            }
+            .flag-wrapper .flag-img {
+                max-height: 3.6vh;
+            }
+            .round-badge {
+                font-size: 1.6vw;
+                padding: 0.1vh 0.8vw;
+                gap: 0.5vw;
+            }
+            .round-badge .round-num {
+                font-size: 3.2vw;
+                min-width: 3.0vw;
+            }
+            .stats-bar {
+                font-size: 1.6vw;
+                gap: 0.8vw;
+                padding: 0.1vh 0.5vw;
+            }
+            .stats-bar .stat-item .num {
+                font-size: 2.2vw;
+                min-width: 1.8vw;
+            }
+            .name-card {
+                font-size: 2.2vw;
+                height: 2.6vh;
+                padding: 0.1vh 0.6vw;
+                border-radius: 1.0vw;
+                min-height: 18px;
+                gap: 0.2vw;
+            }
+            .name-card .avatar {
+                width: 1.8vh;
+                height: 1.8vh;
+                min-width: 1.8vh;
+                min-height: 1.8vh;
+            }
+            #nameGrid {
+                padding: 0.2vh 0.2vw;
+                min-height: 120px;
+            }
+            #scoreboard .score-teams {
+                font-size: 3.2vw;
+                gap: 0.5vw;
+            }
+            #scoreboard .score-teams .score {
+                font-size: 3.6vw;
+            }
+            #scoreboard .score-teams .team .flag-img {
+                height: 3.6vw;
+            }
+            #scoreboard .score-teams .team .name {
+                font-size: 2.4vw;
+            }
+            #scoreboard .score-date {
+                font-size: 1.6vw;
+            }
+            #scoreboard .score-round {
+                font-size: 2.0vw;
+            }
+            #scoreboard .score-card {
+                padding: 0.4vh 2.5vw;
+                min-width: 70vw;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app">
+        <!-- 头部 -->
+        <header>
+            <div class="logo">
+                <div class="flag-wrapper">
+                    <img src="./assets/argentina-flag.png" alt="阿根廷国旗" class="flag-img" onerror="this.style.display='none'" />
+                </div>
+                <div class="title-row">
+                    <h1>FIFA 2026世界杯 <span class="highlight">我是全勤王</span></h1>
+                </div>
+                <div class="sub">武汉阿根廷球迷俱乐部 观赛盛宴</div>
+            </div>
+            <div class="round-badge">
+                <span class="label">📋 场次</span>
+                <span class="round-num active" id="roundDisplay">1</span>
+                <span class="total">/ <span id="totalDisplay">8</span></span>
+                <span class="people-count" id="peopleCountDisplay">👤 76</span>
+            </div>
+        </header>
+
+        <!-- 统计条 -->
+        <div class="stats-bar">
+            <div class="stat-item">📊 当前人数 <span class="num" id="currentCountNum">76</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">⬆️ 晋级 <span class="num qualify-num" id="qualifyCountNum">0</span></div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">⬇️ 淘汰 <span class="num eliminate-num" id="eliminateCountNum">0</span></div>
+        </div>
+
+        <!-- 名字网格 -->
+        <div id="nameGrid"></div>
+
+        <!-- 比分牌 -->
+        <div id="scoreboard">
+            <div class="score-card">
+                <div class="score-round"></div>
+                <div class="score-date"></div>
+                <div class="score-teams"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // =================================================================
+            //  ⚙️ 可配置参数
+            // =================================================================
+            const AUTO_PAUSE_SECONDS = 2.5;
+            const AVATAR_INTERVAL_MS = 380;
+
+            const ELIMINATE_ANIMATION_DURATION_MS = 900;
+            const ELIMINATE_INTERVAL_MS = 80;
+            const ELIMINATE_INITIAL_DELAY_MS = 300;
+
+            const SCOREBOARD_MOVE_IN_DURATION_MS = 600;
+            const SCOREBOARD_STAY_DURATION_MS = 2000;
+            const SCOREBOARD_MOVE_OUT_DURATION_MS = 600;
+
+            document.documentElement.style.setProperty('--eliminate-duration', (ELIMINATE_ANIMATION_DURATION_MS / 1000) +
+            's');
+
+            // =================================================================
+            //  📌 比赛数据（已修正，包含 winner 字段）
+            // =================================================================
+            const MATCH_DATA = {
+                "matchDetails": {
+                    "1": {
+                        "name": "J组第一轮",
+                        "host": "ARG",
+                        "guest": "ALG",
+                        "month": 5,
+                        "day": 17,
+                        "hour": 9,
+                        "min": 0,
+                        "dayOfWeek": "三",
+                        "hostscore": 3,
+                        "guestscore": 0,
+                        "winner": "host"
+                    },
+                    "2": {
+                        "name": "J组第二轮",
+                        "host": "ARG",
+                        "guest": "AUT",
+                        "month": 5,
+                        "day": 23,
+                        "hour": 1,
+                        "min": 0,
+                        "dayOfWeek": "二",
+                        "hostscore": 2,
+                        "guestscore": 0,
+                        "winner": "host"
+                    },
+                    "3": {
+                        "name": "J组第三轮",
+                        "host": "JOR",
+                        "guest": "ARG",
+                        "month": 5,
+                        "day": 28,
+                        "hour": 10,
+                        "min": 0,
+                        "dayOfWeek": "日",
+                        "hostscore": 1,
+                        "guestscore": 3,
+                        "winner": "guest"
+                    },
+                    "4": {
+                        "name": "1/16决赛",
+                        "host": "ARG",
+                        "guest": "CPV",
+                        "month": 6,
+                        "day": 4,
+                        "hour": 6,
+                        "min": 0,
+                        "dayOfWeek": "六",
+                        "hostscore": 3,
+                        "guestscore": 2,
+                        "winner": "host"
+                    },
+                    "5": {
+                        "name": "1/8决赛",
+                        "host": "ARG",
+                        "guest": "EGY",
+                        "month": 6,
+                        "day": 8,
+                        "hour": 0,
+                        "min": 0,
+                        "dayOfWeek": "三",
+                        "hostscore": 3,
+                        "guestscore": 2,
+                        "winner": "host"
+                    },
+                    "6": {
+                        "name": "1/4决赛",
+                        "host": "ARG",
+                        "guest": "SUI",
+                        "month": 6,
+                        "day": 12,
+                        "hour": 9,
+                        "min": 0,
+                        "dayOfWeek": "日",
+                        "hostscore": 3,
+                        "guestscore": 1,
+                        "winner": "host"
+                    },
+                    "7": {
+                        "name": "半决赛",
+                        "host": "ENG",
+                        "guest": "ARG",
+                        "month": 6,
+                        "day": 16,
+                        "hour": 3,
+                        "min": 0,
+                        "dayOfWeek": "四",
+                        "hostscore": 1,
+                        "guestscore": 2,
+                        "winner": "guest"
+                    },
+                    "8": {
+                        "name": "决赛",
+                        "host": "ESP",
+                        "guest": "ARG",
+                        "month": 6,
+                        "day": 20,
+                        "hour": 3,
+                        "min": 0,
+                        "dayOfWeek": "一",
+                        "hostscore": -1,
+                        "guestscore": -1,
+                        "winner": ""
+                    }
+                },
+                "country_infos": {
+                    "ARG": { "name": "阿根廷", "flag": "🇦🇷" },
+                    "ALG": { "name": "阿尔及利亚", "flag": "🇩🇿" },
+                    "AUT": { "name": "奥地利", "flag": "🇦🇹" },
+                    "JOR": { "name": "约旦", "flag": "🇯🇴" },
+                    "CPV": { "name": "佛得角", "flag": "🇨🇻" },
+                    "EGY": { "name": "埃及", "flag": "🇪🇬" },
+                    "SUI": { "name": "瑞士", "flag": "🇨🇭" },
+                    "ENG": { "name": "英格兰", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+                    "ESP": { "name": "西班牙", "flag": "🇪🇸" }
+                }
+            };
+
+            // =================================================================
+            //  📌 固定名单（8场）
+            // =================================================================
+            const FIXED_ROUNDS = [
+                [
+                    "武汉阿根廷球迷俱乐部", "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", ".",
+                    "Flash", "张誉", "BLEO", "百事可乐", "烟枪", "边路一条虫", "热血的心",
+                    "LYTTEOTW", "清浅5.11", "沐沐小无邪", "托尼·史塔克", "罗浩", "悬壶济世🐸",
+                    "28号zz", "LeaJay", "Tequila", "棒棒糖", "史涛维", "包包包包包大人💭",
+                    "我不叫Doe", "星辰大海", "胡嵩", "MX", "CharlesG", "秋天的丝瓜",
+                    "陶佳 ichenuonuo", "0628", "流浪猫", "阿秋", "丹", "彩迷", "Arhbo",
+                    "二十九画生", "6wc", "锡锅", "H.", "Shane Wu", "Rush", "🇦🇷kun",
+                    "小田", "瞑揖默谢", "🙊陈聘聘", "BetterWareJ", "崔国瑞", "豆包👶🏻的傻大爸",
+                    "朝朝", "🐑雨点", "我爱罐装可乐", "王贻虎", "Jelly Fighter🌠", "1ec",
+                    "潇潇暮雨", "Kate", "K", "陈祥标", "IU", "Lesliexscape🧀", "☆小志☆",
+                    "🔫", "moonfizz", "小王哥", "AKhArLequIn", "冯玄", "芹泽多摩雄呀",
+                    "张迪", "MITNY", "诺言", "无", "初心", "杨文"
+                ],
+                [
+                    "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", ".", "张誉", "BLEO",
+                    "百事可乐", "烟枪", "LYTTEOTW", "沐沐小无邪", "托尼·史塔克", "28号zz",
+                    "史涛维", "胡嵩", "MX", "秋天的丝瓜", "流浪猫", "丹", "Arhbo",
+                    "锡锅", "Shane Wu", "🇦🇷kun", "🙊陈聘聘", "豆包👶🏻的傻大爸", "🐑雨点",
+                    "我爱罐装可乐", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "冯玄", "芹泽多摩雄呀",
+                    "张迪", "杨文"
+                ],
+                [
+                    "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
+                    "秋天的丝瓜", "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
+                    "豆包👶🏻的傻大爸", "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥",
+                    "张迪", "杨文"
+                ],
+                [
+                    "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
+                    "秋天的丝瓜", "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
+                    "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
+                ],
+                [
+                    "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
+                    "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
+                    "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
+                ],
+                [
+                    "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
+                    "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
+                    "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
+                ],
+                [
+                    "A", "烟枪", "沐沐小无邪", "28号zz", "胡嵩", "流浪猫",
+                    "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘", "🐑雨点",
+                    "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
+                ],
+                [
+                    "A", "烟枪", "沐沐小无邪", "28号zz", "胡嵩", "流浪猫",
+                    "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘", "🐑雨点",
+                    "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
+                ]
+            ];
+
+            // =================================================================
+            //  状态
+            // =================================================================
+            const TOTAL_ROUNDS = FIXED_ROUNDS.length;
+            const AUTO_PAUSE_MS = AUTO_PAUSE_SECONDS * 1000;
+
+            const state = {
+                currentRound: 0,
+                isAnimating: false,
+                autoPlayTimer: null,
+                isAutoPlaying: false,
+                isFinished: false,
+                hasStarted: false,
+                avatarsShown: false,
+                avatarTimer: null,
+                eliminateTimers: [],
+                scoreboardTimer: null,
+                isScoreboardVisible: false,
+            };
+
+            // =================================================================
+            //  DOM 引用
+            // =================================================================
+            const grid = document.getElementById('nameGrid');
+            const roundDisplay = document.getElementById('roundDisplay');
+            const totalDisplay = document.getElementById('totalDisplay');
+            const peopleCountDisplay = document.getElementById('peopleCountDisplay');
+            const currentCountNum = document.getElementById('currentCountNum');
+            const qualifyCountNum = document.getElementById('qualifyCountNum');
+            const eliminateCountNum = document.getElementById('eliminateCountNum');
+
+            const scoreboard = document.getElementById('scoreboard');
+            const scoreRound = scoreboard.querySelector('.score-round');
+            const scoreDate = scoreboard.querySelector('.score-date');
+            const scoreTeams = scoreboard.querySelector('.score-teams');
+
+            // =================================================================
+            //  布局算法
+            // =================================================================
+            function applyScatterLayout(container, cards, count) {
+                if (!cards || cards.length === 0) return;
+
+                const rect = container.getBoundingClientRect();
+                let w = rect.width || container.clientWidth || 800;
+                let h = rect.height || container.clientHeight || 500;
+
+                const pad = Math.min(w * 0.020, 38);
+                w = Math.max(w - pad * 2, 160);
+                h = Math.max(h - pad * 2, 160);
+
+                const density = Math.min(count / 80, 1);
+                const scaleFactor = 0.44 + density * 0.42;
+                const areaW = w * scaleFactor;
+                const areaH = h * scaleFactor;
+                const offsetX = (w - areaW) / 2 + pad;
+                const offsetY = (h - areaH) / 2 + pad;
+
+                const aspect = areaW / areaH;
+                let cols = Math.ceil(Math.sqrt(count * aspect));
+                let rows = Math.ceil(count / cols);
+                cols = Math.max(cols, 1);
+                rows = Math.max(rows, 1);
+
+                const spacingFactor = Math.max(1, 1 + (20 - Math.min(count, 20)) * 0.04);
+                const cellW = areaW / (cols + 0.5 * spacingFactor);
+                const cellH = areaH / (rows + 0.5 * spacingFactor);
+
+                const offsetScale = Math.min(1, count / 25);
+                const randOffsetX = Math.min(cellW * 0.32 * offsetScale, 34);
+                const randOffsetY = Math.min(cellH * 0.32 * offsetScale, 34);
+
+                const cardData = cards.map((card) => {
+                    const cw = card.offsetWidth || 64;
+                    const ch = card.offsetHeight || 30;
+                    return { el: card, w: cw, h: ch };
+                });
+
+                const positions = [];
+                for (let i = 0; i < cardData.length; i++) {
+                    const col = i % cols;
+                    const row = Math.floor(i / cols);
+                    let baseX = offsetX + (col + 0.5) * cellW;
+                    let baseY = offsetY + (row + 0.5) * cellH;
+                    let shiftX = (Math.random() - 0.5) * randOffsetX * 2;
+                    let shiftY = (Math.random() - 0.5) * randOffsetY * 2;
+                    const maxShiftX = Math.min(cellW * 0.30 * offsetScale, 30);
+                    const maxShiftY = Math.min(cellH * 0.30 * offsetScale, 30);
+                    shiftX = Math.max(-maxShiftX, Math.min(maxShiftX, shiftX));
+                    shiftY = Math.max(-maxShiftY, Math.min(maxShiftY, shiftY));
+
+                    let x = baseX + shiftX;
+                    let y = baseY + shiftY;
+                    const cw = cardData[i].w;
+                    const ch = cardData[i].h;
+                    x = Math.max(cw / 2 + pad, Math.min(w - cw / 2 - pad, x));
+                    y = Math.max(ch / 2 + pad, Math.min(h - ch / 2 - pad, y));
+                    const rot = (Math.random() - 0.5) * 10 * offsetScale;
+                    positions.push({
+                        x: x - cw / 2,
+                        y: y - ch / 2,
+                        rot: rot,
+                        w: cw,
+                        h: ch,
+                        idx: i
+                    });
+                }
+
+                for (let iter = 0; iter < 8; iter++) {
+                    let anyOverlap = false;
+                    for (let i = 0; i < positions.length; i++) {
+                        for (let j = i + 1; j < positions.length; j++) {
+                            const a = positions[i];
+                            const b = positions[j];
+                            const overlapX = (a.x < b.x + b.w && b.x < a.x + a.w);
+                            const overlapY = (a.y < b.y + b.h && b.y < a.y + a.h);
+                            if (overlapX && overlapY) {
+                                anyOverlap = true;
+                                const overlapXAmount = Math.min(a.x + a.w - b.x, b.x + b.w - a.x);
+                                const overlapYAmount = Math.min(a.y + a.h - b.y, b.y + b.h - a.y);
+                                if (overlapXAmount < overlapYAmount) {
+                                    const dx = (overlapXAmount * 0.5 + 2) * (a.x < b.x ? -1 : 1);
+                                    a.x += dx;
+                                    b.x -= dx;
+                                } else {
+                                    const dy = (overlapYAmount * 0.5 + 2) * (a.y < b.y ? -1 : 1);
+                                    a.y += dy;
+                                    b.y -= dy;
+                                }
+                                const a_cw = a.w,
+                                    a_ch = a.h;
+                                a.x = Math.max(pad, Math.min(w - a_cw - pad, a.x));
+                                a.y = Math.max(pad, Math.min(h - a_ch - pad, a.y));
+                                const b_cw = b.w,
+                                    b_ch = b.h;
+                                b.x = Math.max(pad, Math.min(w - b_cw - pad, b.x));
+                                b.y = Math.max(pad, Math.min(h - b_ch - pad, b.y));
+                            }
+                        }
+                    }
+                    if (!anyOverlap) break;
+                }
+
+                for (let i = 0; i < cardData.length; i++) {
+                    const card = cardData[i].el;
+                    const pos = positions[i];
+                    card.style.left = pos.x + 'px';
+                    card.style.top = pos.y + 'px';
+                    card.style.transform = `rotate(${pos.rot}deg)`;
+                    card.style.position = 'absolute';
+                    card.style.margin = '0';
+                    card.style.visibility = 'visible';
+                    card.style.opacity = '1';
+                }
+
+                const maxBottom = positions.reduce((max, p) => Math.max(max, p.y + p.h), 0);
+                const newHeight = Math.max(maxBottom + pad, 160);
+                container.style.minHeight = newHeight + 'px';
+                container.style.height = 'auto';
+            }
+
+            // =================================================================
+            //  构建卡片内容
+            // =================================================================
+            function buildCardContent(name, showAvatar) {
+                const fragment = document.createDocumentFragment();
+
+                if (showAvatar) {
+                    const avatar = document.createElement('img');
+                    avatar.className = 'avatar';
+                    avatar.src = `assets/avatars/${name}.jpg`;
+                    avatar.alt = '';
+                    avatar.dataset.name = name;
+                    avatar.onerror = function() {
+                        this.classList.add('hidden');
+                        const placeholder = document.createElement('span');
+                        placeholder.className = 'avatar-placeholder';
+                        this.parentNode.insertBefore(placeholder, this);
+                    };
+                    fragment.appendChild(avatar);
+                }
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'name-text';
+                nameSpan.textContent = name;
+                fragment.appendChild(nameSpan);
+
+                return fragment;
+            }
+
+            // =================================================================
+            //  逐个显示头像
+            // =================================================================
+            function showAvatarsSequentially() {
+                if (state.avatarTimer) {
+                    clearTimeout(state.avatarTimer);
+                    state.avatarTimer = null;
+                }
+
+                const cards = grid.querySelectorAll('.name-card');
+                const avatarItems = [];
+                cards.forEach(card => {
+                    const avatar = card.querySelector('.avatar');
+                    if (avatar && !avatar.classList.contains('hidden')) {
+                        avatarItems.push({ card, avatar });
+                    }
+                });
+
+                if (avatarItems.length === 0) return;
+
+                for (let i = avatarItems.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [avatarItems[i], avatarItems[j]] = [avatarItems[j], avatarItems[i]];
+                }
+
+                state.avatarsShown = true;
+                let index = 0;
+
+                function showNext() {
+                    if (index >= avatarItems.length) {
+                        state.avatarTimer = null;
+                        return;
+                    }
+                    const item = avatarItems[index];
+                    item.avatar.classList.add('show');
+                    item.avatar.style.opacity = '1';
+                    item.avatar.style.transform = 'scale(1)';
+                    index++;
+                    state.avatarTimer = setTimeout(showNext, AVATAR_INTERVAL_MS);
+                }
+
+                state.avatarTimer = setTimeout(showNext, 200);
+            }
+
+            // =================================================================
+            //  逐个淘汰
+            // =================================================================
+            function staggerEliminateCards() {
+                state.eliminateTimers.forEach(t => clearTimeout(t));
+                state.eliminateTimers = [];
+
+                const eliminateCards = grid.querySelectorAll('[data-eliminate="true"]');
+                if (eliminateCards.length === 0) return 0;
+
+                let index = 0;
+                const totalCards = eliminateCards.length;
+
+                eliminateCards.forEach((card) => {
+                    const delay = ELIMINATE_INITIAL_DELAY_MS + index * ELIMINATE_INTERVAL_MS;
+                    const timer = setTimeout(() => {
+                        card.classList.remove('qualify', 'qualify-pulse');
+                        card.classList.add('eliminate');
+                        card.removeAttribute('data-eliminate');
+                    }, delay);
+                    state.eliminateTimers.push(timer);
+                    index++;
+                });
+
+                const maxDelay = ELIMINATE_INITIAL_DELAY_MS + (totalCards - 1) * ELIMINATE_INTERVAL_MS;
+                return maxDelay + ELIMINATE_ANIMATION_DURATION_MS + 150;
+            }
+
+            // =================================================================
+            //  渲染
+            // =================================================================
+            function renderCards(names, options = {}) {
+                const {
+                    qualifySet = new Set(),
+                        eliminateSet = new Set(),
+                        reappearSet = new Set(),
+                        extraClass = '',
+                        skipLayout = false,
+                        showAvatars = false,
+                } = options;
+
+                if (skipLayout && grid.children.length > 0) {
+                    const existing = new Map();
+                    for (const child of grid.children) {
+                        const name = child.dataset.name;
+                        if (name) existing.set(name, child);
+                    }
+                    const newSet = new Set(names);
+
+                    for (const [name, el] of existing) {
+                        if (newSet.has(name)) {
+                            el.className = 'name-card';
+                            el.innerHTML = '';
+                            const content = buildCardContent(name, showAvatars);
+                            el.appendChild(content);
+
+                            if (qualifySet.has(name)) {
+                                el.classList.add('qualify');
+                                const mark = document.createElement('span');
+                                mark.className = 'check-mark';
+                                mark.textContent = ' ✓';
+                                el.appendChild(mark);
+                            } else if (eliminateSet.has(name)) {
+                                el.classList.add('qualify');
+                                el.setAttribute('data-eliminate', 'true');
+                            }
+
+                            if (reappearSet.has(name)) {
+                                el.classList.add('reappear');
+                            }
+                            if (extraClass) {
+                                el.classList.add(extraClass);
+                            }
+
+                            el.style.position = 'absolute';
+                            el.style.visibility = 'visible';
+                            el.style.opacity = '1';
+                        } else {
+                            el.remove();
+                        }
+                    }
+                    updateStats(names, qualifySet, eliminateSet);
+                    return;
+                }
+
+                grid.innerHTML = '';
+                if (!names || names.length === 0) {
+                    grid.innerHTML = '<div class="empty-hint">✨ 暂无名单</div>';
+                    grid.style.minHeight = '160px';
+                    updateStats(names, qualifySet, eliminateSet);
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+                const cards = [];
+                names.forEach((name) => {
+                    const card = document.createElement('div');
+                    card.className = 'name-card';
+                    card.dataset.name = name;
+
+                    const content = buildCardContent(name, showAvatars);
+                    card.appendChild(content);
+
+                    if (qualifySet.has(name)) {
+                        card.classList.add('qualify');
+                        const mark = document.createElement('span');
+                        mark.className = 'check-mark';
+                        mark.textContent = ' ✓';
+                        card.appendChild(mark);
+                    } else if (eliminateSet.has(name)) {
+                        card.classList.add('qualify');
+                        card.setAttribute('data-eliminate', 'true');
+                    }
+
+                    if (reappearSet.has(name)) {
+                        card.classList.add('reappear');
+                    }
+                    if (extraClass) {
+                        card.classList.add(extraClass);
+                    }
+
+                    card.style.opacity = '0';
+                    card.style.visibility = 'hidden';
+                    fragment.appendChild(card);
+                    cards.push(card);
+                });
+                grid.appendChild(fragment);
+                updateStats(names, qualifySet, eliminateSet);
+
+                if (!skipLayout) {
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            cards.forEach(c => {
+                                c.style.visibility = 'visible';
+                                c.style.opacity = '0';
+                            });
+                            void grid.offsetHeight;
+                            cards.forEach(c => { void c.offsetWidth; });
+                            applyScatterLayout(grid, cards, names.length);
+                            cards.forEach((c, i) => {
+                                setTimeout(() => {
+                                    c.style.opacity = '1';
+                                    c.style.transition = 'opacity 0.40s ease';
+                                }, i * 4 + 20);
+                            });
+                        });
+                    });
+                } else {
+                    cards.forEach(c => {
+                        c.style.visibility = 'visible';
+                        c.style.opacity = '1';
+                    });
+                }
+            }
+
+            function updateStats(names, qualifySet, eliminateSet) {
+                const total = names ? names.length : 0;
+                currentCountNum.textContent = total;
+                peopleCountDisplay.textContent = `👤 ${total}`;
+                const qualifyCount = qualifySet ? qualifySet.size : 0;
+                const eliminateCount = eliminateSet ? eliminateSet.size : 0;
+                qualifyCountNum.textContent = qualifyCount;
+                eliminateCountNum.textContent = eliminateCount;
+                if (qualifyCount > 0) {
+                    qualifyCountNum.classList.remove('pop');
+                    void qualifyCountNum.offsetWidth;
+                    qualifyCountNum.classList.add('pop');
+                }
+                if (eliminateCount > 0) {
+                    eliminateCountNum.classList.remove('pop');
+                    void eliminateCountNum.offsetWidth;
+                    eliminateCountNum.classList.add('pop');
+                }
+            }
+
+            function updateRoundUI() {
+                const idx = state.currentRound;
+                roundDisplay.textContent = idx + 1;
+                totalDisplay.textContent = TOTAL_ROUNDS;
+                roundDisplay.classList.toggle('active', true);
+            }
+
+            function renderCurrentRound() {
+                const names = FIXED_ROUNDS[state.currentRound];
+                renderCards(names, {
+                    qualifySet: new Set(),
+                    eliminateSet: new Set(),
+                    reappearSet: new Set(),
+                    skipLayout: false,
+                    showAvatars: false,
+                });
+                state.avatarsShown = false;
+                if (state.avatarTimer) {
+                    clearTimeout(state.avatarTimer);
+                    state.avatarTimer = null;
+                }
+                state.eliminateTimers.forEach(t => clearTimeout(t));
+                state.eliminateTimers = [];
+                updateRoundUI();
+            }
+
+            // =================================================================
+            //  比分牌控制（修正版）
+            // =================================================================
+            function updateScoreboardContent(roundIndex) {
+                const round = roundIndex + 1;
+                const match = MATCH_DATA.matchDetails[round];
+                if (!match) return;
+
+                const countries = MATCH_DATA.country_infos;
+                const hostInfo = countries[match.host];
+                const guestInfo = countries[match.guest];
+
+                // --- 第一行：比赛轮次 name（突出显示） ---
+                const roundName = match.name || `第${round}场`;
+                scoreRound.textContent = roundName;
+
+                // --- 第二行：日期 周几 时间 ---
+                let dateStr;
+                if (round === 8) {
+                    dateStr = `Today`;
+                } else {
+                    const month = match.month;
+                    const day = match.day;
+                    const dow = match.dayOfWeek;
+                    const hour = String(match.hour).padStart(2, '0');
+                    const min = String(match.min).padStart(2, '0');
+                    dateStr = `${month}月${day}日 周${dow} ${hour}:${min}`;
+                }
+                scoreDate.textContent = dateStr;
+
+                // --- 第三行：主队名称 + 主队国旗 + 比分/VS + 客队国旗 + 客队名称 ---
+                let html = '';
+
+                // 主队
+                html += `<span class="team">`;
+                html += `<span class="name">${hostInfo.name}</span>`;
+                html +=
+                    `<img class="flag-img" src="assets/flags/${match.host}.webp" alt="${match.host}" onerror="this.style.display='none'" />`;
+                html += `</span>`;
+
+                // 判断是否是未开球（hostscore === -1）
+                const isUnplayed = (match.hostscore === -1 && match.guestscore === -1);
+
+                if (!isUnplayed && match.hostscore !== undefined && match.guestscore !== undefined) {
+                    const hs = match.hostscore;
+                    const gs = match.guestscore;
+                    const winner = match.winner; // "host" 或 "guest"
+
+                    // 根据 winner 决定比分颜色
+                    let hostScoreClass = 'score';
+                    let guestScoreClass = 'score';
+                    if (winner === 'host') {
+                        hostScoreClass += ' win';
+                        guestScoreClass += ' lose';
+                    } else if (winner === 'guest') {
+                        hostScoreClass += ' lose';
+                        guestScoreClass += ' win';
+                    } else {
+                        // 无 winner 信息（兜底），按分数高低
+                        if (hs > gs) {
+                            hostScoreClass += ' win';
+                            guestScoreClass += ' lose';
+                        } else if (gs > hs) {
+                            hostScoreClass += ' lose';
+                            guestScoreClass += ' win';
+                        } else {
+                            // 平局，都用 win（深蓝）
+                            hostScoreClass += ' win';
+                            guestScoreClass += ' win';
+                        }
+                    }
+
+                    html += `<span class="${hostScoreClass}">${hs}</span>`;
+                    html += `<span class="score-dash">-</span>`;
+                    html += `<span class="${guestScoreClass}">${gs}</span>`;
+                } else {
+                    // 未开球或比分缺失：显示 VS
+                    html += `<span class="vs">VS</span>`;
+                }
+
+                // 客队
+                html += `<span class="team">`;
+                html +=
+                    `<img class="flag-img" src="assets/flags/${match.guest}.webp" alt="${match.guest}" onerror="this.style.display='none'" />`;
+                html += `<span class="name">${guestInfo.name}</span>`;
+                html += `</span>`;
+
+                scoreTeams.innerHTML = html;
+            }
+
+            function showScoreboard(roundIndex) {
+                return new Promise((resolve) => {
+                    updateScoreboardContent(roundIndex);
+
+                    scoreboard.style.transition = 'none';
+                    scoreboard.style.transform = 'translateY(-50%) translateX(-100%)';
+                    void scoreboard.offsetHeight;
+
+                    scoreboard.style.transition =
+                        `transform ${SCOREBOARD_MOVE_IN_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
+                    scoreboard.style.transform = 'translateY(-50%) translateX(0)';
+
+                    const totalTime = SCOREBOARD_MOVE_IN_DURATION_MS + SCOREBOARD_STAY_DURATION_MS +
+                        SCOREBOARD_MOVE_OUT_DURATION_MS;
+                    state.scoreboardTimer = setTimeout(() => {
+                        scoreboard.style.transition =
+                            `transform ${SCOREBOARD_MOVE_OUT_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
+                        scoreboard.style.transform = 'translateY(-50%) translateX(100%)';
+
+                        setTimeout(() => {
+                            resolve();
+                        }, SCOREBOARD_MOVE_OUT_DURATION_MS);
+                    }, SCOREBOARD_MOVE_IN_DURATION_MS + SCOREBOARD_STAY_DURATION_MS);
+                });
+            }
+
+            function hideScoreboardImmediately() {
+                if (state.scoreboardTimer) {
+                    clearTimeout(state.scoreboardTimer);
+                    state.scoreboardTimer = null;
+                }
+                scoreboard.style.transition = 'none';
+                scoreboard.style.transform = 'translateY(-50%) translateX(-100%)';
+            }
+
+            // =================================================================
+            //  特效
+            // =================================================================
+            async function playQualifyEffect() {
+                if (state.isAnimating) return;
+                const from = state.currentRound;
+                const to = from + 1;
+                if (to >= TOTAL_ROUNDS) return;
+
+                state.isAnimating = true;
+
+                await showScoreboard(from);
+
+                const prevNames = FIXED_ROUNDS[from];
+                const nextNames = FIXED_ROUNDS[to];
+                const nextSet = new Set(nextNames);
+                const qualifySet = new Set();
+                const eliminateSet = new Set();
+                prevNames.forEach(name => {
+                    if (nextSet.has(name)) qualifySet.add(name);
+                    else eliminateSet.add(name);
+                });
+
+                renderCards(prevNames, {
+                    qualifySet,
+                    eliminateSet,
+                    skipLayout: true,
+                    showAvatars: false,
+                });
+
+                const totalEliminateDuration = staggerEliminateCards();
+
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        state.eliminateTimers.forEach(t => clearTimeout(t));
+                        state.eliminateTimers = [];
+                        resolve();
+                    }, totalEliminateDuration + 150);
+                });
+
+                const glowSet = new Set(nextNames);
+                renderCards(nextNames, {
+                    qualifySet: glowSet,
+                    extraClass: 'qualify-glow',
+                    skipLayout: true,
+                    showAvatars: false,
+                });
+                state.currentRound = to;
+                updateRoundUI();
+
+                await new Promise(resolve => {
+                    setTimeout(() => {
+                        const normalQualify = new Set(nextNames);
+                        const isFinalStage = (to === TOTAL_ROUNDS - 1);
+
+                        renderCards(nextNames, {
+                            qualifySet: normalQualify,
+                            skipLayout: true,
+                            showAvatars: isFinalStage,
+                        });
+
+                        if (isFinalStage) {
+                            setTimeout(() => {
+                                showAvatarsSequentially();
+                            }, 400);
+                        }
+
+                        state.isAnimating = false;
+
+                        if (state.currentRound >= TOTAL_ROUNDS - 1) {
+                            state.isFinished = true;
+                            state.isAutoPlaying = false;
+                            if (state.autoPlayTimer) {
+                                clearTimeout(state.autoPlayTimer);
+                                state.autoPlayTimer = null;
+                            }
+                        } else {
+                            if (state.isAutoPlaying) {
+                                state.autoPlayTimer = setTimeout(autoPlayStep, AUTO_PAUSE_MS);
+                            }
+                        }
+                        resolve();
+                    }, 1400);
+                });
+            }
+
+            // =================================================================
+            //  自动播放
+            // =================================================================
+            function startAutoPlay() {
+                if (state.isAutoPlaying) return;
+                if (state.isAnimating) return;
+
+                if (state.isFinished) {
+                    state.isFinished = false;
+                    state.currentRound = 0;
+                    state.avatarsShown = false;
+                    if (state.avatarTimer) {
+                        clearTimeout(state.avatarTimer);
+                        state.avatarTimer = null;
+                    }
+                    state.eliminateTimers.forEach(t => clearTimeout(t));
+                    state.eliminateTimers = [];
+                    hideScoreboardImmediately();
+                    renderCurrentRound();
+                    updateRoundUI();
+                    setTimeout(() => {
+                        if (!state.isAutoPlaying && !state.isAnimating) {
+                            startAutoPlayInternal();
+                        }
+                    }, 400);
+                    return;
+                }
+
+                if (state.currentRound >= TOTAL_ROUNDS - 1) {
+                    state.isFinished = true;
+                    return;
+                }
+
+                startAutoPlayInternal();
+            }
+
+            function startAutoPlayInternal() {
+                if (state.isAutoPlaying) return;
+                if (state.isAnimating) return;
+                if (state.currentRound >= TOTAL_ROUNDS - 1) {
+                    state.isFinished = true;
+                    return;
+                }
+
+                state.isAutoPlaying = true;
+                state.isFinished = false;
+                state.hasStarted = true;
+
+                setTimeout(() => {
+                    if (state.isAutoPlaying) {
+                        autoPlayStep();
+                    }
+                }, 400);
+            }
+
+            function autoPlayStep() {
+                if (!state.isAutoPlaying) return;
+                if (state.isAnimating) {
+                    state.autoPlayTimer = setTimeout(autoPlayStep, 300);
+                    return;
+                }
+                if (state.currentRound >= TOTAL_ROUNDS - 1) {
+                    state.isFinished = true;
+                    state.isAutoPlaying = false;
+                    return;
+                }
+                playQualifyEffect();
+            }
+
+            // =================================================================
+            //  重置
+            // =================================================================
+            function resetToFirst() {
+                if (state.isAnimating) return;
+                if (state.isAutoPlaying) {
+                    state.isAutoPlaying = false;
+                    if (state.autoPlayTimer) {
+                        clearTimeout(state.autoPlayTimer);
+                        state.autoPlayTimer = null;
+                    }
+                }
+                if (state.avatarTimer) {
+                    clearTimeout(state.avatarTimer);
+                    state.avatarTimer = null;
+                }
+                state.eliminateTimers.forEach(t => clearTimeout(t));
+                state.eliminateTimers = [];
+                hideScoreboardImmediately();
+                state.currentRound = 0;
+                state.isFinished = false;
+                state.hasStarted = false;
+                state.avatarsShown = false;
+                renderCurrentRound();
+                updateRoundUI();
+            }
+
+            // =================================================================
+            //  窗口大小变化
+            // =================================================================
+            let resizeTimer = null;
+
+            function handleResize() {
+                if (resizeTimer) clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    if (!state.isAnimating) {
+                        const names = FIXED_ROUNDS[state.currentRound];
+                        const cards = grid.querySelectorAll('.name-card');
+                        if (cards.length > 0 && cards.length === names.length) {
+                            const cardArray = Array.from(cards);
+                            const classMap = {};
+                            cardArray.forEach(c => {
+                                const name = c.dataset.name;
+                                classMap[name] = {
+                                    qualify: c.classList.contains('qualify'),
+                                    eliminate: c.classList.contains('eliminate'),
+                                    reappear: c.classList.contains('reappear'),
+                                    glow: c.classList.contains('qualify-glow'),
+                                };
+                            });
+                            applyScatterLayout(grid, cardArray, names.length);
+                            cardArray.forEach(c => {
+                                const name = c.dataset.name;
+                                const cls = classMap[name] || {};
+                                c.className = 'name-card';
+                                if (cls.qualify) c.classList.add('qualify');
+                                if (cls.eliminate) c.classList.add('eliminate');
+                                if (cls.reappear) c.classList.add('reappear');
+                                if (cls.glow) c.classList.add('qualify-glow');
+                            });
+                        }
+                    }
+                    resizeTimer = null;
+                }, 350);
+            }
+
+            // =================================================================
+            //  键盘
+            // =================================================================
+            function onKeyDown(e) {
+                if (e.key === ' ' || e.key === 'Space') {
+                    e.preventDefault();
+                    if (state.isAutoPlaying) return;
+                    if (state.isAnimating) return;
+                    startAutoPlay();
+                }
+            }
+
+            // =================================================================
+            //  初始化
+            // =================================================================
+            function init() {
+                renderCurrentRound();
+                updateRoundUI();
+
+                scoreboard.style.transform = 'translateY(-50%) translateX(-100%)';
+
+                document.addEventListener('keydown', onKeyDown);
+                window.addEventListener('resize', handleResize);
+
+                console.log(`🇦🇷 阿根廷观赛晋级 (比分牌修正版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
+                console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
+                console.log(`🏆 比分牌移入: ${SCOREBOARD_MOVE_IN_DURATION_MS}ms，停留: ${SCOREBOARD_STAY_DURATION_MS}ms，移出: ${SCOREBOARD_MOVE_OUT_DURATION_MS}ms`);
+                console.log('🎯 比分颜色根据 winner 字段控制，场次名称独立突出显示');
+                console.log('⌨️  按 空格键 开始自动播放 | 刷新页面重置');
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+
+        })();
+    </script>
+
+</body>
+</html>
