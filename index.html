@@ -914,7 +914,6 @@
                     state.avatarTimer = null;
                 }
 
-                // 获取所有卡片中的头像
                 const cards = grid.querySelectorAll('.name-card');
                 const avatarItems = [];
                 cards.forEach(card => {
@@ -929,7 +928,7 @@
 
                 if (avatarItems.length === 0) return;
 
-                // 随机打乱顺序（Fisher-Yates）
+                // 随机打乱
                 for (let i = avatarItems.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [avatarItems[i], avatarItems[j]] = [avatarItems[j], avatarItems[i]];
@@ -944,16 +943,13 @@
                         return;
                     }
                     const item = avatarItems[index];
-                    // 添加 show 类触发动画
                     item.avatar.classList.add('show');
-                    // 确保头像可见
                     item.avatar.style.opacity = '1';
                     item.avatar.style.transform = 'scale(1)';
                     index++;
                     state.avatarTimer = setTimeout(showNext, AVATAR_INTERVAL_MS);
                 }
 
-                // 延迟一点点开始，确保 DOM 已完全更新
                 state.avatarTimer = setTimeout(showNext, 200);
             }
 
@@ -982,12 +978,9 @@
                     for (const [name, el] of existing) {
                         if (newSet.has(name)) {
                             el.className = 'name-card';
-                            // 清空内容
                             el.innerHTML = '';
-                            // 重建内容（包含头像）
                             const content = buildCardContent(name, showAvatars);
                             el.appendChild(content);
-                            // 添加状态类
                             if (qualifySet.has(name)) {
                                 el.classList.add('qualify');
                                 const mark = document.createElement('span');
@@ -1004,7 +997,7 @@
                             if (extraClass) {
                                 el.classList.add(extraClass);
                             }
-                            // 确保位置样式保留
+                            // 保留位置样式
                             el.style.position = 'absolute';
                             el.style.visibility = 'visible';
                             el.style.opacity = '1';
@@ -1163,7 +1156,6 @@
                 // 第二阶段：高亮晋级名单
                 setTimeout(() => {
                     const glowSet = new Set(nextNames);
-                    const isFinal = (to === TOTAL_ROUNDS - 1);
                     renderCards(nextNames, {
                         qualifySet: glowSet,
                         extraClass: 'qualify-glow',
@@ -1173,15 +1165,15 @@
                     state.currentRound = to;
                     updateRoundUI();
 
-                    // 第三阶段：恢复正常样式 + 最终场显示头像（重新布局）
+                    // 第三阶段：恢复正常样式 + 最终场显示头像（保持位置不变）
                     setTimeout(() => {
                         const normalQualify = new Set(nextNames);
                         const isFinalStage = (to === TOTAL_ROUNDS - 1);
 
-                        // 最终场使用 skipLayout: false 重新布局，给头像留空间
+                        // 始终使用 skipLayout: true 保持位置
                         renderCards(nextNames, {
                             qualifySet: normalQualify,
-                            skipLayout: !isFinalStage,
+                            skipLayout: true,
                             showAvatars: isFinalStage,
                         });
 
