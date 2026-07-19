@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🏆 观赛晋级 · 固定名单特效</title>
+    <title>🏆 观赛晋级 · 固定名单 + 自动暂停</title>
     <style>
-        /* ===== 全局样式（与之前相同，保留完整） ===== */
+        /* ===== 全局样式（保持与之前一致） ===== */
         * {
             margin: 0;
             padding: 0;
@@ -592,14 +592,14 @@
                 <span class="label">📋 场次</span>
                 <span class="round-num active" id="roundDisplay">1</span>
                 <span class="total">/ <span id="totalDisplay">8</span></span>
-                <span class="people-count" id="peopleCountDisplay">👤 80</span>
+                <span class="people-count" id="peopleCountDisplay">👤 76</span>
             </div>
         </header>
 
         <!-- 统计条 -->
         <div class="stats-bar">
             <div class="stat-item">
-                📊 当前人数 <span class="num" id="currentCountNum">80</span>
+                📊 当前人数 <span class="num" id="currentCountNum">76</span>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
@@ -646,115 +646,87 @@
             'use strict';
 
             // =================================================================
-            //  📌 数据配置区 —— 请在此替换为您自己的固定名单
+            //  ⚙️ 自动播放配置（修改此值即可调整暂停时长）
             // =================================================================
-
-            /**
-             * 方式一：直接定义完整的 8 场名单（推荐）
-             * 每个子数组代表一场的名单，顺序从第1场到第8场。
-             * 注意：每场名单必须是上一场的子集（即下一场的人名必须全部在上一场中出现）。
-             */
-            // const FIXED_ROUNDS = [
-            //   ['张伟', '李娜', ...],  // 第1场 80人
-            //   ['张伟', '李娜', ...],  // 第2场 70人
-            //   // ... 共8场
-            // ];
+            const AUTO_PAUSE_SECONDS = 8; // 每次晋级后暂停的秒数，例如 3 表示暂停 3 秒
 
             // =================================================================
-            //  如果尚未提供自己的名单，以下将自动生成一个固定的示例名单（8场）
-            //  您可以直接替换上面的 FIXED_ROUNDS 变量，或修改下面的生成逻辑。
+            //  📌 数据配置区 —— 您的固定名单（8场）
             // =================================================================
 
-            // --- 固定名字池（用于生成示例数据）---
-            const SURNAMES = [
-                '张', '王', '李', '刘', '陈', '杨', '赵', '黄', '周', '吴',
-                '徐', '孙', '胡', '朱', '高', '林', '何', '郭', '马', '罗'
+            const FIXED_ROUNDS = [
+                // 第一场（共76人，按表格顺序去重）
+                [
+                    "武汉阿根廷球迷俱乐部", "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", "百事可乐",
+                    "烟枪", "边路一条虫", "热血的心", "LYTTEOTW", "清浅5.11", "沐沐小无邪",
+                    "托尼·史塔克", "悬壶济世🐸", "28号zz", "LeaJay", "Tequila", "🇦🇷kun",
+                    "棒棒糖", "包包包包包大人💭", "我不叫Doe", "星辰大海", "胡嵩", "MX",
+                    "🐑雨点", "CharlesG", "秋天的丝瓜", "0628", "流浪猫", "史涛维",
+                    "阿秋", "丹", "彩迷", "6wc", "锡锅", "H.", "Shane Wu",
+                    "诺言", "罗浩", "陶佳 ichenuonuo", "无", "Flash", "moonfizz",
+                    "BLEO", "初心", "Rush", "二十九画生", "豆包👶🏻的傻大爸", "小田",
+                    "瞑揖默谢", "Arhbo", "🙊陈聘聘", "BetterWareJ", "崔国瑞", "朝朝",
+                    "我爱罐装可乐", "王贻虎", "张誉", "Jelly Fighter🌠", "1ec", "潇潇暮雨",
+                    "Kate", "K", "陈祥标", "IU", "Lesliexscape🧀", "☆小志☆",
+                    "🔫", ".", "小王哥", "AKhArLequIn", "冯玄", "芹泽多摩雄呀",
+                    "张迪", "MITNY", "杨文"
+                ],
+                // 第二场（34人）
+                [
+                    "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", "百事可乐", "烟枪",
+                    "LYTTEOTW", "沐沐小无邪", "托尼·史塔克", "28号zz", "🇦🇷kun", "胡嵩",
+                    "MX", "🐑雨点", "秋天的丝瓜", "流浪猫", "史涛维", "丹",
+                    "锡锅", "Shane Wu", "BLEO", "豆包👶🏻的傻大爸", "Arhbo", "🙊陈聘聘",
+                    "我爱罐装可乐", "张誉", "潇潇暮雨", "Lesliexscape🧀", ".", "小王哥",
+                    "冯玄", "芹泽多摩雄呀", "张迪", "杨文"
+                ],
+                // 第三场（20人）
+                [
+                    "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
+                    "🐑雨点", "秋天的丝瓜", "流浪猫", "史涛维", "锡锅", "豆包👶🏻的傻大爸",
+                    "Arhbo", "🙊陈聘聘", "张誉", "潇潇暮雨", "Lesliexscape🧀", "小王哥",
+                    "张迪", "杨文"
+                ],
+                // 第四场（19人，比第三场少“豆包👶🏻的傻大爸”）
+                [
+                    "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
+                    "🐑雨点", "秋天的丝瓜", "流浪猫", "史涛维", "锡锅", "Arhbo",
+                    "🙊陈聘聘", "张誉", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪",
+                    "杨文"
+                ],
+                // 第五场（17人，比第四场少“秋天的丝瓜”和“张誉”）
+                [
+                    "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
+                    "🐑雨点", "流浪猫", "史涛维", "锡锅", "Arhbo", "🙊陈聘聘",
+                    "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
+                ],
+                // 第六场（17人，与第五场相同）
+                [
+                    "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
+                    "🐑雨点", "流浪猫", "史涛维", "锡锅", "Arhbo", "🙊陈聘聘",
+                    "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
+                ],
+                // 第七场（16人，比第六场少“史涛维”）
+                [
+                    "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
+                    "🐑雨点", "流浪猫", "锡锅", "Arhbo", "🙊陈聘聘",
+                    "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
+                ],
+                // 第八场（16人，与第七场相同）
+                [
+                    "A", "烟枪", "沐沐小无邪", "28号zz", "🇦🇷kun", "胡嵩",
+                    "🐑雨点", "流浪猫", "锡锅", "Arhbo", "🙊陈聘聘",
+                    "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
+                ]
             ];
-            const GIVEN_NAMES = [
-                '伟', '芳', '秀英', '敏', '静', '丽', '强', '磊', '军', '洋',
-                '勇', '艳', '杰', '娜', '涛', '明', '超', '秀兰', '霞', '平',
-                '刚', '桂英', '慧', '建', '文', '华', '飞', '玉兰', '斌', '宇'
-            ];
-
-            /**
-             * 生成固定数量的中文名（按顺序组合，确保不重复）
-             */
-            function generateFixedNames(count) {
-                const names = [];
-                let idx = 0;
-                while (names.length < count) {
-                    const surname = SURNAMES[idx % SURNAMES.length];
-                    const given = GIVEN_NAMES[Math.floor(idx / SURNAMES.length) % GIVEN_NAMES.length];
-                    const full = surname + given;
-                    // 避免重复（理论上不会，因为组合唯一）
-                    if (!names.includes(full)) {
-                        names.push(full);
-                    }
-                    idx++;
-                }
-                return names;
-            }
-
-            /**
-             * 生成固定排列（用于确定每场晋级哪些人）
-             * 使用步长 7（与80互质）产生一个循环排列
-             */
-            function getFixedPermutation(length) {
-                const step = 7;
-                const perm = [];
-                let val = 0;
-                for (let i = 0; i < length; i++) {
-                    perm.push(val);
-                    val = (val + step) % length;
-                }
-                return perm;
-            }
-
-            /**
-             * 构建固定示例数据（8场）
-             * 第1场 80人，后续每场人数递减，且都是上一场的子集。
-             */
-            function buildExampleRounds() {
-                const sizes = [80, 70, 60, 50, 40, 30, 20, 10]; // 8场
-                const first = generateFixedNames(sizes[0]);
-                const perm = getFixedPermutation(sizes[0]);
-
-                const rounds = [];
-                for (let i = 0; i < sizes.length; i++) {
-                    const count = sizes[i];
-                    // 取排列的前 count 个索引对应的名字
-                    const selected = perm.slice(0, count).map(idx => first[idx]);
-                    rounds.push(selected);
-                }
-                return rounds;
-            }
-
-            // --- 最终使用的名单数据 ---
-            // 如果用户已定义 FIXED_ROUNDS，则使用之；否则使用示例数据
-            let allRounds;
-            if (typeof FIXED_ROUNDS !== 'undefined' && Array.isArray(FIXED_ROUNDS) && FIXED_ROUNDS.length === 8) {
-                allRounds = FIXED_ROUNDS;
-            } else {
-                // 生成固定示例
-                allRounds = buildExampleRounds();
-                console.log('📌 使用自动生成的固定示例名单（8场），您可替换 FIXED_ROUNDS 变量。');
-            }
-
-            // 校验：确保每场都是上一场的子集（开发辅助）
-            for (let i = 1; i < allRounds.length; i++) {
-                const prev = new Set(allRounds[i - 1]);
-                const curr = allRounds[i];
-                const allInPrev = curr.every(name => prev.has(name));
-                if (!allInPrev) {
-                    console.warn(`⚠️ 第 ${i+1} 场名单不是第 ${i} 场的子集，请检查数据。`);
-                }
-            }
 
             // =================================================================
             //  状态管理
             // =================================================================
 
-            const TOTAL_ROUNDS = allRounds.length; // 8
+            const TOTAL_ROUNDS = FIXED_ROUNDS.length; // 8
+            const AUTO_PAUSE_MS = AUTO_PAUSE_SECONDS * 1000;
+
             const state = {
                 currentRound: 0,
                 isAnimating: false,
@@ -872,12 +844,12 @@
                 nextBtn.disabled = idx === total - 1 || state.isAnimating;
 
                 if (idx > 0) {
-                    prevBadge.textContent = allRounds[idx - 1].length;
+                    prevBadge.textContent = FIXED_ROUNDS[idx - 1].length;
                 } else {
                     prevBadge.textContent = '-';
                 }
                 if (idx < total - 1) {
-                    nextBadge.textContent = allRounds[idx + 1].length;
+                    nextBadge.textContent = FIXED_ROUNDS[idx + 1].length;
                 } else {
                     nextBadge.textContent = '-';
                 }
@@ -900,7 +872,7 @@
             }
 
             function renderCurrentRound() {
-                const names = allRounds[state.currentRound];
+                const names = FIXED_ROUNDS[state.currentRound];
                 renderCards(names, {
                     qualifySet: new Set(),
                     eliminateSet: new Set(),
@@ -923,8 +895,8 @@
                 nextBtn.disabled = true;
                 prevBtn.disabled = true;
 
-                const prevNames = allRounds[from];
-                const nextNames = allRounds[to];
+                const prevNames = FIXED_ROUNDS[from];
+                const nextNames = FIXED_ROUNDS[to];
                 const nextSet = new Set(nextNames);
 
                 const qualifySet = new Set();
@@ -990,8 +962,8 @@
                 nextBtn.disabled = true;
                 prevBtn.disabled = true;
 
-                const currentNames = allRounds[from];
-                const prevNames = allRounds[to];
+                const currentNames = FIXED_ROUNDS[from];
+                const prevNames = FIXED_ROUNDS[to];
                 const prevSet = new Set(prevNames);
 
                 const keepSet = new Set();
@@ -1042,27 +1014,28 @@
 
             function goToNext() {
                 if (state.isAnimating) return;
+                // 手动操作时停止自动播放，避免冲突
+                if (state.isAutoPlaying) stopAutoPlay();
                 if (state.currentRound >= TOTAL_ROUNDS - 1) return;
                 playQualifyEffect();
             }
 
             function goToPrev() {
                 if (state.isAnimating) return;
+                if (state.isAutoPlaying) stopAutoPlay();
                 if (state.currentRound <= 0) return;
                 playReappearEffect();
             }
 
             function resetToFirst() {
                 if (state.isAnimating) return;
-                if (state.isAutoPlaying) {
-                    stopAutoPlay();
-                }
+                if (state.isAutoPlaying) stopAutoPlay();
                 state.currentRound = 0;
                 renderCurrentRound();
                 updateRoundUI();
             }
 
-            // ---- 自动播放 ----
+            // ---- 自动播放（含暂停配置） ----
             function toggleAutoPlay() {
                 if (state.isAutoPlaying) {
                     stopAutoPlay();
@@ -1108,20 +1081,26 @@
                     return;
                 }
 
+                // 执行晋级
                 playQualifyEffect();
 
+                // 等待动画彻底完成（包括最后的 state.isAnimating = false）
                 const checkDone = () => {
                     if (!state.isAnimating) {
+                        // 动画已完成，此时进入暂停状态
                         if (state.isAutoPlaying && state.currentRound < TOTAL_ROUNDS - 1) {
-                            state.autoPlayTimer = setTimeout(autoPlayStep, 600);
+                            // ⭐ 关键：暂停 AUTO_PAUSE_MS 毫秒后再进行下一步
+                            state.autoPlayTimer = setTimeout(autoPlayStep, AUTO_PAUSE_MS);
                         } else if (state.isAutoPlaying && state.currentRound >= TOTAL_ROUNDS - 1) {
                             stopAutoPlay();
                         }
                     } else {
+                        // 如果还在动画中，继续轮询
                         state.autoPlayTimer = setTimeout(checkDone, 300);
                     }
                 };
 
+                // 在 playQualifyEffect 内部有 1100ms + 1400ms 的动画，这里给足够的缓冲时间再开始轮询
                 state.autoPlayTimer = setTimeout(checkDone, 1200);
             }
 
@@ -1152,9 +1131,9 @@
                 });
 
                 console.log(`🏆 观赛晋级特效已启动（共 ${TOTAL_ROUNDS} 场）`);
-                console.log('📋 各场人数:', allRounds.map(r => r.length).join(' → '));
+                console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
+                console.log(`⏸️ 自动播放每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
                 console.log('⌨️  快捷键: ← 上一场 | → / Space 下一场 | r 重置');
-                console.log('📌 如需使用自己的名单，请修改代码顶部的 FIXED_ROUNDS 变量。');
             }
 
             if (document.readyState === 'loading') {
