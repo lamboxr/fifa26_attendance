@@ -22,11 +22,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 4vh 4vw;
+            padding: 3.5vh 3.5vw;
             position: relative;
         }
 
-        /* 球衣条纹装饰 */
         body::before {
             content: '';
             position: fixed;
@@ -43,17 +42,17 @@
             z-index: 0;
         }
 
-        /* ===== 主容器 — 四周留白舒适 ===== */
+        /* ===== 主容器 ===== */
         #app {
-            width: 84vw;
-            max-width: 84vw;
-            height: 82vh;
-            max-height: 82vh;
+            width: 86vw;
+            max-width: 86vw;
+            height: 84vh;
+            max-height: 84vh;
             background: rgba(255, 255, 255, 0.90);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
             border-radius: 2.4vw;
-            padding: 2.8vh 3.2vw 1.8vh;
+            padding: 2.6vh 3.0vw 1.6vh;
             box-shadow: 0 2.5vh 7vh rgba(0, 40, 80, 0.15), 0 0 0 0.15vw rgba(108, 180, 238, 0.10);
             border: 0.12vw solid rgba(255, 255, 255, 0.25);
             display: flex;
@@ -69,8 +68,8 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 0.6vh;
-            padding-bottom: 0.6vh;
+            margin-bottom: 0.5vh;
+            padding-bottom: 0.5vh;
             border-bottom: 0.12vw solid rgba(108, 180, 238, 0.15);
             flex-shrink: 0;
         }
@@ -86,14 +85,14 @@
             gap: 0.8vw;
         }
         .logo .title-row .flag-img {
-            height: 3.6vh;
+            height: 3.4vh;
             width: auto;
             display: block;
             border-radius: 0.2vw;
             box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.08);
         }
         .logo h1 {
-            font-size: 2.6vw;
+            font-size: 2.4vw;
             font-weight: 800;
             color: #1A3A5C;
             letter-spacing: 0.06vw;
@@ -103,8 +102,7 @@
             color: #2E86C1;
         }
         .logo .sub {
-            font-size: 1.8vw;
-            /* 比原来增大一倍（原0.95vw） */
+            font-size: 1.6vw;
             color: #4A7A9C;
             letter-spacing: 0.25vw;
             font-weight: 500;
@@ -116,7 +114,7 @@
             align-items: center;
             gap: 1.0vw;
             background: rgba(108, 180, 238, 0.10);
-            padding: 0.4vh 1.6vw 0.4vh 1.8vw;
+            padding: 0.3vh 1.6vw 0.3vh 1.8vw;
             border-radius: 4vw;
             border: 0.10vw solid rgba(108, 180, 238, 0.16);
             font-size: 0.90vw;
@@ -158,7 +156,7 @@
         .stats-bar {
             display: flex;
             gap: 1.6vw;
-            margin-bottom: 0.6vh;
+            margin-bottom: 0.5vh;
             flex-wrap: wrap;
             background: rgba(255, 255, 255, 0.30);
             padding: 0.2vh 1.0vw;
@@ -193,7 +191,7 @@
             background: rgba(108, 180, 238, 0.10);
         }
 
-        /* ===== 名字网格 — 核心区域 ===== */
+        /* ===== 名字网格 ===== */
         #nameGrid {
             position: relative;
             flex: 1 1 auto;
@@ -206,13 +204,13 @@
             overflow: hidden;
         }
 
-        /* ===== 名字卡片 — 完全自适应宽度 ===== */
+        /* ===== 名字卡片 ===== */
         .name-card {
             position: absolute;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.4vh 1.2vw;
+            padding: 0.3vh 1.2vw;
             height: 3.8vh;
             min-height: 28px;
             border-radius: 0.9vw;
@@ -238,7 +236,7 @@
             width: auto;
             max-width: none;
             overflow: visible;
-            text-overflow: clip;
+            gap: 0.4vw;
         }
 
         .name-card:hover {
@@ -247,6 +245,49 @@
             background: rgba(255, 255, 255, 0.96);
             box-shadow: 0 0.5vw 2.0vw rgba(46, 134, 193, 0.14);
             z-index: 100;
+        }
+
+        /* ===== 头像样式 ===== */
+        .name-card .avatar {
+            width: 2.6vh;
+            height: 2.6vh;
+            min-width: 2.6vh;
+            min-height: 2.6vh;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 0.10vw solid rgba(108, 180, 238, 0.25);
+            background: rgba(200, 220, 240, 0.3);
+            opacity: 0;
+            animation: avatarFadeIn 0.5s ease forwards;
+            display: inline-block;
+        }
+
+        @keyframes avatarFadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.75);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .name-card .avatar.hidden {
+            display: none;
+        }
+
+        .name-card .avatar-placeholder {
+            width: 2.6vh;
+            height: 2.6vh;
+            min-width: 2.6vh;
+            min-height: 2.6vh;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: rgba(200, 220, 240, 0.25);
+            border: 0.10vw solid rgba(108, 180, 238, 0.12);
+            display: inline-block;
         }
 
         /* ---- 晋级 ---- */
@@ -337,7 +378,7 @@
             }
         }
 
-        /* ---- 晋级高亮（蓝光） ---- */
+        /* ---- 晋级高亮 ---- */
         .name-card.qualify-glow {
             background: rgba(46, 134, 193, 0.16);
             border-color: #2E86C1;
@@ -375,11 +416,11 @@
             letter-spacing: 0.15vw;
         }
 
-        /* ===== 底部 — 鸣谢区域 ===== */
+        /* ===== 底部鸣谢 ===== */
         footer {
             flex-shrink: 0;
-            margin-top: 0.6vh;
-            padding-top: 0.5vh;
+            margin-top: 0.5vh;
+            padding-top: 0.4vh;
             border-top: 0.08vw solid rgba(108, 180, 238, 0.10);
             display: flex;
             justify-content: center;
@@ -415,7 +456,7 @@
             }
         }
 
-        /* ===== 滚动条完全隐藏 ===== */
+        /* ===== 滚动条隐藏 ===== */
         ::-webkit-scrollbar {
             display: none;
         }
@@ -427,23 +468,29 @@
         /* ===== 响应式 ===== */
         @media (max-width: 1200px) {
             #app {
-                width: 88vw;
-                height: 86vh;
-                padding: 2.0vh 2.4vw 1.6vh;
+                width: 90vw;
+                height: 88vh;
+                padding: 2.0vh 2.4vw 1.4vh;
             }
             .logo h1 {
-                font-size: 3.0vw;
+                font-size: 2.8vw;
             }
             .logo .sub {
-                font-size: 2.0vw;
+                font-size: 1.8vw;
             }
             .name-card {
-                font-size: 1.8vw;
+                font-size: 1.6vw;
                 height: 3.6vh;
                 padding: 0.3vh 1.0vw;
             }
+            .name-card .avatar {
+                width: 2.4vh;
+                height: 2.4vh;
+                min-width: 2.4vh;
+                min-height: 2.4vh;
+            }
             .footer-credit {
-                font-size: 1.2vw;
+                font-size: 1.1vw;
             }
         }
 
@@ -451,27 +498,27 @@
             #app {
                 width: 94vw;
                 height: auto;
-                min-height: 88vh;
-                padding: 1.6vh 2.0vw 1.2vh;
+                min-height: 86vh;
+                padding: 1.4vh 1.8vw 1.0vh;
                 border-radius: 3vw;
             }
             .logo h1 {
-                font-size: 4.0vw;
+                font-size: 3.6vw;
             }
             .logo .sub {
-                font-size: 2.8vw;
+                font-size: 2.4vw;
             }
             .logo .title-row .flag-img {
-                height: 3.0vh;
+                height: 2.8vh;
             }
             .round-badge {
                 font-size: 1.4vw;
-                padding: 0.2vh 1.4vw;
+                padding: 0.2vh 1.2vw;
                 gap: 0.8vw;
             }
             .round-badge .round-num {
-                font-size: 3.2vw;
-                min-width: 3.0vw;
+                font-size: 3.0vw;
+                min-width: 2.8vw;
             }
             .stats-bar {
                 font-size: 1.4vw;
@@ -482,34 +529,41 @@
                 font-size: 2.0vw;
             }
             .name-card {
-                font-size: 2.2vw;
+                font-size: 2.0vw;
                 height: 3.2vh;
                 padding: 0.2vh 0.9vw;
                 border-radius: 1.2vw;
                 min-height: 24px;
+                gap: 0.3vw;
+            }
+            .name-card .avatar {
+                width: 2.2vh;
+                height: 2.2vh;
+                min-width: 2.2vh;
+                min-height: 2.2vh;
             }
             #nameGrid {
                 padding: 0.6vh 0.4vw;
-                min-height: 200px;
+                min-height: 180px;
             }
             .footer-credit {
-                font-size: 1.6vw;
+                font-size: 1.4vw;
             }
         }
 
         @media (max-width: 480px) {
             #app {
-                padding: 0.8vh 1.2vw 0.8vh;
+                padding: 0.8vh 1.0vw 0.6vh;
                 border-radius: 2.5vw;
             }
             .logo h1 {
-                font-size: 5.0vw;
+                font-size: 4.4vw;
             }
             .logo .sub {
-                font-size: 3.2vw;
+                font-size: 2.8vw;
             }
             .logo .title-row .flag-img {
-                height: 2.6vh;
+                height: 2.4vh;
             }
             .round-badge {
                 font-size: 1.8vw;
@@ -517,8 +571,8 @@
                 gap: 0.6vw;
             }
             .round-badge .round-num {
-                font-size: 4.0vw;
-                min-width: 3.8vw;
+                font-size: 3.6vw;
+                min-width: 3.4vw;
             }
             .stats-bar {
                 font-size: 1.8vw;
@@ -526,22 +580,29 @@
                 padding: 0.1vh 0.6vw;
             }
             .stats-bar .stat-item .num {
-                font-size: 2.6vw;
+                font-size: 2.4vw;
                 min-width: 2.0vw;
             }
             .name-card {
-                font-size: 2.8vw;
+                font-size: 2.4vw;
                 height: 2.8vh;
                 padding: 0.1vh 0.7vw;
                 border-radius: 1.2vw;
                 min-height: 20px;
+                gap: 0.2vw;
+            }
+            .name-card .avatar {
+                width: 2.0vh;
+                height: 2.0vh;
+                min-width: 2.0vh;
+                min-height: 2.0vh;
             }
             #nameGrid {
                 padding: 0.3vh 0.3vw;
-                min-height: 150px;
+                min-height: 140px;
             }
             .footer-credit {
-                font-size: 2.0vw;
+                font-size: 1.8vw;
             }
         }
     </style>
@@ -593,13 +654,13 @@
             // =================================================================
             //  ⚙️ 配置
             // =================================================================
-            const AUTO_PAUSE_SECONDS = 2.5; // 每次晋级后暂停秒数
+            const AUTO_PAUSE_SECONDS = 0;
 
             // =================================================================
-            //  📌 固定名单（8场）
+            //  📌 固定名单（8场，按最新表格整理）
             // =================================================================
             const FIXED_ROUNDS = [
-                // 第一场（共80人，按表格顺序去重）
+                // 第一场（共76人，去重后）
                 [
                     "武汉阿根廷球迷俱乐部", "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", ".",
                     "Flash", "张誉", "BLEO", "百事可乐", "烟枪", "边路一条虫", "热血的心",
@@ -614,7 +675,7 @@
                     "🔫", "moonfizz", "小王哥", "AKhArLequIn", "冯玄", "芹泽多摩雄呀",
                     "张迪", "MITNY", "诺言", "无", "初心", "杨文"
                 ],
-                // 第二场（34人）
+                // 第二场
                 [
                     "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", ".", "张誉", "BLEO",
                     "百事可乐", "烟枪", "LYTTEOTW", "沐沐小无邪", "托尼·史塔克", "28号zz",
@@ -623,38 +684,38 @@
                     "我爱罐装可乐", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "冯玄", "芹泽多摩雄呀",
                     "张迪", "杨文"
                 ],
-                // 第三场（20人）
+                // 第三场
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "秋天的丝瓜", "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "豆包👶🏻的傻大爸", "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥",
                     "张迪", "杨文"
                 ],
-                // 第四场（19人，比第三场少“豆包👶🏻的傻大爸”）
+                // 第四场
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "秋天的丝瓜", "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第五场（18人，比第四场少“秋天的丝瓜”）
+                // 第五场
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第六场（18人，与第五场相同）
+                // 第六场
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第七场（16人，比第六场少“史涛维”和“张誉”）
+                // 第七场
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "胡嵩", "流浪猫",
                     "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘", "🐑雨点",
                     "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第八场（16人，与第七场相同）
+                // 第八场（最终16人）
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "胡嵩", "流浪猫",
                     "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘", "🐑雨点",
@@ -674,8 +735,8 @@
                 autoPlayTimer: null,
                 isAutoPlaying: false,
                 isFinished: false,
-                isPaused: false,
-                hasStarted: false, // 是否已开始播放
+                hasStarted: false,
+                avatarsShown: false, // 标记头像是否已显示
             };
 
             // =================================================================
@@ -690,7 +751,7 @@
             const eliminateCountNum = document.getElementById('eliminateCountNum');
 
             // =================================================================
-            //  布局算法（含防重叠）
+            //  布局算法
             // =================================================================
             function applyScatterLayout(container, cards, count) {
                 if (!cards || cards.length === 0) return;
@@ -716,24 +777,20 @@
                 cols = Math.max(cols, 1);
                 rows = Math.max(rows, 1);
 
-                // 人数越少，行列间距越大
                 const spacingFactor = Math.max(1, 1 + (20 - Math.min(count, 20)) * 0.04);
                 const cellW = areaW / (cols + 0.5 * spacingFactor);
                 const cellH = areaH / (rows + 0.5 * spacingFactor);
 
-                // 偏移量：人数越少，偏移越小（防重叠）
                 const offsetScale = Math.min(1, count / 25);
                 const randOffsetX = Math.min(cellW * 0.32 * offsetScale, 36);
                 const randOffsetY = Math.min(cellH * 0.32 * offsetScale, 36);
 
-                // 测量卡片实际尺寸
                 const cardData = cards.map((card) => {
                     const cw = card.offsetWidth || 64;
                     const ch = card.offsetHeight || 30;
                     return { el: card, w: cw, h: ch };
                 });
 
-                // --- 生成初始位置 ---
                 const positions = [];
                 for (let i = 0; i < cardData.length; i++) {
                     const col = i % cols;
@@ -764,22 +821,19 @@
                     });
                 }
 
-                // --- 防重叠迭代 ---
+                // 防重叠
                 for (let iter = 0; iter < 8; iter++) {
                     let anyOverlap = false;
                     for (let i = 0; i < positions.length; i++) {
                         for (let j = i + 1; j < positions.length; j++) {
                             const a = positions[i];
                             const b = positions[j];
-                            // 检测矩形重叠
                             const overlapX = (a.x < b.x + b.w && b.x < a.x + a.w);
                             const overlapY = (a.y < b.y + b.h && b.y < a.y + a.h);
                             if (overlapX && overlapY) {
                                 anyOverlap = true;
-                                // 计算重叠量
                                 const overlapXAmount = Math.min(a.x + a.w - b.x, b.x + b.w - a.x);
                                 const overlapYAmount = Math.min(a.y + a.h - b.y, b.y + b.h - a.y);
-                                // 向重叠较小的方向移动
                                 if (overlapXAmount < overlapYAmount) {
                                     const dx = (overlapXAmount * 0.5 + 2) * (a.x < b.x ? -1 : 1);
                                     a.x += dx;
@@ -789,7 +843,6 @@
                                     a.y += dy;
                                     b.y -= dy;
                                 }
-                                // 边界约束
                                 const a_cw = a.w,
                                     a_ch = a.h;
                                 a.x = Math.max(pad, Math.min(w - a_cw - pad, a.x));
@@ -804,7 +857,6 @@
                     if (!anyOverlap) break;
                 }
 
-                // --- 应用位置 ---
                 for (let i = 0; i < cardData.length; i++) {
                     const card = cardData[i].el;
                     const pos = positions[i];
@@ -824,6 +876,39 @@
             }
 
             // =================================================================
+            //  构建卡片内容（头像 + 名字）
+            // =================================================================
+            function buildCardContent(name, showAvatar, index) {
+                const fragment = document.createDocumentFragment();
+
+                if (showAvatar) {
+                    const avatar = document.createElement('img');
+                    avatar.className = 'avatar';
+                    avatar.src = `assets/avatars/${name}.jpg`;
+                    avatar.alt = '';
+                    avatar.dataset.name = name;
+                    // 依次展现：每个头像延迟不同
+                    const delay = index * 0.06;
+                    avatar.style.animationDelay = delay + 's';
+                    avatar.onerror = function() {
+                        this.classList.add('hidden');
+                        // 如果头像加载失败，用占位元素保持布局
+                        const placeholder = document.createElement('span');
+                        placeholder.className = 'avatar-placeholder';
+                        this.parentNode.insertBefore(placeholder, this);
+                    };
+                    fragment.appendChild(avatar);
+                }
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'name-text';
+                nameSpan.textContent = name;
+                fragment.appendChild(nameSpan);
+
+                return fragment;
+            }
+
+            // =================================================================
             //  渲染
             // =================================================================
             function renderCards(names, options = {}) {
@@ -833,8 +918,10 @@
                         reappearSet = new Set(),
                         extraClass = '',
                         skipLayout = false,
+                        showAvatars = false,
                 } = options;
 
+                // ---- 更新模式 ----
                 if (skipLayout && grid.children.length > 0) {
                     const existing = new Map();
                     for (const child of grid.children) {
@@ -842,11 +929,18 @@
                         if (name) existing.set(name, child);
                     }
                     const newSet = new Set(names);
+                    let index = 0;
 
                     for (const [name, el] of existing) {
                         if (newSet.has(name)) {
+                            // 保留原有位置样式
                             el.className = 'name-card';
-                            el.textContent = name;
+                            // 清空内容
+                            el.innerHTML = '';
+                            // 重建内容
+                            const content = buildCardContent(name, showAvatars, index);
+                            el.appendChild(content);
+                            // 添加状态类
                             if (qualifySet.has(name)) {
                                 el.classList.add('qualify');
                                 const mark = document.createElement('span');
@@ -863,6 +957,7 @@
                             if (extraClass) {
                                 el.classList.add(extraClass);
                             }
+                            index++;
                         } else {
                             el.remove();
                         }
@@ -871,6 +966,7 @@
                     return;
                 }
 
+                // ---- 重建模式 ----
                 grid.innerHTML = '';
                 if (!names || names.length === 0) {
                     grid.innerHTML = '<div class="empty-hint">✨ 暂无名单</div>';
@@ -881,11 +977,14 @@
 
                 const fragment = document.createDocumentFragment();
                 const cards = [];
-                names.forEach(name => {
+                names.forEach((name, index) => {
                     const card = document.createElement('div');
                     card.className = 'name-card';
-                    card.textContent = name;
                     card.dataset.name = name;
+
+                    const content = buildCardContent(name, showAvatars, index);
+                    card.appendChild(content);
+
                     if (qualifySet.has(name)) {
                         card.classList.add('qualify');
                         const mark = document.createElement('span');
@@ -902,6 +1001,7 @@
                     if (extraClass) {
                         card.classList.add(extraClass);
                     }
+
                     card.style.opacity = '0';
                     card.style.visibility = 'hidden';
                     fragment.appendChild(card);
@@ -971,7 +1071,9 @@
                     eliminateSet: new Set(),
                     reappearSet: new Set(),
                     skipLayout: false,
+                    showAvatars: false,
                 });
+                state.avatarsShown = false;
                 updateRoundUI();
             }
 
@@ -996,28 +1098,39 @@
                     else eliminateSet.add(name);
                 });
 
+                // 第一阶段：显示晋级/淘汰标记（无头像）
                 renderCards(prevNames, {
                     qualifySet,
                     eliminateSet,
                     skipLayout: true,
+                    showAvatars: false,
                 });
 
+                // 第二阶段：高亮晋级名单（无头像）
                 setTimeout(() => {
                     const glowSet = new Set(nextNames);
+                    const isFinal = (to === TOTAL_ROUNDS - 1);
                     renderCards(nextNames, {
                         qualifySet: glowSet,
                         extraClass: 'qualify-glow',
                         skipLayout: true,
+                        showAvatars: false,
                     });
                     state.currentRound = to;
                     updateRoundUI();
 
+                    // 第三阶段：恢复正常样式 + 最终场显示头像
                     setTimeout(() => {
                         const normalQualify = new Set(nextNames);
+                        const isFinalStage = (to === TOTAL_ROUNDS - 1);
                         renderCards(nextNames, {
                             qualifySet: normalQualify,
                             skipLayout: true,
+                            showAvatars: isFinalStage,
                         });
+                        if (isFinalStage) {
+                            state.avatarsShown = true;
+                        }
                         state.isAnimating = false;
 
                         if (state.currentRound >= TOTAL_ROUNDS - 1) {
@@ -1044,9 +1157,9 @@
                 if (state.isAnimating) return;
 
                 if (state.isFinished) {
-                    // 已完成，重置后播放
                     state.isFinished = false;
                     state.currentRound = 0;
+                    state.avatarsShown = false;
                     renderCurrentRound();
                     updateRoundUI();
                     setTimeout(() => {
@@ -1113,6 +1226,7 @@
                 state.currentRound = 0;
                 state.isFinished = false;
                 state.hasStarted = false;
+                state.avatarsShown = false;
                 renderCurrentRound();
                 updateRoundUI();
             }
@@ -1157,7 +1271,7 @@
             }
 
             // =================================================================
-            //  键盘 — 空格键 开始/重新播放
+            //  键盘
             // =================================================================
             function onKeyDown(e) {
                 if (e.key === ' ' || e.key === 'Space') {
@@ -1169,7 +1283,7 @@
             }
 
             // =================================================================
-            //  初始化（不自动播放）
+            //  初始化
             // =================================================================
             function init() {
                 renderCurrentRound();
@@ -1178,12 +1292,12 @@
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级 (录屏版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
+                console.log(`🇦🇷 阿根廷观赛晋级 (头像版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
                 console.log(`⏸️ 每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
                 console.log('⌨️  按 空格键 开始自动播放 | 刷新页面重置');
-                console.log('🎯 无按钮、无提示，适合录屏展示');
-                console.log('📁 阿根廷国旗图片请放在 ./assets/argentina-flag.png');
+                console.log('🖼️  最终名单将显示头像，图片路径: assets/avatars/名字.jpg');
+                console.log('📁 阿根廷国旗图片: ./assets/argentina-flag.png');
             }
 
             if (document.readyState === 'loading') {
