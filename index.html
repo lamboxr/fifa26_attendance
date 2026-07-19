@@ -567,7 +567,7 @@
         }
 
         /* =========================================================
-                   感谢词覆盖层 — 左对齐，8行
+                   感谢词覆盖层 — 背景图透明化，文字显眼
                    ========================================================= */
         #thanks-overlay {
             position: absolute;
@@ -576,14 +576,18 @@
             right: 0;
             bottom: 0;
             z-index: 300;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(4px);
+            /* 白色遮罩透明度降低，让背景图更明显 */
+            background-color: rgba(255, 255, 255, 0.55);
+            background-image: url('assets/thanks_bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             display: flex;
             align-items: center;
             justify-content: flex-start;
             padding: 3vh 4vw;
             border-radius: inherit;
-            transition: opacity 1s ease;
+            transition: opacity 1.2s ease;
             opacity: 1;
             pointer-events: none;
         }
@@ -601,12 +605,20 @@
             font-size: 1.5vw;
             line-height: 2.6vw;
             color: #1A3A5C;
+            /* 文字颜色加深，增加对比度 */
+            color: #0A1A2A;
             text-align: left;
-            font-weight: 400;
+            font-weight: 500;
             letter-spacing: 0.04vw;
             display: flex;
             flex-direction: column;
             gap: 0.4vh;
+            position: relative;
+            z-index: 1;
+            /* 添加文字阴影，增强可读性 */
+            text-shadow: 0 0.1vw 0.2vw rgba(255, 255, 255, 0.8),
+                0 0.2vw 0.4vw rgba(255, 255, 255, 0.6),
+                0 0 0.8vw rgba(255, 255, 255, 0.3);
         }
 
         #thanks-text .thanks-line {
@@ -625,9 +637,11 @@
             display: inline-flex;
             align-items: center;
             gap: 0.4vw;
-            font-weight: 600;
-            color: #2E86C1;
+            font-weight: 700;
+            color: #1A5276;
+            /* 深蓝，更突出 */
             white-space: nowrap;
+            text-shadow: 0 0.1vw 0.2vw rgba(255, 255, 255, 0.9);
         }
 
         #thanks-text .thanks-line .line-content .thanks-avatar {
@@ -635,20 +649,22 @@
             height: 2.6vh;
             border-radius: 50%;
             object-fit: cover;
-            border: 0.1vw solid #2E86C1;
-            background: #eee;
+            border: 0.12vw solid #1A5276;
+            background: #fff;
+            box-shadow: 0 0.1vw 0.3vw rgba(0, 0, 0, 0.15);
         }
 
         #thanks-text .thanks-line .cursor {
             display: inline-block;
             width: 0.08vw;
             height: 2.2vw;
-            background: #2E86C1;
+            background: #1A5276;
             animation: blink 0.8s step-end infinite;
             vertical-align: text-bottom;
             margin-left: 0.1vw;
             position: relative;
             top: 0.1vw;
+            opacity: 0.9;
         }
 
         @keyframes blink {
@@ -658,6 +674,36 @@
             }
             50% {
                 opacity: 0;
+            }
+        }
+
+        /* ===== 启动提示 ===== */
+        #start-hint {
+            position: absolute;
+            bottom: 5vh;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 310;
+            color: rgba(26, 58, 92, 0.7);
+            font-size: 1.2vw;
+            letter-spacing: 0.15vw;
+            font-weight: 500;
+            animation: pulseHint 2s ease-in-out infinite;
+            pointer-events: none;
+            text-shadow: 0 0.1vw 0.3vw rgba(255, 255, 255, 0.8);
+        }
+
+        #start-hint.hidden {
+            display: none;
+        }
+
+        @keyframes pulseHint {
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 1;
             }
         }
 
@@ -747,6 +793,10 @@
             #thanks-text .thanks-line .line-content .thanks-avatar {
                 width: 2.2vh;
                 height: 2.2vh;
+            }
+            #start-hint {
+                font-size: 1.4vw;
+                bottom: 4vh;
             }
         }
 
@@ -843,6 +893,10 @@
                 width: 2.0vh;
                 height: 2.0vh;
             }
+            #start-hint {
+                font-size: 1.8vw;
+                bottom: 3vh;
+            }
         }
 
         @media (max-width: 480px) {
@@ -936,6 +990,10 @@
                 width: 1.8vh;
                 height: 1.8vh;
             }
+            #start-hint {
+                font-size: 2.4vw;
+                bottom: 2.5vh;
+            }
         }
     </style>
 </head>
@@ -986,6 +1044,9 @@
         <div id="thanks-overlay">
             <div id="thanks-text"></div>
         </div>
+
+        <!-- 启动提示 -->
+        <div id="start-hint">按 空格键 开始</div>
     </div>
 
     <script>
@@ -993,7 +1054,7 @@
             'use strict';
 
             // =================================================================
-            //  ⚙️ 可配置参数（已按需求更新）
+            //  ⚙️ 可配置参数
             // =================================================================
 
             // ---- 名单环节通用参数 ----
@@ -1142,7 +1203,7 @@
             };
 
             // =================================================================
-            //  📌 感谢词模板（已更新第7行文案）
+            //  📌 感谢词模板（8行）
             // =================================================================
             const THANKS_LINES = [
                 '感谢梅西，感谢阿根廷队，为我们带来这一个月无与伦比的激情与快乐——每一粒进球、每一次呐喊，都刻进了我们的记忆深处！',
@@ -1224,6 +1285,14 @@
             const TOTAL_ROUNDS = FIXED_ROUNDS.length;
             const AUTO_PAUSE_MS = AUTO_PAUSE_SECONDS * 1000;
 
+            // ---- 播放控制阶段 ----
+            // 'idle'       : 页面加载，等待空格开始感谢环节
+            // 'thanks'     : 感谢环节进行中（打字 + 停顿）
+            // 'ready'      : 感谢结束，显示第一场名单，等待空格开始晋级
+            // 'playing'    : 名单晋级环节进行中
+            // 'finished'   : 全部结束
+            let phase = 'idle';
+
             const state = {
                 currentRound: 0,
                 isAnimating: false,
@@ -1237,6 +1306,7 @@
                 scoreboardTimer: null,
                 isScoreboardVisible: false,
                 isThanksDone: false,
+                thanksResolve: null, // 用于等待感谢环节结束
             };
 
             // =================================================================
@@ -1257,6 +1327,7 @@
 
             const thanksOverlay = document.getElementById('thanks-overlay');
             const thanksText = document.getElementById('thanks-text');
+            const startHint = document.getElementById('start-hint');
 
             // =================================================================
             //  布局算法
@@ -1823,17 +1894,14 @@
                     const linesHTML = buildThanksLines();
                     thanksText.innerHTML = ''; // 清空
 
-                    // 预先创建所有行，给每行固定 min-height
                     const lineElements = [];
                     linesHTML.forEach((lineHTML, idx) => {
                         const lineDiv = document.createElement('div');
                         lineDiv.className = 'thanks-line';
-                        // 内容容器
                         const contentSpan = document.createElement('span');
                         contentSpan.className = 'line-content';
                         contentSpan.innerHTML = '';
                         lineDiv.appendChild(contentSpan);
-                        // 光标（初始隐藏）
                         const cursor = document.createElement('span');
                         cursor.className = 'cursor';
                         cursor.style.display = 'none';
@@ -1854,22 +1922,18 @@
 
                     function typeNextLine() {
                         if (activeLineIndex >= lineElements.length) {
-                            // 所有行完成
                             resolve();
                             return;
                         }
 
                         const line = lineElements[activeLineIndex];
-                        // 显示该行光标
                         line.cursor.style.display = 'inline-block';
 
                         function typeNextChar() {
                             if (line.currentIndex >= line.chars.length) {
-                                // 该行完成，隐藏光标
                                 line.cursor.style.display = 'none';
                                 line.done = true;
                                 activeLineIndex++;
-                                // 行间停顿（除最后一行）
                                 const delay = (activeLineIndex < lineElements.length) ? THANKS_LINE_INTERVAL_MS : 0;
                                 setTimeout(typeNextLine, delay);
                                 return;
@@ -1885,23 +1949,65 @@
                             }
 
                             line.content.innerHTML = line.outputHTML;
-                            // 确保光标在内容后面（光标元素已经存在，且在content之后）
-                            // 由于光标是独立的span，位置自然在内容后面
                             line.currentIndex++;
                             setTimeout(typeNextChar, THANKS_CHAR_INTERVAL_MS);
                         }
 
-                        // 延迟开始打字（让光标先出现）
                         setTimeout(typeNextChar, 50);
                     }
 
-                    // 启动第一行
                     setTimeout(typeNextLine, 100);
                 });
             }
 
             // =================================================================
-            //  特效（含感谢词前置）
+            //  播放控制函数
+            // =================================================================
+
+            // ---- 启动感谢环节 ----
+            async function startThanksPhase() {
+                if (phase === 'thanks') return;
+                if (phase === 'ready' || phase === 'playing' || phase === 'finished') return;
+
+                phase = 'thanks';
+                startHint.classList.add('hidden');
+                thanksOverlay.classList.remove('hidden');
+
+                // 执行感谢词打字
+                await typeThanksSequentially();
+
+                // 感谢词结束后停顿
+                await new Promise(resolve => setTimeout(resolve, THANKS_PAUSE_AFTER_MS));
+
+                // 关闭感谢覆盖层，显示第一场名单
+                thanksOverlay.classList.add('hidden');
+                state.isThanksDone = true;
+                phase = 'ready';
+
+                // 显示第一场名单（重新渲染确保卡片可见）
+                state.currentRound = 0;
+                renderCurrentRound();
+                updateRoundUI();
+
+                // 显示启动提示（按空格开始晋级）
+                startHint.textContent = '按 空格键 开始观赛晋级';
+                startHint.classList.remove('hidden');
+            }
+
+            // ---- 启动名单晋级环节 ----
+            function startPlayingPhase() {
+                if (phase !== 'ready') return;
+                if (state.isAutoPlaying) return;
+
+                phase = 'playing';
+                startHint.classList.add('hidden');
+
+                // 启动自动晋级流程
+                startAutoPlayInternal();
+            }
+
+            // =================================================================
+            //  特效（名单晋级）
             // =================================================================
             async function playQualifyEffect() {
                 if (state.isAnimating) return;
@@ -1978,10 +2084,14 @@
                         if (state.currentRound >= TOTAL_ROUNDS - 1) {
                             state.isFinished = true;
                             state.isAutoPlaying = false;
+                            phase = 'finished';
                             if (state.autoPlayTimer) {
                                 clearTimeout(state.autoPlayTimer);
                                 state.autoPlayTimer = null;
                             }
+                            // 全部完成，显示提示
+                            startHint.textContent = '🎉 全部完成！按空格重新开始';
+                            startHint.classList.remove('hidden');
                         } else {
                             if (state.isAutoPlaying) {
                                 state.autoPlayTimer = setTimeout(autoPlayStep, AUTO_PAUSE_MS);
@@ -1993,46 +2103,16 @@
             }
 
             // =================================================================
-            //  自动播放
+            //  自动播放（名单环节）
             // =================================================================
-            function startAutoPlay() {
-                if (state.isAutoPlaying) return;
-                if (state.isAnimating) return;
-
-                if (state.isFinished) {
-                    state.isFinished = false;
-                    state.currentRound = 0;
-                    state.avatarsShown = false;
-                    if (state.avatarTimer) {
-                        clearTimeout(state.avatarTimer);
-                        state.avatarTimer = null;
-                    }
-                    state.eliminateTimers.forEach(t => clearTimeout(t));
-                    state.eliminateTimers = [];
-                    hideScoreboardImmediately();
-                    renderCurrentRound();
-                    updateRoundUI();
-                    setTimeout(() => {
-                        if (!state.isAutoPlaying && !state.isAnimating) {
-                            startAutoPlayInternal();
-                        }
-                    }, 400);
-                    return;
-                }
-
-                if (state.currentRound >= TOTAL_ROUNDS - 1) {
-                    state.isFinished = true;
-                    return;
-                }
-
-                startAutoPlayInternal();
-            }
-
             function startAutoPlayInternal() {
                 if (state.isAutoPlaying) return;
                 if (state.isAnimating) return;
                 if (state.currentRound >= TOTAL_ROUNDS - 1) {
                     state.isFinished = true;
+                    phase = 'finished';
+                    startHint.textContent = '🎉 全部完成！按空格重新开始';
+                    startHint.classList.remove('hidden');
                     return;
                 }
 
@@ -2056,22 +2136,22 @@
                 if (state.currentRound >= TOTAL_ROUNDS - 1) {
                     state.isFinished = true;
                     state.isAutoPlaying = false;
+                    phase = 'finished';
+                    startHint.textContent = '🎉 全部完成！按空格重新开始';
+                    startHint.classList.remove('hidden');
                     return;
                 }
                 playQualifyEffect();
             }
 
             // =================================================================
-            //  重置
+            //  重置全部（回到初始状态）
             // =================================================================
-            function resetToFirst() {
-                if (state.isAnimating) return;
-                if (state.isAutoPlaying) {
-                    state.isAutoPlaying = false;
-                    if (state.autoPlayTimer) {
-                        clearTimeout(state.autoPlayTimer);
-                        state.autoPlayTimer = null;
-                    }
+            function resetAll() {
+                // 清理所有定时器
+                if (state.autoPlayTimer) {
+                    clearTimeout(state.autoPlayTimer);
+                    state.autoPlayTimer = null;
                 }
                 if (state.avatarTimer) {
                     clearTimeout(state.avatarTimer);
@@ -2079,13 +2159,35 @@
                 }
                 state.eliminateTimers.forEach(t => clearTimeout(t));
                 state.eliminateTimers = [];
-                hideScoreboardImmediately();
+                if (state.scoreboardTimer) {
+                    clearTimeout(state.scoreboardTimer);
+                    state.scoreboardTimer = null;
+                }
+
+                // 重置状态
                 state.currentRound = 0;
+                state.isAnimating = false;
+                state.isAutoPlaying = false;
                 state.isFinished = false;
                 state.hasStarted = false;
                 state.avatarsShown = false;
+                state.isThanksDone = false;
+
+                // 重置界面
+                hideScoreboardImmediately();
+                thanksOverlay.classList.remove('hidden');
+                // 清空感谢词内容（准备重新打字）
+                thanksText.innerHTML = '';
+                // 重置第一场名单（先渲染，但被感谢层覆盖）
                 renderCurrentRound();
                 updateRoundUI();
+
+                // 重置阶段
+                phase = 'idle';
+                startHint.textContent = '按 空格键 开始';
+                startHint.classList.remove('hidden');
+
+                console.log('🔄 已重置，等待按空格开始感谢环节');
             }
 
             // =================================================================
@@ -2128,51 +2230,61 @@
             }
 
             // =================================================================
-            //  键盘
+            //  键盘事件
             // =================================================================
             function onKeyDown(e) {
                 if (e.key === ' ' || e.key === 'Space') {
                     e.preventDefault();
-                    if (!state.isThanksDone) return;
-                    if (state.isAutoPlaying) return;
-                    if (state.isAnimating) return;
-                    resetToFirst();
-                    setTimeout(() => {
-                        if (!state.isAutoPlaying && !state.isAnimating) {
-                            startAutoPlayInternal();
-                        }
-                    }, 400);
+
+                    // 阶段 'idle' → 开始感谢环节
+                    if (phase === 'idle') {
+                        startThanksPhase();
+                        return;
+                    }
+
+                    // 阶段 'ready' → 开始名单晋级
+                    if (phase === 'ready') {
+                        startPlayingPhase();
+                        return;
+                    }
+
+                    // 阶段 'finished' → 重置全部
+                    if (phase === 'finished') {
+                        resetAll();
+                        return;
+                    }
+
+                    // 阶段 'thanks' 或 'playing' 中，忽略空格
+                    //（防止在打字或晋级动画中打断）
                 }
             }
 
             // =================================================================
             //  初始化
             // =================================================================
-            async function init() {
+            function init() {
+                // 初始状态：显示感谢层，显示第一场名单（被覆盖），显示启动提示
                 thanksOverlay.classList.remove('hidden');
+                thanksText.innerHTML = '';
+                startHint.textContent = '按 空格键 开始';
+                startHint.classList.remove('hidden');
 
+                // 预渲染第一场名单（感谢层覆盖中，用户看不到）
+                state.currentRound = 0;
                 renderCurrentRound();
                 updateRoundUI();
+
+                // 隐藏比分牌
                 scoreboard.style.transform = 'translateY(-50%) translateX(-100%)';
 
-                // 逐行顺序打字
-                await typeThanksSequentially();
-
-                // 全部结束后停顿
-                await new Promise(resolve => setTimeout(resolve, THANKS_PAUSE_AFTER_MS));
-
-                thanksOverlay.classList.add('hidden');
-                state.isThanksDone = true;
-
-                startAutoPlayInternal();
-
+                // 注册事件
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 参数已更新（淘汰1500ms，间隔300ms）共 ${TOTAL_ROUNDS} 场`);
+                console.log(`🇦🇷 阿根廷观赛晋级 (播放控制版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
                 console.log(`⏱️ 字符间隔 ${THANKS_CHAR_INTERVAL_MS}ms，行间隔 ${THANKS_LINE_INTERVAL_MS}ms，结束停顿 ${THANKS_PAUSE_AFTER_MS/1000}s`);
                 console.log('📝 志愿者: 烟枪、福崽崽、🙊陈聘聘、李圣、奎爷');
-                console.log('⌨️  空格键重新播放（感谢词之后）');
+                console.log('⌨️  按 空格键 开始感谢环节 → 感谢结束按空格开始晋级');
             }
 
             if (document.readyState === 'loading') {
