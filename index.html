@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-    <title>🇦🇷 阿根廷 · 观赛晋级 (大屏版)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🇦🇷 阿根廷 · 观赛晋级</title>
     <style>
         /* ===== 全局重置 ===== */
         * {
@@ -16,16 +16,17 @@
         body {
             width: 100%;
             min-height: 100vh;
+            overflow-x: hidden;
             font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
             background: linear-gradient(145deg, #6CB4EE 0%, #D6EAF8 50%, #FFFFFF 100%);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 1.2vh 1.2vw;
+            padding: 2.5vh 2.5vw;
             position: relative;
         }
 
-        /* 球衣条纹装饰 */
+        /* 球衣条纹装饰（柔和） */
         body::before {
             content: '';
             position: fixed;
@@ -34,30 +35,32 @@
             right: 0;
             bottom: 0;
             background: repeating-linear-gradient(90deg,
-                    rgba(255, 255, 255, 0.07) 0px,
-                    rgba(255, 255, 255, 0.07) 5vw,
-                    rgba(108, 180, 238, 0.04) 5vw,
-                    rgba(108, 180, 238, 0.04) 10vw);
+                    rgba(255, 255, 255, 0.06) 0px,
+                    rgba(255, 255, 255, 0.06) 6vw,
+                    rgba(108, 180, 238, 0.04) 6vw,
+                    rgba(108, 180, 238, 0.04) 12vw);
             pointer-events: none;
             z-index: 0;
         }
 
+        /* ===== 主容器 — 四周留白，不撑满 ===== */
         #app {
-            width: 98vw;
-            max-width: 98vw;
-            height: 96vh;
-            background: rgba(255, 255, 255, 0.90);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-radius: 2.5vw;
-            padding: 2vh 2.5vw 1.8vh;
-            box-shadow: 0 2vh 6vh rgba(0, 40, 80, 0.20), 0 0 0 0.2vw rgba(108, 180, 238, 0.15);
-            border: 0.15vw solid rgba(255, 255, 255, 0.3);
+            width: 92vw;
+            max-width: 92vw;
+            height: 90vh;
+            max-height: 90vh;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 2.4vw;
+            padding: 2.2vh 2.8vw 2.2vh;
+            box-shadow: 0 2.5vh 7vh rgba(0, 40, 80, 0.18), 0 0 0 0.15vw rgba(108, 180, 238, 0.12);
+            border: 0.12vw solid rgba(255, 255, 255, 0.25);
             display: flex;
             flex-direction: column;
             position: relative;
             z-index: 1;
-            transition: all 0.2s ease;
+            overflow: hidden;
         }
 
         /* ===== 头部 ===== */
@@ -66,25 +69,26 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 1.2vh;
-            padding-bottom: 0.8vh;
-            border-bottom: 0.2vw solid rgba(108, 180, 238, 0.25);
+            margin-bottom: 0.8vh;
+            padding-bottom: 0.6vh;
+            border-bottom: 0.15vw solid rgba(108, 180, 238, 0.20);
             flex-shrink: 0;
         }
 
         .logo h1 {
-            font-size: 2.8vw;
+            font-size: 2.6vw;
             font-weight: 800;
             color: #1A3A5C;
             display: flex;
             align-items: center;
             gap: 0.6vw;
+            letter-spacing: 0.04vw;
         }
         .logo h1 .flag {
-            font-size: 3.2vw;
+            font-size: 3.0vw;
         }
         .logo .sub {
-            font-size: 1.0vw;
+            font-size: 0.95vw;
             color: #4A7A9C;
             letter-spacing: 0.2vw;
             margin-top: 0.1vh;
@@ -94,41 +98,41 @@
         .round-badge {
             display: flex;
             align-items: center;
-            gap: 1.4vw;
+            gap: 1.2vw;
             background: rgba(108, 180, 238, 0.10);
-            padding: 0.5vh 2vw 0.5vh 2.2vw;
+            padding: 0.4vh 1.8vw 0.4vh 2.0vw;
             border-radius: 4vw;
-            border: 0.12vw solid rgba(108, 180, 238, 0.20);
-            font-size: 1.0vw;
+            border: 0.10vw solid rgba(108, 180, 238, 0.18);
+            font-size: 0.95vw;
         }
         .round-badge .label {
             color: #1A3A5C;
             font-weight: 600;
-            letter-spacing: 0.1vw;
+            letter-spacing: 0.08vw;
         }
         .round-badge .round-num {
-            font-size: 2.4vw;
+            font-size: 2.2vw;
             font-weight: 800;
             color: #1A3A5C;
-            min-width: 2.4vw;
+            min-width: 2.2vw;
             text-align: center;
             transition: 0.3s;
         }
         .round-badge .round-num.active {
             color: #2E86C1;
-            text-shadow: 0 0 2vw rgba(46, 134, 193, 0.25);
+            text-shadow: 0 0 1.8vw rgba(46, 134, 193, 0.20);
         }
         .round-badge .total {
             color: #4A7A9C;
-            font-size: 1.4vw;
+            font-size: 1.2vw;
             font-weight: 500;
         }
         .round-badge .people-count {
             color: #1A3A5C;
-            font-size: 1.2vw;
+            font-size: 1.1vw;
             background: rgba(108, 180, 238, 0.12);
-            padding: 0.2vh 1.2vw;
-            border-radius: 2.5vw;
+            padding: 0.15vh 1.0vw;
+            border-radius: 2.2vw;
             font-weight: 600;
             margin-left: 0.2vw;
         }
@@ -136,29 +140,29 @@
         /* ===== 统计条 ===== */
         .stats-bar {
             display: flex;
-            gap: 2vw;
-            margin-bottom: 1.2vh;
+            gap: 1.8vw;
+            margin-bottom: 0.8vh;
             flex-wrap: wrap;
-            background: rgba(255, 255, 255, 0.40);
-            padding: 0.4vh 1.4vw;
-            border-radius: 1.6vw;
+            background: rgba(255, 255, 255, 0.35);
+            padding: 0.25vh 1.2vw;
+            border-radius: 1.4vw;
             backdrop-filter: blur(4px);
-            border: 0.1vw solid rgba(108, 180, 238, 0.10);
+            border: 0.08vw solid rgba(108, 180, 238, 0.08);
             flex-shrink: 0;
-            font-size: 1.0vw;
+            font-size: 0.95vw;
         }
         .stats-bar .stat-item {
             display: flex;
             align-items: center;
-            gap: 0.5vw;
+            gap: 0.4vw;
             color: #1A3A5C;
             font-weight: 500;
         }
         .stats-bar .stat-item .num {
             font-weight: 700;
-            font-size: 1.6vw;
+            font-size: 1.5vw;
             color: #1A3A5C;
-            min-width: 1.8vw;
+            min-width: 1.6vw;
             text-align: center;
         }
         .stats-bar .stat-item .num.qualify-num {
@@ -168,40 +172,40 @@
             color: #E74C3C;
         }
         .stats-bar .stat-divider {
-            width: 0.1vw;
-            background: rgba(108, 180, 238, 0.15);
+            width: 0.08vw;
+            background: rgba(108, 180, 238, 0.12);
         }
 
-        /* ===== 名字网格 — 核心区域，占据绝大部分空间 ===== */
+        /* ===== 名字网格 — 核心区域 ===== */
         #nameGrid {
             position: relative;
             flex: 1 1 auto;
             width: 100%;
             min-height: 0;
-            padding: 1.2vh 1.2vw;
-            border-radius: 1.8vw;
-            background: rgba(255, 255, 255, 0.15);
-            border: 0.1vw solid rgba(108, 180, 238, 0.06);
-            overflow: visible;
+            padding: 1.0vh 0.8vw 0.8vh;
+            border-radius: 1.6vw;
+            background: rgba(255, 255, 255, 0.10);
+            border: 0.08vw solid rgba(108, 180, 238, 0.04);
+            overflow: hidden;
         }
 
-        /* ===== 名字卡片 — 大尺寸，清晰醒目 ===== */
+        /* ===== 名字卡片 — 完全自适应宽度 ===== */
         .name-card {
             position: absolute;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 0.6vh 1.8vw;
-            min-width: 4.5vw;
-            height: 4.8vh;
-            border-radius: 1.2vw;
+            padding: 0.5vh 1.4vw;
+            height: 4.2vh;
+            min-height: 32px;
+            border-radius: 1.0vw;
             background: rgba(255, 255, 255, 0.88);
-            border: 0.15vw solid rgba(108, 180, 238, 0.30);
+            border: 0.12vw solid rgba(108, 180, 238, 0.28);
             color: #1A3A5C;
-            font-size: 1.8vw;
+            font-size: 1.5vw;
             font-weight: 500;
-            transition: left 0.65s cubic-bezier(0.34, 1.56, 0.64, 1),
-                top 0.65s cubic-bezier(0.34, 1.56, 0.64, 1),
+            transition: left 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
+                top 0.7s cubic-bezier(0.34, 1.56, 0.64, 1),
                 transform 0.4s ease,
                 background 0.3s ease,
                 border-color 0.3s ease,
@@ -209,25 +213,31 @@
                 opacity 0.5s ease;
             cursor: default;
             user-select: none;
-            box-shadow: 0 0.2vw 1vw rgba(0, 40, 80, 0.06);
+            box-shadow: 0 0.15vw 0.8vw rgba(0, 40, 80, 0.05);
             white-space: nowrap;
             z-index: 1;
             will-change: left, top, transform;
             letter-spacing: 0.04vw;
+            width: auto;
+            max-width: none;
+            overflow: visible;
+            text-overflow: clip;
         }
+
         .name-card:hover {
-            transform: scale(1.10) rotate(0deg) !important;
+            transform: scale(1.08) rotate(0deg) !important;
             border-color: #2E86C1;
             background: rgba(255, 255, 255, 0.96);
-            box-shadow: 0 0.8vw 3vw rgba(46, 134, 193, 0.18);
+            box-shadow: 0 0.6vw 2.4vw rgba(46, 134, 193, 0.16);
             z-index: 100;
         }
 
+        /* ---- 晋级 ---- */
         .name-card.qualify {
             background: rgba(46, 134, 193, 0.12);
             border-color: #2E86C1;
             color: #1A5276;
-            box-shadow: 0 0 2.5vw rgba(46, 134, 193, 0.10), inset 0 0 2vw rgba(46, 134, 193, 0.04);
+            box-shadow: 0 0 2.0vw rgba(46, 134, 193, 0.10), inset 0 0 1.6vw rgba(46, 134, 193, 0.04);
             animation: qualifyPulse 1.2s ease-in-out;
             z-index: 10;
         }
@@ -237,8 +247,8 @@
                 box-shadow: 0 0 0 rgba(46, 134, 193, 0);
             }
             30% {
-                transform: scale(1.12);
-                box-shadow: 0 0 5vw rgba(46, 134, 193, 0.30);
+                transform: scale(1.10);
+                box-shadow: 0 0 4vw rgba(46, 134, 193, 0.28);
                 border-color: #2E86C1;
             }
             70% {
@@ -246,19 +256,20 @@
             }
             100% {
                 transform: scale(1);
-                box-shadow: 0 0 2.5vw rgba(46, 134, 193, 0.10);
+                box-shadow: 0 0 2.0vw rgba(46, 134, 193, 0.10);
             }
         }
         .name-card.qualify .check-mark {
             display: inline-block;
-            margin-left: 0.4vw;
-            font-size: 1.2vw;
+            margin-left: 0.35vw;
+            font-size: 1.0vw;
             color: #2E86C1;
         }
 
+        /* ---- 淘汰 ---- */
         .name-card.eliminate {
-            background: rgba(231, 76, 60, 0.08);
-            border-color: rgba(231, 76, 60, 0.22);
+            background: rgba(231, 76, 60, 0.07);
+            border-color: rgba(231, 76, 60, 0.20);
             color: #C0392B;
             animation: eliminateFade 0.9s ease-in forwards;
             pointer-events: none;
@@ -268,51 +279,53 @@
             0% {
                 transform: scale(1);
                 opacity: 1;
-                background: rgba(231, 76, 60, 0.08);
+                background: rgba(231, 76, 60, 0.07);
             }
             40% {
                 transform: scale(0.78);
-                opacity: 0.8;
-                background: rgba(231, 76, 60, 0.18);
+                opacity: 0.7;
+                background: rgba(231, 76, 60, 0.16);
             }
             100% {
-                transform: scale(0.35) translateY(5vh);
+                transform: scale(0.30) translateY(5vh);
                 opacity: 0;
                 background: rgba(231, 76, 60, 0);
                 border-color: transparent;
             }
         }
 
+        /* ---- 回归 ---- */
         .name-card.reappear {
             animation: reappearUp 0.8s ease-out forwards;
             z-index: 8;
         }
         @keyframes reappearUp {
             0% {
-                transform: translateY(6vh) scale(0.5);
+                transform: translateY(6vh) scale(0.50);
                 opacity: 0;
-                background: rgba(46, 134, 193, 0.05);
+                background: rgba(46, 134, 193, 0.04);
             }
             60% {
-                transform: translateY(-0.6vh) scale(1.04);
+                transform: translateY(-0.4vh) scale(1.04);
                 opacity: 1;
                 background: rgba(46, 134, 193, 0.10);
-                border-color: rgba(46, 134, 193, 0.30);
+                border-color: rgba(46, 134, 193, 0.28);
             }
             100% {
                 transform: translateY(0) scale(1);
                 opacity: 1;
                 background: rgba(255, 255, 255, 0.88);
-                border-color: rgba(108, 180, 238, 0.30);
+                border-color: rgba(108, 180, 238, 0.28);
                 color: #1A3A5C;
             }
         }
 
+        /* ---- 晋级高亮（蓝光） ---- */
         .name-card.qualify-glow {
             background: rgba(46, 134, 193, 0.18);
             border-color: #2E86C1;
             color: #1A5276;
-            box-shadow: 0 0 5vw rgba(46, 134, 193, 0.22), inset 0 0 3vw rgba(46, 134, 193, 0.06);
+            box-shadow: 0 0 4.5vw rgba(46, 134, 193, 0.20), inset 0 0 2.5vw rgba(46, 134, 193, 0.06);
             animation: glowBlue 1.5s ease-in-out;
             z-index: 20;
         }
@@ -322,16 +335,16 @@
                 box-shadow: 0 0 0 rgba(46, 134, 193, 0);
             }
             25% {
-                transform: scale(1.16);
-                box-shadow: 0 0 8vw rgba(46, 134, 193, 0.40);
+                transform: scale(1.14);
+                box-shadow: 0 0 7vw rgba(46, 134, 193, 0.38);
             }
             60% {
                 transform: scale(0.94);
-                box-shadow: 0 0 3.5vw rgba(46, 134, 193, 0.15);
+                box-shadow: 0 0 3vw rgba(46, 134, 193, 0.14);
             }
             100% {
                 transform: scale(1);
-                box-shadow: 0 0 5vw rgba(46, 134, 193, 0.12);
+                box-shadow: 0 0 4.5vw rgba(46, 134, 193, 0.10);
             }
         }
 
@@ -341,97 +354,13 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: #4A7A9C;
-            font-size: 2.2vw;
+            font-size: 2.0vw;
             letter-spacing: 0.2vw;
         }
 
-        /* ===== 底部 — 仅保留一个自动播放按钮 ===== */
+        /* ===== 底部无任何按钮，完全留空 ===== */
         footer {
-            margin-top: 1.2vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-top: 0.8vh;
-            border-top: 0.15vw solid rgba(108, 180, 238, 0.15);
-            flex-shrink: 0;
-            gap: 2vw;
-        }
-
-        .controls {
-            display: flex;
-            gap: 1.2vw;
-            align-items: center;
-        }
-
-        .controls button {
-            padding: 0.7vh 2.8vw;
-            border: none;
-            border-radius: 5vw;
-            font-size: 1.6vw;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.6vw;
-            background: linear-gradient(135deg, #2E86C1, #1A5276);
-            color: #fff;
-            border: 0.12vw solid rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(4px);
-            box-shadow: 0 0.4vw 2vw rgba(46, 134, 193, 0.30);
-            letter-spacing: 0.1vw;
-        }
-        .controls button:hover:not(:disabled) {
-            background: linear-gradient(135deg, #3498DB, #1A5276);
-            box-shadow: 0 0.8vw 3.5vw rgba(46, 134, 193, 0.45);
-            transform: translateY(-0.2vw) scale(1.02);
-        }
-        .controls button:active:not(:disabled) {
-            transform: scale(0.96);
-        }
-        .controls button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: 0 0.2vw 1vw rgba(46, 134, 193, 0.15);
-        }
-        .controls button .icon {
-            font-size: 1.8vw;
-            line-height: 1;
-        }
-
-        /* 快捷键提示 — 小字显示 */
-        .shortcut-hint {
-            color: rgba(26, 58, 92, 0.35);
-            font-size: 0.9vw;
-            font-weight: 400;
-            letter-spacing: 0.05vw;
-            user-select: none;
-        }
-
-        /* ===== 进度点（保留，作为视觉辅助） ===== */
-        .progress-dots {
-            display: flex;
-            gap: 0.6vw;
-            align-items: center;
-        }
-        .progress-dots .dot {
-            width: 0.9vw;
-            height: 0.9vw;
-            border-radius: 50%;
-            background: rgba(108, 180, 238, 0.20);
-            transition: all 0.4s ease;
-            border: 0.08vw solid rgba(108, 180, 238, 0.15);
-        }
-        .progress-dots .dot.active {
-            background: #2E86C1;
-            box-shadow: 0 0 1.5vw rgba(46, 134, 193, 0.35);
-            border-color: #2E86C1;
-            transform: scale(1.3);
-        }
-        .progress-dots .dot.done {
-            background: rgba(46, 134, 193, 0.25);
-            border-color: rgba(46, 134, 193, 0.15);
+            display: none;
         }
 
         /* ===== 工具类 ===== */
@@ -443,7 +372,7 @@
                 transform: scale(1);
             }
             50% {
-                transform: scale(1.4);
+                transform: scale(1.35);
                 color: #2E86C1;
             }
             100% {
@@ -451,125 +380,115 @@
             }
         }
 
-        /* ===== 响应式（小屏保底） ===== */
+        /* ===== 滚动条完全隐藏 ===== */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        * {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        /* ===== 响应式（保持大屏优先，小屏兼容） ===== */
         @media (max-width: 1200px) {
             #app {
-                width: 100%;
-                max-width: 100%;
-                height: 94vh;
-                padding: 1.5vh 2vw;
+                width: 94vw;
+                height: 92vh;
+                padding: 1.8vh 2.2vw;
             }
             .logo h1 {
-                font-size: 3.2vw;
+                font-size: 3.0vw;
             }
             .name-card {
-                font-size: 2vw;
-                height: 4.2vh;
-                padding: 0.4vh 1.4vw;
-                border-radius: 1.2vw;
-                min-width: 5vw;
-            }
-            .controls button {
                 font-size: 1.8vw;
-                padding: 0.6vh 2.4vw;
+                height: 4.0vh;
+                padding: 0.4vh 1.2vw;
             }
         }
 
         @media (max-width: 768px) {
             #app {
+                width: 96vw;
                 height: auto;
-                min-height: 90vh;
-                padding: 1.2vh 1.5vw;
-                border-radius: 4vw;
+                min-height: 88vh;
+                padding: 1.2vh 1.8vw 1.2vh;
+                border-radius: 3vw;
             }
             .logo h1 {
-                font-size: 4vw;
+                font-size: 3.8vw;
             }
             .logo .sub {
-                font-size: 1.6vw;
-            }
-            .round-badge {
-                font-size: 1.6vw;
-                padding: 0.3vh 2vw;
-                gap: 1vw;
-            }
-            .round-badge .round-num {
-                font-size: 3.2vw;
-                min-width: 3vw;
-            }
-            .stats-bar {
-                font-size: 1.6vw;
-                gap: 1.5vw;
-                padding: 0.3vh 1.2vw;
-            }
-            .stats-bar .stat-item .num {
-                font-size: 2.2vw;
-            }
-            .name-card {
-                font-size: 2.4vw;
-                height: 3.8vh;
-                padding: 0.2vh 1vw;
-                border-radius: 1.2vw;
-                min-width: 5.5vw;
-            }
-            .controls button {
-                font-size: 2.2vw;
-                padding: 0.4vh 3vw;
-            }
-            .shortcut-hint {
                 font-size: 1.4vw;
             }
-            .progress-dots .dot {
-                width: 1.4vw;
-                height: 1.4vw;
+            .round-badge {
+                font-size: 1.4vw;
+                padding: 0.3vh 1.6vw;
+                gap: 0.8vw;
+            }
+            .round-badge .round-num {
+                font-size: 3.0vw;
+                min-width: 2.8vw;
+            }
+            .stats-bar {
+                font-size: 1.4vw;
+                gap: 1.2vw;
+                padding: 0.2vh 1.0vw;
+            }
+            .stats-bar .stat-item .num {
+                font-size: 2.0vw;
+            }
+            .name-card {
+                font-size: 2.2vw;
+                height: 3.6vh;
+                padding: 0.2vh 1.0vw;
+                border-radius: 1.2vw;
+                min-height: 26px;
+            }
+            #nameGrid {
+                padding: 0.8vh 0.6vw;
+                min-height: 240px;
             }
         }
 
         @media (max-width: 480px) {
             #app {
-                padding: 0.8vh 1vw;
-                border-radius: 3vw;
+                padding: 0.8vh 1.2vw 0.8vh;
+                border-radius: 2.5vw;
             }
             .logo h1 {
-                font-size: 5vw;
+                font-size: 4.8vw;
             }
             .logo .sub {
-                font-size: 2vw;
-            }
-            .round-badge {
-                font-size: 2.2vw;
-                padding: 0.2vh 1.5vw;
-                gap: 0.8vw;
-            }
-            .round-badge .round-num {
-                font-size: 4vw;
-                min-width: 4vw;
-            }
-            .stats-bar {
-                font-size: 2vw;
-                gap: 1.2vw;
-                padding: 0.2vh 1vw;
-            }
-            .stats-bar .stat-item .num {
-                font-size: 2.8vw;
-            }
-            .name-card {
-                font-size: 2.8vw;
-                height: 3.2vh;
-                padding: 0.1vh 0.8vw;
-                border-radius: 1.5vw;
-                min-width: 6vw;
-            }
-            .controls button {
-                font-size: 2.8vw;
-                padding: 0.3vh 3.5vw;
-            }
-            .shortcut-hint {
                 font-size: 1.8vw;
             }
-            .progress-dots .dot {
-                width: 1.8vw;
-                height: 1.8vw;
+            .round-badge {
+                font-size: 1.8vw;
+                padding: 0.2vh 1.2vw;
+                gap: 0.6vw;
+            }
+            .round-badge .round-num {
+                font-size: 3.8vw;
+                min-width: 3.5vw;
+            }
+            .stats-bar {
+                font-size: 1.8vw;
+                gap: 1.0vw;
+                padding: 0.15vh 0.8vw;
+            }
+            .stats-bar .stat-item .num {
+                font-size: 2.6vw;
+                min-width: 2.2vw;
+            }
+            .name-card {
+                font-size: 2.6vw;
+                height: 3.0vh;
+                padding: 0.1vh 0.8vw;
+                border-radius: 1.2vw;
+                min-height: 22px;
+            }
+            #nameGrid {
+                padding: 0.4vh 0.4vw;
+                min-height: 180px;
             }
         }
     </style>
@@ -600,19 +519,8 @@
             <div class="stat-item">⬇️ 淘汰 <span class="num eliminate-num" id="eliminateCountNum">0</span></div>
         </div>
 
-        <!-- 名字网格 — 核心区域 -->
+        <!-- 名字网格 -->
         <div id="nameGrid"></div>
-
-        <!-- 底部 — 只有一个自动播放按钮 -->
-        <footer>
-            <div class="controls">
-                <button id="autoBtn">
-                    <span class="icon">▶</span> 自动播放
-                </button>
-                <span class="shortcut-hint">空格键 播放</span>
-            </div>
-            <div class="progress-dots" id="progressDots"></div>
-        </footer>
     </div>
 
     <script>
@@ -620,9 +528,9 @@
             'use strict';
 
             // =================================================================
-            //  ⚙️ 自动播放配置
+            //  ⚙️ 配置
             // =================================================================
-            const AUTO_PAUSE_SECONDS = 3;
+            const AUTO_PAUSE_SECONDS = 2.5; // 每次晋级后暂停秒数
 
             // =================================================================
             //  📌 固定名单（8场）
@@ -686,7 +594,7 @@
             ];
 
             // =================================================================
-            //  状态管理
+            //  状态
             // =================================================================
             const TOTAL_ROUNDS = FIXED_ROUNDS.length;
             const AUTO_PAUSE_MS = AUTO_PAUSE_SECONDS * 1000;
@@ -696,7 +604,8 @@
                 isAnimating: false,
                 autoPlayTimer: null,
                 isAutoPlaying: false,
-                isFinished: false, // 是否播放完成（停在第八场）
+                isFinished: false,
+                isPaused: false,
             };
 
             // =================================================================
@@ -709,11 +618,9 @@
             const currentCountNum = document.getElementById('currentCountNum');
             const qualifyCountNum = document.getElementById('qualifyCountNum');
             const eliminateCountNum = document.getElementById('eliminateCountNum');
-            const autoBtn = document.getElementById('autoBtn');
-            const progressDots = document.getElementById('progressDots');
 
             // =================================================================
-            //  布局算法（散落聚集）
+            //  布局算法
             // =================================================================
             function applyScatterLayout(container, cards, count) {
                 if (!cards || cards.length === 0) return;
@@ -722,12 +629,12 @@
                 let w = rect.width || container.clientWidth || 800;
                 let h = rect.height || container.clientHeight || 500;
 
-                const pad = Math.min(w * 0.018, 35);
-                w = Math.max(w - pad * 2, 200);
-                h = Math.max(h - pad * 2, 200);
+                const pad = Math.min(w * 0.020, 40);
+                w = Math.max(w - pad * 2, 180);
+                h = Math.max(h - pad * 2, 180);
 
                 const density = Math.min(count / 80, 1);
-                const scaleFactor = 0.48 + density * 0.38;
+                const scaleFactor = 0.46 + density * 0.40;
                 const areaW = w * scaleFactor;
                 const areaH = h * scaleFactor;
                 const offsetX = (w - areaW) / 2 + pad;
@@ -741,12 +648,13 @@
 
                 const cellW = areaW / (cols + 0.6);
                 const cellH = areaH / (rows + 0.6);
-                const randOffsetX = Math.min(cellW * 0.38, 45);
-                const randOffsetY = Math.min(cellH * 0.38, 45);
+                const randOffsetX = Math.min(cellW * 0.38, 48);
+                const randOffsetY = Math.min(cellH * 0.38, 48);
 
+                // 获取每个卡片的实际宽度
                 const cardData = cards.map((card) => {
-                    const cw = card.offsetWidth || 80;
-                    const ch = card.offsetHeight || 40;
+                    const cw = card.offsetWidth || 70;
+                    const ch = card.offsetHeight || 34;
                     return { el: card, w: cw, h: ch };
                 });
 
@@ -758,8 +666,8 @@
                     let baseY = offsetY + (row + 0.5) * cellH;
                     let shiftX = (Math.random() - 0.5) * randOffsetX * 2;
                     let shiftY = (Math.random() - 0.5) * randOffsetY * 2;
-                    const maxShiftX = Math.min(cellW * 0.32, 35);
-                    const maxShiftY = Math.min(cellH * 0.32, 35);
+                    const maxShiftX = Math.min(cellW * 0.32, 38);
+                    const maxShiftY = Math.min(cellH * 0.32, 38);
                     shiftX = Math.max(-maxShiftX, Math.min(maxShiftX, shiftX));
                     shiftY = Math.max(-maxShiftY, Math.min(maxShiftY, shiftY));
 
@@ -787,20 +695,18 @@
                     card.style.transform = `rotate(${pos.rot}deg)`;
                     card.style.position = 'absolute';
                     card.style.margin = '0';
-                    card.style.width = 'auto';
-                    card.style.maxWidth = '180px';
                     card.style.visibility = 'visible';
                     card.style.opacity = '1';
                 }
 
                 const maxBottom = positions.reduce((max, p) => Math.max(max, p.y + p.h), 0);
-                const newHeight = Math.max(maxBottom + pad, 200);
+                const newHeight = Math.max(maxBottom + pad, 180);
                 container.style.minHeight = newHeight + 'px';
                 container.style.height = 'auto';
             }
 
             // =================================================================
-            //  渲染核心
+            //  渲染
             // =================================================================
             function renderCards(names, options = {}) {
                 const {
@@ -848,11 +754,11 @@
                     return;
                 }
 
-                // ---- 重建模式 ----
+                // ---- 重建 ----
                 grid.innerHTML = '';
                 if (!names || names.length === 0) {
                     grid.innerHTML = '<div class="empty-hint">✨ 暂无名单</div>';
-                    grid.style.minHeight = '200px';
+                    grid.style.minHeight = '180px';
                     updateStats(names, qualifySet, eliminateSet);
                     return;
                 }
@@ -889,6 +795,7 @@
                 updateStats(names, qualifySet, eliminateSet);
 
                 if (!skipLayout) {
+                    // 先让卡片可见但透明，测量宽度
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
                             cards.forEach(c => {
@@ -896,12 +803,17 @@
                                 c.style.opacity = '0';
                             });
                             void grid.offsetHeight;
+                            // 获取每个卡片的自然宽度
+                            cards.forEach(c => {
+                                // 确保宽度已计算
+                                void c.offsetWidth;
+                            });
                             applyScatterLayout(grid, cards, names.length);
                             cards.forEach((c, i) => {
                                 setTimeout(() => {
                                     c.style.opacity = '1';
-                                    c.style.transition = 'opacity 0.35s ease';
-                                }, i * 5 + 20);
+                                    c.style.transition = 'opacity 0.40s ease';
+                                }, i * 5 + 30);
                             });
                         });
                     });
@@ -933,43 +845,12 @@
                 }
             }
 
-            // =================================================================
-            //  UI 更新
-            // =================================================================
             function updateRoundUI() {
                 const idx = state.currentRound;
                 const total = TOTAL_ROUNDS;
                 roundDisplay.textContent = idx + 1;
                 totalDisplay.textContent = total;
                 roundDisplay.classList.toggle('active', true);
-
-                const dots = progressDots.querySelectorAll('.dot');
-                dots.forEach((dot, i) => {
-                    dot.classList.toggle('active', i === idx);
-                    dot.classList.toggle('done', i < idx);
-                });
-
-                // 更新按钮状态
-                if (state.isAutoPlaying) {
-                    autoBtn.innerHTML = '<span class="icon">⏳</span> 播放中...';
-                    autoBtn.disabled = true;
-                } else if (state.isFinished) {
-                    autoBtn.innerHTML = '<span class="icon">▶</span> 重新播放';
-                    autoBtn.disabled = false;
-                } else {
-                    autoBtn.innerHTML = '<span class="icon">▶</span> 自动播放';
-                    autoBtn.disabled = false;
-                }
-            }
-
-            function initDots() {
-                progressDots.innerHTML = '';
-                for (let i = 0; i < TOTAL_ROUNDS; i++) {
-                    const dot = document.createElement('span');
-                    dot.className = 'dot';
-                    if (i === 0) dot.classList.add('active');
-                    progressDots.appendChild(dot);
-                }
             }
 
             function renderCurrentRound() {
@@ -984,7 +865,7 @@
             }
 
             // =================================================================
-            //  特效函数
+            //  特效
             // =================================================================
             function playQualifyEffect() {
                 if (state.isAnimating) return;
@@ -993,7 +874,6 @@
                 if (to >= TOTAL_ROUNDS) return;
 
                 state.isAnimating = true;
-                autoBtn.disabled = true;
 
                 const prevNames = FIXED_ROUNDS[from];
                 const nextNames = FIXED_ROUNDS[to];
@@ -1029,7 +909,6 @@
                         });
                         state.isAnimating = false;
 
-                        // 检查是否播放完成
                         if (state.currentRound >= TOTAL_ROUNDS - 1) {
                             state.isFinished = true;
                             state.isAutoPlaying = false;
@@ -1037,77 +916,39 @@
                                 clearTimeout(state.autoPlayTimer);
                                 state.autoPlayTimer = null;
                             }
-                            updateRoundUI();
                         } else {
-                            updateRoundUI();
+                            // 继续自动播放
+                            if (state.isAutoPlaying) {
+                                state.autoPlayTimer = setTimeout(autoPlayStep, AUTO_PAUSE_MS);
+                            }
                         }
                     }, 1400);
                 }, 1100);
             }
 
-            function playReappearEffect() {
-                if (state.isAnimating) return;
-                const from = state.currentRound;
-                const to = from - 1;
-                if (to < 0) return;
-
-                state.isAnimating = true;
-                autoBtn.disabled = true;
-
-                const prevNames = FIXED_ROUNDS[to];
-                const currentNames = FIXED_ROUNDS[from];
-                const keepSet = new Set();
-                const reappearSet = new Set();
-                prevNames.forEach(name => {
-                    if (currentNames.includes(name)) keepSet.add(name);
-                    else reappearSet.add(name);
-                });
-
-                renderCards(prevNames, {
-                    qualifySet: keepSet,
-                    reappearSet: reappearSet,
-                    skipLayout: false,
-                });
-                state.currentRound = to;
-                updateRoundUI();
-
-                setTimeout(() => {
-                    const normalQualify = new Set(prevNames);
-                    renderCards(prevNames, {
-                        qualifySet: normalQualify,
-                        skipLayout: false,
-                    });
-                    state.isAnimating = false;
-                    updateRoundUI();
-                }, 900);
-            }
-
             // =================================================================
-            //  自动播放控制
+            //  自动播放
             // =================================================================
             function startAutoPlay() {
                 if (state.isAutoPlaying) return;
                 if (state.isAnimating) return;
 
-                // 如果已完成，重置到第一场
+                // 如果已完成，重置
                 if (state.isFinished) {
                     state.isFinished = false;
                     state.currentRound = 0;
                     renderCurrentRound();
                     updateRoundUI();
-                    // 延迟一点再启动播放
                     setTimeout(() => {
                         if (!state.isAutoPlaying && !state.isAnimating) {
                             startAutoPlayInternal();
                         }
-                    }, 300);
+                    }, 400);
                     return;
                 }
 
-                // 如果已经在最后一场但未标记完成（边缘情况），重置
                 if (state.currentRound >= TOTAL_ROUNDS - 1) {
                     state.isFinished = true;
-                    updateRoundUI();
                     return;
                 }
 
@@ -1119,28 +960,17 @@
                 if (state.isAnimating) return;
                 if (state.currentRound >= TOTAL_ROUNDS - 1) {
                     state.isFinished = true;
-                    updateRoundUI();
                     return;
                 }
 
                 state.isAutoPlaying = true;
                 state.isFinished = false;
-                updateRoundUI();
 
                 setTimeout(() => {
                     if (state.isAutoPlaying) {
                         autoPlayStep();
                     }
                 }, 400);
-            }
-
-            function stopAutoPlay() {
-                state.isAutoPlaying = false;
-                if (state.autoPlayTimer) {
-                    clearTimeout(state.autoPlayTimer);
-                    state.autoPlayTimer = null;
-                }
-                updateRoundUI();
             }
 
             function autoPlayStep() {
@@ -1152,39 +982,25 @@
                 if (state.currentRound >= TOTAL_ROUNDS - 1) {
                     state.isFinished = true;
                     state.isAutoPlaying = false;
-                    updateRoundUI();
                     return;
                 }
 
                 playQualifyEffect();
-
-                const checkDone = () => {
-                    if (!state.isAnimating) {
-                        if (state.isAutoPlaying && state.currentRound < TOTAL_ROUNDS - 1) {
-                            state.autoPlayTimer = setTimeout(autoPlayStep, AUTO_PAUSE_MS);
-                        } else if (state.isAutoPlaying && state.currentRound >= TOTAL_ROUNDS - 1) {
-                            state.isFinished = true;
-                            state.isAutoPlaying = false;
-                            updateRoundUI();
-                        } else {
-                            // 如果被外部停止，清理
-                            if (!state.isAutoPlaying) {
-                                updateRoundUI();
-                            }
-                        }
-                    } else {
-                        state.autoPlayTimer = setTimeout(checkDone, 300);
-                    }
-                };
-                state.autoPlayTimer = setTimeout(checkDone, 1200);
+                // playQualifyEffect 内部会在动画完成后调用 autoPlayStep
             }
 
             // =================================================================
-            //  重置到第一场（刷新页面等价）
+            //  重置
             // =================================================================
             function resetToFirst() {
                 if (state.isAnimating) return;
-                if (state.isAutoPlaying) stopAutoPlay();
+                if (state.isAutoPlaying) {
+                    state.isAutoPlaying = false;
+                    if (state.autoPlayTimer) {
+                        clearTimeout(state.autoPlayTimer);
+                        state.autoPlayTimer = null;
+                    }
+                }
                 state.currentRound = 0;
                 state.isFinished = false;
                 renderCurrentRound();
@@ -1192,7 +1008,7 @@
             }
 
             // =================================================================
-            //  窗口大小变化处理
+            //  窗口大小变化
             // =================================================================
             let resizeTimer = null;
 
@@ -1227,24 +1043,25 @@
                         }
                     }
                     resizeTimer = null;
-                }, 300);
+                }, 350);
             }
 
             // =================================================================
-            //  键盘事件
+            //  键盘 — 空格重新播放（无提示）
             // =================================================================
             function onKeyDown(e) {
-                // 空格键触发自动播放（如果已播放完成则重新开始）
                 if (e.key === ' ' || e.key === 'Space') {
                     e.preventDefault();
-                    if (state.isAutoPlaying) return; // 播放中忽略
+                    if (state.isAutoPlaying) return;
                     if (state.isAnimating) return;
-                    startAutoPlay();
-                }
-                // R键重置（方便调试）
-                if (e.key === 'r' || e.key === 'R') {
-                    e.preventDefault();
+                    // 重置并播放
                     resetToFirst();
+                    // 延迟启动
+                    setTimeout(() => {
+                        if (!state.isAutoPlaying && !state.isAnimating) {
+                            startAutoPlayInternal();
+                        }
+                    }, 300);
                 }
             }
 
@@ -1252,20 +1069,24 @@
             //  初始化
             // =================================================================
             function init() {
-                initDots();
                 renderCurrentRound();
                 updateRoundUI();
-
-                autoBtn.addEventListener('click', startAutoPlay);
 
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级 (大屏版) 已启动，共 ${TOTAL_ROUNDS} 场`);
+                // 页面加载后延迟1.2秒自动开始播放
+                setTimeout(() => {
+                    if (!state.isAutoPlaying && !state.isAnimating && !state.isFinished) {
+                        startAutoPlayInternal();
+                    }
+                }, 1200);
+
+                console.log(`🇦🇷 阿根廷观赛晋级 (录屏版) 已启动，共 ${TOTAL_ROUNDS} 场`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
-                console.log(`⏸️ 自动播放每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
-                console.log('⌨️  空格键 = 自动播放  |  R键 = 重置到第一场');
-                console.log('🔄 刷新页面 = 完全初始化');
+                console.log(`⏸️ 每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
+                console.log('⌨️  空格键 = 重新播放（无提示） | 刷新页面 = 重置');
+                console.log('🎯 无按钮、无进度提示，适合录屏展示');
             }
 
             if (document.readyState === 'loading') {
