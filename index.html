@@ -204,7 +204,7 @@
             overflow: hidden;
         }
 
-        /* ===== 名字卡片 ===== */
+        /* ===== 名字卡片 — 正常样式 ===== */
         .name-card {
             position: absolute;
             display: inline-flex;
@@ -237,6 +237,15 @@
             max-width: none;
             overflow: visible;
             gap: 0.4vw;
+        }
+
+        /* ---- 待淘汰状态（保持正常样式，用于神秘感） ---- */
+        .name-card[data-eliminate="true"] {
+            /* 保持与正常卡片完全相同的样式，不提前暴露淘汰样式 */
+            background: rgba(255, 255, 255, 0.88);
+            border-color: rgba(108, 180, 238, 0.26);
+            color: #1A3A5C;
+            box-shadow: 0 0.12vw 0.6vw rgba(0, 40, 80, 0.04);
         }
 
         .name-card:hover {
@@ -323,25 +332,28 @@
             color: #2E86C1;
         }
 
-        /* ---- 淘汰（动画时长由 JS 通过 CSS 变量控制） ---- */
+        /* ---- 淘汰样式（仅在添加 eliminate 类后触发） ---- */
         .name-card.eliminate {
-            background: rgba(231, 76, 60, 0.06);
-            border-color: rgba(231, 76, 60, 0.18);
-            color: #C0392B;
+            background: rgba(231, 76, 60, 0.12) !important;
+            border-color: rgba(231, 76, 60, 0.50) !important;
+            color: #C0392B !important;
             animation: eliminateFade var(--eliminate-duration, 0.9s) ease-in forwards;
             pointer-events: none;
             z-index: 5;
+            box-shadow: 0 0 1.8vw rgba(231, 76, 60, 0.15) !important;
         }
         @keyframes eliminateFade {
             0% {
                 transform: scale(1);
                 opacity: 1;
-                background: rgba(231, 76, 60, 0.06);
+                background: rgba(231, 76, 60, 0.12);
+                border-color: rgba(231, 76, 60, 0.50);
             }
             40% {
                 transform: scale(0.78);
-                opacity: 0.7;
-                background: rgba(231, 76, 60, 0.14);
+                opacity: 0.8;
+                background: rgba(231, 76, 60, 0.20);
+                border-color: rgba(231, 76, 60, 0.60);
             }
             100% {
                 transform: scale(0.30) translateY(4vh);
@@ -659,6 +671,7 @@
             // ---- 淘汰动画参数 ----
             const ELIMINATE_ANIMATION_DURATION_MS = 1500; // 单个标签消失动画时长（毫秒）
             const ELIMINATE_INTERVAL_MS = 300; // 标签与标签开始消失的间隔（毫秒）
+            const ELIMINATE_INITIAL_DELAY_MS = 300; // 第一个标签开始消失前的初始延迟（毫秒）
 
             // ---- 将淘汰动画时长注入 CSS 变量 ----
             document.documentElement.style.setProperty('--eliminate-duration', (ELIMINATE_ANIMATION_DURATION_MS / 1000) +
@@ -746,6 +759,7 @@
                 hasStarted: false,
                 avatarsShown: false,
                 avatarTimer: null,
+                eliminateTimers: [], // 存储所有淘汰定时器
             };
 
             // =================================================================
@@ -962,21 +976,34 @@
             }
 
             // =================================================================
-            //  逐个消除淘汰者（使用配置参数）
+            //  逐个淘汰：每个标签在轮到它时才变为淘汰样式
             // =================================================================
             function staggerEliminateCards() {
-                const eliminateCards = grid.querySelectorAll('.name-card.eliminate');
+                // 清理之前的定时器
+                state.eliminateTimers.forEach(t => clearTimeout(t));
+                state.eliminateTimers = [];
+
+                // 找到所有待淘汰的卡片（带有 data-eliminate="true" 属性）
+                const eliminateCards = grid.querySelectorAll('[data-eliminate="true"]');
                 if (eliminateCards.length === 0) return 0;
 
                 let index = 0;
+                const totalCards = eliminateCards.length;
+
                 eliminateCards.forEach((card) => {
-                    const delay = index * ELIMINATE_INTERVAL_MS;
-                    card.style.animationDelay = delay + 'ms';
+                    // 计算延迟：初始延迟 + 索引 * 间隔
+                    const delay = ELIMINATE_INITIAL_DELAY_MS + index * ELIMINATE_INTERVAL_MS;
+                    const timer = setTimeout(() => {
+                        // 在轮到该标签时，才添加 eliminate 类，触发淘汰样式 + 消失动画
+                        card.classList.add('eliminate');
+                        card.removeAttribute('data-eliminate');
+                    }, delay);
+                    state.eliminateTimers.push(timer);
                     index++;
                 });
 
-                // 计算总耗时：最后一个的延迟 + 动画时长 + 缓冲
-                const maxDelay = (index - 1) * ELIMINATE_INTERVAL_MS;
+                // 返回总耗时：最后一个的延迟 + 动画时长 + 缓冲
+                const maxDelay = ELIMINATE_INITIAL_DELAY_MS + (totalCards - 1) * ELIMINATE_INTERVAL_MS;
                 const totalDuration = maxDelay + ELIMINATE_ANIMATION_DURATION_MS + 150;
                 return totalDuration;
             }
@@ -1005,10 +1032,13 @@
 
                     for (const [name, el] of existing) {
                         if (newSet.has(name)) {
+                            // 重置卡片
                             el.className = 'name-card';
                             el.innerHTML = '';
                             const content = buildCardContent(name, showAvatars);
                             el.appendChild(content);
+
+                            // 状态标记
                             if (qualifySet.has(name)) {
                                 el.classList.add('qualify');
                                 const mark = document.createElement('span');
@@ -1017,9 +1047,14 @@
                                 el.appendChild(mark);
                             }
                             if (eliminateSet.has(name)) {
-                                el.classList.add('eliminate');
-                                // 确保动画时长使用 CSS 变量
-                                el.style.animationDelay = '0ms';
+                                // 关键：淘汰标签只加 data-eliminate 属性，不加 eliminate 类
+                                // 保持正常样式，直到 stagggerEliminateCards 触发时才变为淘汰样式
+                                el.setAttribute('data-eliminate', 'true');
+                                // 确保没有 eliminate 类
+                                el.classList.remove('eliminate');
+                            } else {
+                                el.removeAttribute('data-eliminate');
+                                el.classList.remove('eliminate');
                             }
                             if (reappearSet.has(name)) {
                                 el.classList.add('reappear');
@@ -1027,11 +1062,14 @@
                             if (extraClass) {
                                 el.classList.add(extraClass);
                             }
-                            // 保留位置样式
+
+                            // 保留位置
                             el.style.position = 'absolute';
                             el.style.visibility = 'visible';
                             el.style.opacity = '1';
                         } else {
+                            // 不在新名单中，移除卡片（并清理其定时器）
+                            // 注意：如果该卡片正在等待淘汰，它的定时器会在状态切换时被清理
                             el.remove();
                         }
                     }
@@ -1066,8 +1104,8 @@
                         card.appendChild(mark);
                     }
                     if (eliminateSet.has(name)) {
-                        card.classList.add('eliminate');
-                        card.style.animationDelay = '0ms';
+                        // 只加 data-eliminate，不加 eliminate 类
+                        card.setAttribute('data-eliminate', 'true');
                     }
                     if (reappearSet.has(name)) {
                         card.classList.add('reappear');
@@ -1152,11 +1190,14 @@
                     clearTimeout(state.avatarTimer);
                     state.avatarTimer = null;
                 }
+                // 清理淘汰定时器
+                state.eliminateTimers.forEach(t => clearTimeout(t));
+                state.eliminateTimers = [];
                 updateRoundUI();
             }
 
             // =================================================================
-            //  特效（逐个淘汰）
+            //  特效（逐个淘汰，每个标签在轮到它时才变为淘汰样式）
             // =================================================================
             function playQualifyEffect() {
                 if (state.isAnimating) return;
@@ -1176,7 +1217,7 @@
                     else eliminateSet.add(name);
                 });
 
-                // --- 第一阶段：标记晋级/淘汰，设置淘汰延迟 ---
+                // --- 第一阶段：标记淘汰（仅 data-eliminate，无样式变化） ---
                 renderCards(prevNames, {
                     qualifySet,
                     eliminateSet,
@@ -1184,12 +1225,16 @@
                     showAvatars: false,
                 });
 
-                // 计算淘汰动画总时长（使用配置参数）
+                // 开始逐个淘汰：每个标签在轮到它时才变为淘汰样式并消失
                 const totalEliminateDuration = staggerEliminateCards();
 
-                // 等待淘汰完成，然后进入第二阶段
+                // 等待淘汰全部完成，进入第二阶段
                 setTimeout(() => {
-                    // 第二阶段：高亮晋级名单（此时淘汰者已消失）
+                    // 清理所有未执行的淘汰定时器
+                    state.eliminateTimers.forEach(t => clearTimeout(t));
+                    state.eliminateTimers = [];
+
+                    // 第二阶段：高亮晋级名单（淘汰者已消失）
                     const glowSet = new Set(nextNames);
                     renderCards(nextNames, {
                         qualifySet: glowSet,
@@ -1250,6 +1295,8 @@
                         clearTimeout(state.avatarTimer);
                         state.avatarTimer = null;
                     }
+                    state.eliminateTimers.forEach(t => clearTimeout(t));
+                    state.eliminateTimers = [];
                     renderCurrentRound();
                     updateRoundUI();
                     setTimeout(() => {
@@ -1317,6 +1364,8 @@
                     clearTimeout(state.avatarTimer);
                     state.avatarTimer = null;
                 }
+                state.eliminateTimers.forEach(t => clearTimeout(t));
+                state.eliminateTimers = [];
                 state.currentRound = 0;
                 state.isFinished = false;
                 state.hasStarted = false;
@@ -1386,11 +1435,13 @@
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级 (可配置淘汰参数版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
+                console.log(`🇦🇷 阿根廷观赛晋级 (神秘淘汰版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
                 console.log(`⏸️ 每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
                 console.log(`⏳ 单个淘汰动画时长: ${ELIMINATE_ANIMATION_DURATION_MS}ms`);
                 console.log(`⏳ 标签消失间隔: ${ELIMINATE_INTERVAL_MS}ms`);
+                console.log(`⏳ 初始延迟: ${ELIMINATE_INITIAL_DELAY_MS}ms`);
+                console.log('🎭 每个标签在轮到它时才变为淘汰样式，保持神秘感');
                 console.log('⌨️  按 空格键 开始自动播放 | 刷新页面重置');
                 console.log('📁 阿根廷国旗图片: ./assets/argentina-flag.png');
                 console.log('📁 头像图片: ./assets/avatars/名字.jpg');
