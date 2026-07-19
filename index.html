@@ -226,7 +226,6 @@
             overflow: hidden;
         }
 
-        /* ---- 背景图片伪元素 ---- */
         #nameGrid::before {
             content: '';
             position: absolute;
@@ -477,7 +476,7 @@
         }
 
         #scoreboard .score-card {
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(4px);
             border: 0.2vw solid #2E86C1;
             border-radius: 1.5vw;
@@ -511,9 +510,12 @@
             gap: 0.4vw;
         }
 
-        #scoreboard .score-teams .team .flag {
-            font-size: 2.6vw;
-            line-height: 1;
+        #scoreboard .score-teams .team .flag-img {
+            height: 2.8vw;
+            width: auto;
+            border-radius: 0.2vw;
+            display: block;
+            box-shadow: 0 0.1vw 0.3vw rgba(0, 0, 0, 0.10);
         }
 
         #scoreboard .score-teams .team .name {
@@ -524,17 +526,23 @@
         #scoreboard .score-teams .score {
             font-size: 2.6vw;
             font-weight: 800;
-            margin: 0 0.4vw;
+            margin: 0 0.2vw;
         }
 
         #scoreboard .score-teams .score.win {
             color: #f6b93b;
-            /* 金色 */
             text-shadow: 0 0 0.8vw rgba(246, 185, 59, 0.4);
         }
 
         #scoreboard .score-teams .score.lose {
-            color: #999;
+            color: #1A3A5C;
+        }
+
+        #scoreboard .score-teams .score-dash {
+            color: #1A3A5C;
+            font-weight: 300;
+            margin: 0 0.2vw;
+            font-size: 2.2vw;
         }
 
         #scoreboard .score-teams .vs {
@@ -625,8 +633,8 @@
             #scoreboard .score-teams .score {
                 font-size: 2.2vw;
             }
-            #scoreboard .score-teams .team .flag {
-                font-size: 2.2vw;
+            #scoreboard .score-teams .team .flag-img {
+                height: 2.4vw;
             }
             #scoreboard .score-teams .team .name {
                 font-size: 1.6vw;
@@ -701,8 +709,8 @@
             #scoreboard .score-teams .score {
                 font-size: 3.0vw;
             }
-            #scoreboard .score-teams .team .flag {
-                font-size: 3.0vw;
+            #scoreboard .score-teams .team .flag-img {
+                height: 3.2vw;
             }
             #scoreboard .score-teams .team .name {
                 font-size: 2.2vw;
@@ -776,8 +784,8 @@
             #scoreboard .score-teams .score {
                 font-size: 4.0vw;
             }
-            #scoreboard .score-teams .team .flag {
-                font-size: 4.0vw;
+            #scoreboard .score-teams .team .flag-img {
+                height: 4.0vw;
             }
             #scoreboard .score-teams .team .name {
                 font-size: 2.8vw;
@@ -826,7 +834,7 @@
         <!-- 名字网格 -->
         <div id="nameGrid"></div>
 
-        <!-- 比分牌容器（由JS动态填充内容） -->
+        <!-- 比分牌容器 -->
         <div id="scoreboard">
             <div class="score-card">
                 <div class="score-date"></div>
@@ -856,34 +864,112 @@
             const ELIMINATE_INTERVAL_MS = 80;
             const ELIMINATE_INITIAL_DELAY_MS = 300;
 
-            // ---- 比分牌动画参数 ----
-            const SCOREBOARD_MOVE_IN_DURATION_MS = 600; // 移入时长
-            const SCOREBOARD_STAY_DURATION_MS = 2000; // 停留时长
-            const SCOREBOARD_MOVE_OUT_DURATION_MS = 600; // 移出时长
+            const SCOREBOARD_MOVE_IN_DURATION_MS = 600;
+            const SCOREBOARD_STAY_DURATION_MS = 2000;
+            const SCOREBOARD_MOVE_OUT_DURATION_MS = 600;
 
             document.documentElement.style.setProperty('--eliminate-duration', (ELIMINATE_ANIMATION_DURATION_MS / 1000) +
             's');
 
             // =================================================================
-            //  📌 比赛数据
+            //  📌 比赛数据（含 name 字段）
             // =================================================================
             const MATCH_DATA = {
                 "matchDetails": {
-                    "1": { "host": "ARG", "guest": "ALG", "month": 5, "day": 17, "hour": 9, "min": 0, "dayOfWeek": "三",
-                        "hostscore": 3, "guestscore": 0 },
-                    "2": { "host": "ARG", "guest": "AUT", "month": 5, "day": 23, "hour": 1, "min": 0, "dayOfWeek": "二",
-                        "hostscore": 2, "guestscore": 0 },
-                    "3": { "host": "JOR", "guest": "ARG", "month": 5, "day": 28, "hour": 10, "min": 0, "dayOfWeek": "日",
-                        "hostscore": 1, "guestscore": 3 },
-                    "4": { "host": "ARG", "guest": "CPV", "month": 6, "day": 4, "hour": 6, "min": 0, "dayOfWeek": "六",
-                        "hostscore": 3, "guestscore": 2 },
-                    "5": { "host": "ARG", "guest": "EGY", "month": 6, "day": 8, "hour": 0, "min": 0, "dayOfWeek": "三",
-                        "hostscore": 3, "guestscore": 2 },
-                    "6": { "host": "ARG", "guest": "SUI", "month": 6, "day": 12, "hour": 9, "min": 0, "dayOfWeek": "日",
-                        "hostscore": 3, "guestscore": 1 },
-                    "7": { "host": "ENG", "guest": "ARG", "month": 6, "day": 16, "hour": 3, "min": 0, "dayOfWeek": "四",
-                        "hostscore": 1, "guestscore": 2 },
-                    "8": { "host": "ESP", "guest": "ARG", "month": 6, "day": 20, "hour": 3, "min": 0, "dayOfWeek": "一" }
+                    "1": {
+                        "name": "J组第一轮",
+                        "host": "ARG",
+                        "guest": "ALG",
+                        "month": 5,
+                        "day": 17,
+                        "hour": 9,
+                        "min": 0,
+                        "dayOfWeek": "三",
+                        "hostscore": 3,
+                        "guestscore": 0
+                    },
+                    "2": {
+                        "name": "J组第二轮",
+                        "host": "ARG",
+                        "guest": "AUT",
+                        "month": 5,
+                        "day": 23,
+                        "hour": 1,
+                        "min": 0,
+                        "dayOfWeek": "二",
+                        "hostscore": 2,
+                        "guestscore": 0
+                    },
+                    "3": {
+                        "name": "J组第三轮",
+                        "host": "JOR",
+                        "guest": "ARG",
+                        "month": 5,
+                        "day": 28,
+                        "hour": 10,
+                        "min": 0,
+                        "dayOfWeek": "日",
+                        "hostscore": 1,
+                        "guestscore": 3
+                    },
+                    "4": {
+                        "name": "1/16决赛",
+                        "host": "ARG",
+                        "guest": "CPV",
+                        "month": 6,
+                        "day": 4,
+                        "hour": 6,
+                        "min": 0,
+                        "dayOfWeek": "六",
+                        "hostscore": 3,
+                        "guestscore": 2
+                    },
+                    "5": {
+                        "name": "1/8决赛",
+                        "host": "ARG",
+                        "guest": "EGY",
+                        "month": 6,
+                        "day": 8,
+                        "hour": 0,
+                        "min": 0,
+                        "dayOfWeek": "三",
+                        "hostscore": 3,
+                        "guestscore": 2
+                    },
+                    "6": {
+                        "name": "1/4决赛",
+                        "host": "ARG",
+                        "guest": "SUI",
+                        "month": 6,
+                        "day": 12,
+                        "hour": 9,
+                        "min": 0,
+                        "dayOfWeek": "日",
+                        "hostscore": 3,
+                        "guestscore": 1
+                    },
+                    "7": {
+                        "name": "半决赛",
+                        "host": "ENG",
+                        "guest": "ARG",
+                        "month": 6,
+                        "day": 16,
+                        "hour": 3,
+                        "min": 0,
+                        "dayOfWeek": "四",
+                        "hostscore": 1,
+                        "guestscore": 2
+                    },
+                    "8": {
+                        "name": "决赛",
+                        "host": "ESP",
+                        "guest": "ARG",
+                        "month": 6,
+                        "day": 20,
+                        "hour": 3,
+                        "min": 0,
+                        "dayOfWeek": "一"
+                    }
                 },
                 "country_infos": {
                     "ARG": { "name": "阿根廷", "flag": "🇦🇷" },
@@ -1391,7 +1477,7 @@
             }
 
             // =================================================================
-            //  比分牌控制
+            //  比分牌控制（使用图片国旗）
             // =================================================================
             function updateScoreboardContent(roundIndex) {
                 const round = roundIndex + 1;
@@ -1402,33 +1488,38 @@
                 const hostInfo = countries[match.host];
                 const guestInfo = countries[match.guest];
 
-                // 日期
+                // --- 第一行：比赛轮次 : 日期 周几 时间 ---
+                const roundName = match.name || `第${round}场`;
                 let dateStr;
                 if (round === 8) {
-                    dateStr = 'Today';
+                    dateStr = `${roundName} : Today`;
                 } else {
                     const month = match.month;
                     const day = match.day;
                     const dow = match.dayOfWeek;
                     const hour = String(match.hour).padStart(2, '0');
                     const min = String(match.min).padStart(2, '0');
-                    dateStr = `${month}月${day}日 周${dow} ${hour}:${min}`;
+                    dateStr = `${roundName} : ${month}月${day}日 周${dow} ${hour}:${min}`;
                 }
                 scoreDate.textContent = dateStr;
 
-                // 对阵
+                // --- 第二行：主队名称 + 主队国旗 + 比分 - 比分 + 客队国旗 + 客队名称 ---
                 let html = '';
-                // 主队
-                html += `<span class="team"><span class="flag">${hostInfo.flag}</span><span class="name">${hostInfo.name}</span></span>`;
 
-                // 比分或vs
+                // 主队：名称 + 国旗（在右侧）
+                html += `<span class="team">`;
+                html += `<span class="name">${hostInfo.name}</span>`;
+                html += `<img class="flag-img" src="assets/flags/${match.host}.webp" alt="${match.host}" onerror="this.style.display='none'" />`;
+                html += `</span>`;
+
+                // 比分
                 if (match.hostscore !== undefined && match.guestscore !== undefined) {
                     const hs = match.hostscore;
                     const gs = match.guestscore;
                     const hostWin = hs > gs;
                     const guestWin = gs > hs;
                     const isDraw = hs === gs;
-                    // 主队比分
+
                     let hostScoreClass = 'score';
                     let guestScoreClass = 'score';
                     if (hostWin) hostScoreClass += ' win';
@@ -1437,44 +1528,42 @@
                         hostScoreClass += ' win';
                         guestScoreClass += ' win';
                     }
+
                     html += `<span class="${hostScoreClass}">${hs}</span>`;
-                    html += `<span class="score" style="color:#1A3A5C;font-weight:300;margin:0 0.2vw;">-</span>`;
+                    html += `<span class="score-dash">-</span>`;
                     html += `<span class="${guestScoreClass}">${gs}</span>`;
                 } else {
                     html += `<span class="vs">vs</span>`;
                 }
 
-                // 客队
-                html +=
-                    `<span class="team"><span class="flag">${guestInfo.flag}</span><span class="name">${guestInfo.name}</span></span>`;
+                // 客队：国旗（在左侧）+ 名称
+                html += `<span class="team">`;
+                html += `<img class="flag-img" src="assets/flags/${match.guest}.webp" alt="${match.guest}" onerror="this.style.display='none'" />`;
+                html += `<span class="name">${guestInfo.name}</span>`;
+                html += `</span>`;
 
                 scoreTeams.innerHTML = html;
             }
 
             function showScoreboard(roundIndex) {
                 return new Promise((resolve) => {
-                    // 更新内容
                     updateScoreboardContent(roundIndex);
 
-                    // 重置位置到左侧外
                     scoreboard.style.transition = 'none';
                     scoreboard.style.transform = 'translateY(-50%) translateX(-100%)';
-                    // 强制回流
                     void scoreboard.offsetHeight;
 
-                    // 移入
-                    scoreboard.style.transition = `transform ${SCOREBOARD_MOVE_IN_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
+                    scoreboard.style.transition =
+                        `transform ${SCOREBOARD_MOVE_IN_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
                     scoreboard.style.transform = 'translateY(-50%) translateX(0)';
 
-                    // 停留后移出
-                    const totalTime = SCOREBOARD_MOVE_IN_DURATION_MS + SCOREBOARD_STAY_DURATION_MS + SCOREBOARD_MOVE_OUT_DURATION_MS;
+                    const totalTime = SCOREBOARD_MOVE_IN_DURATION_MS + SCOREBOARD_STAY_DURATION_MS +
+                        SCOREBOARD_MOVE_OUT_DURATION_MS;
                     state.scoreboardTimer = setTimeout(() => {
-                        // 移出
                         scoreboard.style.transition =
                             `transform ${SCOREBOARD_MOVE_OUT_DURATION_MS}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
                         scoreboard.style.transform = 'translateY(-50%) translateX(100%)';
 
-                        // 移出完成后 resolve
                         setTimeout(() => {
                             resolve();
                         }, SCOREBOARD_MOVE_OUT_DURATION_MS);
@@ -1502,10 +1591,10 @@
 
                 state.isAnimating = true;
 
-                // ----- 1. 显示比分牌 -----
+                // 显示比分牌
                 await showScoreboard(from);
 
-                // ----- 2. 执行淘汰逻辑 -----
+                // 执行淘汰逻辑
                 const prevNames = FIXED_ROUNDS[from];
                 const nextNames = FIXED_ROUNDS[to];
                 const nextSet = new Set(nextNames);
@@ -1516,7 +1605,6 @@
                     else eliminateSet.add(name);
                 });
 
-                // 第一阶段：标记淘汰（蓝色样式）
                 renderCards(prevNames, {
                     qualifySet,
                     eliminateSet,
@@ -1524,10 +1612,8 @@
                     showAvatars: false,
                 });
 
-                // 逐个淘汰
                 const totalEliminateDuration = staggerEliminateCards();
 
-                // 等待淘汰完成
                 await new Promise(resolve => {
                     setTimeout(() => {
                         state.eliminateTimers.forEach(t => clearTimeout(t));
@@ -1536,7 +1622,7 @@
                     }, totalEliminateDuration + 150);
                 });
 
-                // 第二阶段：高亮晋级名单
+                // 高亮晋级
                 const glowSet = new Set(nextNames);
                 renderCards(nextNames, {
                     qualifySet: glowSet,
@@ -1547,7 +1633,7 @@
                 state.currentRound = to;
                 updateRoundUI();
 
-                // 第三阶段：恢复正常样式 + 最终场显示头像
+                // 恢复正常样式 + 最终场显示头像
                 await new Promise(resolve => {
                     setTimeout(() => {
                         const normalQualify = new Set(nextNames);
@@ -1738,19 +1824,16 @@
                 renderCurrentRound();
                 updateRoundUI();
 
-                // 初始隐藏比分牌
                 scoreboard.style.transform = 'translateY(-50%) translateX(-100%)';
 
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级 (含比分牌) 已就绪，共 ${TOTAL_ROUNDS} 场`);
+                console.log(`🇦🇷 阿根廷观赛晋级 (比分牌优化版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
-                console.log(`⏳ 淘汰间隔: ${ELIMINATE_INTERVAL_MS}ms，从蓝色直接变红`);
                 console.log(`🏆 比分牌移入: ${SCOREBOARD_MOVE_IN_DURATION_MS}ms，停留: ${SCOREBOARD_STAY_DURATION_MS}ms，移出: ${SCOREBOARD_MOVE_OUT_DURATION_MS}ms`);
+                console.log('📁 国旗图片: assets/flags/三字母简称.webp');
                 console.log('⌨️  按 空格键 开始自动播放 | 刷新页面重置');
-                console.log('📁 阿根廷国旗图片: ./assets/argentina-flag.png');
-                console.log('📁 头像图片: ./assets/avatars/名字.jpg');
             }
 
             if (document.readyState === 'loading') {

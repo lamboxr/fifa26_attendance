@@ -322,3 +322,126 @@
 第一行：Today
 
 第二行：主队中文名 主队国旗 vs  客队国旗 客队中文名 （获胜的比分突出颜色，失败的比分灰色）
+
+---
+
+需要优化
+
+比赛信息更新了比赛轮次 name字段
+
+```
+{
+	"matchDetails": {
+		"1": {
+			"name": "J组第一轮",
+			"host": "ARG",
+			"guest": "ALG",
+			"month": 5,
+			"day": 17,
+			"hour": 9,
+			"min": 0,
+			"dayOfWeek": "三",
+			"hostscore": 3,
+			"guestscore": 0
+		},
+		"2": {
+			"name": "J组第二轮",
+			"host": "ARG",
+			"guest": "AUT",
+			"month": 5,
+			"day": 23,
+			"hour": 1,
+			"min": 0,
+			"dayOfWeek": "二",
+			"hostscore": 2,
+			"guestscore": 0
+		},
+		"3": {
+			"name": "J组第三轮",
+			"host": "JOR",
+			"guest": "ARG",
+			"month": 5,
+			"day": 28,
+			"hour": 10,
+			"min": 0,
+			"dayOfWeek": "日",
+			"hostscore": 1,
+			"guestscore": 3
+		},
+		"4": {
+			"name": "1/16决赛",
+			"host": "ARG",
+			"guest": "CPV",
+			"month": 6,
+			"day": 4,
+			"hour": 6,
+			"min": 0,
+			"dayOfWeek": "六",
+			"hostscore": 3,
+			"guestscore": 2
+		},
+		"5": {
+			"name": "1/8决赛",
+			"host": "ARG",
+			"guest": "EGY",
+			"month": 6,
+			"day": 8,
+			"hour": 0,
+			"min": 0,
+			"dayOfWeek": "三",
+			"hostscore": 3,
+			"guestscore": 2
+		},
+		"6": {
+			"name": "1/4决赛",
+			"host": "ARG",
+			"guest": "SUI",
+			"month": 6,
+			"day": 12,
+			"hour": 9,
+			"min": 0,
+			"dayOfWeek": "日",
+			"hostscore": 3,
+			"guestscore": 1
+		},
+		"7": {
+			"name": "半决赛",
+			"host": "ENG",
+			"guest": "ARG",
+			"month": 6,
+			"day": 16,
+			"hour": 3,
+			"min": 0,
+			"dayOfWeek": "四",
+			"hostscore": 1,
+			"guestscore": 2
+		},
+		"8": {
+			"name": "决赛",
+			"host": "ESP",
+			"guest": "ARG",
+			"month": 6,
+			"day": 20,
+			"hour": 3,
+			"min": 0,
+			"dayOfWeek": "一"
+		}
+	},
+	"country_infos": {
+		"ARG": {"name": "阿根廷", "flag": "🇦🇷"},
+		"ALG": {"name": "阿尔及利亚", "flag": "🇩🇿"},
+		"AUT": {"name": "奥地利", "flag": "🇦🇹"},
+		"JOR": {"name": "约旦", "flag": "🇯🇴"},
+		"CPV": {"name": "佛得角", "flag": "🇨🇻"},
+		"EGY": {"name": "埃及", "flag": "🇪🇬"},
+		"SUI": {"name": "瑞士", "flag": "🇨🇭"},
+		"ENG": {"name": "英格兰", "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿"},
+		"ESP": {"name": "西班牙", "flag": "🇪🇸"}
+	},
+}
+```
+
+1. 比赛信息bug调整：第二行期望值：主队国旗在主队名称右边，客队国旗在客队名称左边，请调整
+2. 第一行更改为：比赛轮次 :日期 周几 时间
+3. 因为网页中国旗emoji无法正常显示，改为引用图片，地址在assets/flags, 图片名称是三字母简称 扩展名webp
+4. 获胜比分失败比分的颜色样式组合没有统一，获胜方比分是黄色，失败方比分是深蓝色，参考第一场
