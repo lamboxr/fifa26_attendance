@@ -74,39 +74,64 @@
             flex-shrink: 0;
         }
 
+        /* ---- 标题区域：国旗跨两行，主标题副标题首字对齐 ---- */
         .logo {
-            display: flex;
-            flex-direction: column;
-            gap: 0.1vh;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-template-rows: auto auto;
+            gap: 0.2vh 0.8vw;
+            align-items: center;
         }
-        .logo .title-row {
+
+        .flag-wrapper {
+            grid-row: 1 / 3;
+            grid-column: 1;
             display: flex;
             align-items: center;
-            gap: 0.8vw;
+            height: 100%;
+            min-height: 5.5vh;
         }
-        .logo .title-row .flag-img {
-            height: 3.4vh;
+
+        .flag-wrapper .flag-img {
+            height: 100%;
             width: auto;
+            max-height: 7vh;
+            object-fit: contain;
             display: block;
             border-radius: 0.2vw;
             box-shadow: 0 0.1vw 0.4vw rgba(0, 0, 0, 0.08);
         }
-        .logo h1 {
+
+        .title-row {
+            grid-row: 1;
+            grid-column: 2;
+            display: flex;
+            align-items: center;
+            gap: 0.6vw;
+        }
+
+        .title-row h1 {
             font-size: 2.4vw;
             font-weight: 800;
             color: #1A3A5C;
             letter-spacing: 0.06vw;
             line-height: 1.2;
+            margin: 0;
         }
-        .logo h1 .highlight {
+        .title-row h1 .highlight {
             color: #2E86C1;
         }
+
         .logo .sub {
+            grid-row: 2;
+            grid-column: 2;
             font-size: 1.6vw;
             color: #4A7A9C;
             letter-spacing: 0.25vw;
             font-weight: 500;
-            margin-top: -0.1vh;
+            margin: 0;
+            padding: 0;
+            line-height: 1.2;
         }
 
         .round-badge {
@@ -478,7 +503,7 @@
                 height: 88vh;
                 padding: 2.0vh 2.4vw 1.4vh;
             }
-            .logo h1 {
+            .title-row h1 {
                 font-size: 2.8vw;
             }
             .logo .sub {
@@ -508,14 +533,14 @@
                 padding: 1.4vh 1.8vw 1.0vh;
                 border-radius: 3vw;
             }
-            .logo h1 {
+            .title-row h1 {
                 font-size: 3.6vw;
             }
             .logo .sub {
                 font-size: 2.4vw;
             }
-            .logo .title-row .flag-img {
-                height: 2.8vh;
+            .flag-wrapper .flag-img {
+                max-height: 5vh;
             }
             .round-badge {
                 font-size: 1.4vw;
@@ -562,14 +587,14 @@
                 padding: 0.8vh 1.0vw 0.6vh;
                 border-radius: 2.5vw;
             }
-            .logo h1 {
+            .title-row h1 {
                 font-size: 4.4vw;
             }
             .logo .sub {
                 font-size: 2.8vw;
             }
-            .logo .title-row .flag-img {
-                height: 2.4vh;
+            .flag-wrapper .flag-img {
+                max-height: 4vh;
             }
             .round-badge {
                 font-size: 1.8vw;
@@ -619,8 +644,10 @@
         <!-- 头部 -->
         <header>
             <div class="logo">
-                <div class="title-row">
+                <div class="flag-wrapper">
                     <img src="./assets/argentina-flag.png" alt="阿根廷国旗" class="flag-img" onerror="this.style.display='none'" />
+                </div>
+                <div class="title-row">
                     <h1>FIFA 2026世界杯 <span class="highlight">我是全勤王</span></h1>
                 </div>
                 <div class="sub">武汉阿根廷球迷俱乐部 观赛盛宴</div>
@@ -663,8 +690,8 @@
             const AUTO_PAUSE_SECONDS = 2.5;
             const AVATAR_INTERVAL_MS = 380;
 
-            const ELIMINATE_ANIMATION_DURATION_MS = 1500;
-            const ELIMINATE_INTERVAL_MS = 300;
+            const ELIMINATE_ANIMATION_DURATION_MS = 900;
+            const ELIMINATE_INTERVAL_MS = 80;
             const ELIMINATE_INITIAL_DELAY_MS = 300;
 
             document.documentElement.style.setProperty('--eliminate-duration', (ELIMINATE_ANIMATION_DURATION_MS / 1000) +
@@ -962,7 +989,6 @@
                 state.eliminateTimers.forEach(t => clearTimeout(t));
                 state.eliminateTimers = [];
 
-                // 找到所有标记为待淘汰的卡片（data-eliminate="true"）
                 const eliminateCards = grid.querySelectorAll('[data-eliminate="true"]');
                 if (eliminateCards.length === 0) return 0;
 
@@ -972,7 +998,6 @@
                 eliminateCards.forEach((card) => {
                     const delay = ELIMINATE_INITIAL_DELAY_MS + index * ELIMINATE_INTERVAL_MS;
                     const timer = setTimeout(() => {
-                        // 直接从蓝色（qualify）变为红色（eliminate）
                         card.classList.remove('qualify', 'qualify-pulse');
                         card.classList.add('eliminate');
                         card.removeAttribute('data-eliminate');
@@ -1015,22 +1040,15 @@
                             const content = buildCardContent(name, showAvatars);
                             el.appendChild(content);
 
-                            // 晋级者：蓝色 + 对勾
                             if (qualifySet.has(name)) {
                                 el.classList.add('qualify');
                                 const mark = document.createElement('span');
                                 mark.className = 'check-mark';
                                 mark.textContent = ' ✓';
                                 el.appendChild(mark);
-                            }
-                            // 待淘汰者：蓝色（与晋级者一致，无对勾）
-                            else if (eliminateSet.has(name)) {
+                            } else if (eliminateSet.has(name)) {
                                 el.classList.add('qualify');
                                 el.setAttribute('data-eliminate', 'true');
-                            }
-                            // 其他情况（如回归者）
-                            else {
-                                // 保持默认白色
                             }
 
                             if (reappearSet.has(name)) {
@@ -1070,16 +1088,13 @@
                     const content = buildCardContent(name, showAvatars);
                     card.appendChild(content);
 
-                    // 晋级者：蓝色 + 对勾
                     if (qualifySet.has(name)) {
                         card.classList.add('qualify');
                         const mark = document.createElement('span');
                         mark.className = 'check-mark';
                         mark.textContent = ' ✓';
                         card.appendChild(mark);
-                    }
-                    // 待淘汰者：蓝色（与晋级者一致，无对勾）
-                    else if (eliminateSet.has(name)) {
+                    } else if (eliminateSet.has(name)) {
                         card.classList.add('qualify');
                         card.setAttribute('data-eliminate', 'true');
                     }
