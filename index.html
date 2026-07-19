@@ -323,12 +323,12 @@
             color: #2E86C1;
         }
 
-        /* ---- 淘汰（逐个延迟在 JS 中控制） ---- */
+        /* ---- 淘汰（动画时长由 JS 通过 CSS 变量控制） ---- */
         .name-card.eliminate {
             background: rgba(231, 76, 60, 0.06);
             border-color: rgba(231, 76, 60, 0.18);
             color: #C0392B;
-            animation: eliminateFade 0.9s ease-in forwards;
+            animation: eliminateFade var(--eliminate-duration, 0.9s) ease-in forwards;
             pointer-events: none;
             z-index: 5;
         }
@@ -651,11 +651,18 @@
             'use strict';
 
             // =================================================================
-            //  ⚙️ 配置
+            //  ⚙️ 可配置参数
             // =================================================================
-            const AUTO_PAUSE_SECONDS = 2.5;
-            const AVATAR_INTERVAL_MS = 380;
-            const ELIMINATE_INTERVAL_MS = 80; // 每个淘汰者间隔（毫秒）
+            const AUTO_PAUSE_SECONDS = 2.5; // 每次晋级后暂停秒数
+            const AVATAR_INTERVAL_MS = 380; // 头像逐个显示间隔（毫秒）
+
+            // ---- 淘汰动画参数 ----
+            const ELIMINATE_ANIMATION_DURATION_MS = 1500; // 单个标签消失动画时长（毫秒）
+            const ELIMINATE_INTERVAL_MS = 300; // 标签与标签开始消失的间隔（毫秒）
+
+            // ---- 将淘汰动画时长注入 CSS 变量 ----
+            document.documentElement.style.setProperty('--eliminate-duration', (ELIMINATE_ANIMATION_DURATION_MS / 1000) +
+            's');
 
             // =================================================================
             //  📌 固定名单（8场）
@@ -955,7 +962,7 @@
             }
 
             // =================================================================
-            //  逐个消除淘汰者（设置 animation-delay）
+            //  逐个消除淘汰者（使用配置参数）
             // =================================================================
             function staggerEliminateCards() {
                 const eliminateCards = grid.querySelectorAll('.name-card.eliminate');
@@ -968,9 +975,10 @@
                     index++;
                 });
 
-                // 返回最后一个淘汰者的延迟 + 动画时长（900ms）+ 缓冲
+                // 计算总耗时：最后一个的延迟 + 动画时长 + 缓冲
                 const maxDelay = (index - 1) * ELIMINATE_INTERVAL_MS;
-                return maxDelay + 900 + 150;
+                const totalDuration = maxDelay + ELIMINATE_ANIMATION_DURATION_MS + 150;
+                return totalDuration;
             }
 
             // =================================================================
@@ -1010,6 +1018,8 @@
                             }
                             if (eliminateSet.has(name)) {
                                 el.classList.add('eliminate');
+                                // 确保动画时长使用 CSS 变量
+                                el.style.animationDelay = '0ms';
                             }
                             if (reappearSet.has(name)) {
                                 el.classList.add('reappear');
@@ -1057,6 +1067,7 @@
                     }
                     if (eliminateSet.has(name)) {
                         card.classList.add('eliminate');
+                        card.style.animationDelay = '0ms';
                     }
                     if (reappearSet.has(name)) {
                         card.classList.add('reappear');
@@ -1173,7 +1184,7 @@
                     showAvatars: false,
                 });
 
-                // 计算淘汰动画总时长
+                // 计算淘汰动画总时长（使用配置参数）
                 const totalEliminateDuration = staggerEliminateCards();
 
                 // 等待淘汰完成，然后进入第二阶段
@@ -1221,7 +1232,7 @@
                             }
                         }
                     }, 1400);
-                }, totalEliminateDuration + 150); // 淘汰动画完成后 + 缓冲
+                }, totalEliminateDuration + 150);
             }
 
             // =================================================================
@@ -1375,10 +1386,11 @@
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级 (逐个淘汰版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
+                console.log(`🇦🇷 阿根廷观赛晋级 (可配置淘汰参数版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
                 console.log(`⏸️ 每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
-                console.log(`⏳ 淘汰间隔 ${ELIMINATE_INTERVAL_MS}ms，逐个消失`);
+                console.log(`⏳ 单个淘汰动画时长: ${ELIMINATE_ANIMATION_DURATION_MS}ms`);
+                console.log(`⏳ 标签消失间隔: ${ELIMINATE_INTERVAL_MS}ms`);
                 console.log('⌨️  按 空格键 开始自动播放 | 刷新页面重置');
                 console.log('📁 阿根廷国旗图片: ./assets/argentina-flag.png');
                 console.log('📁 头像图片: ./assets/avatars/名字.jpg');
