@@ -256,22 +256,17 @@
             border-radius: 50%;
             object-fit: cover;
             flex-shrink: 0;
-            border: 0.10vw solid rgba(108, 180, 238, 0.25);
-            background: rgba(200, 220, 240, 0.3);
-            opacity: 0;
-            animation: avatarFadeIn 0.5s ease forwards;
+            border: 0.10vw solid rgba(108, 180, 238, 0.20);
+            background: rgba(200, 220, 240, 0.20);
             display: inline-block;
+            opacity: 0;
+            transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(0.6);
         }
 
-        @keyframes avatarFadeIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.75);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
+        .name-card .avatar.show {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .name-card .avatar.hidden {
@@ -285,8 +280,12 @@
             min-height: 2.6vh;
             border-radius: 50%;
             flex-shrink: 0;
-            background: rgba(200, 220, 240, 0.25);
-            border: 0.10vw solid rgba(108, 180, 238, 0.12);
+            background: rgba(200, 220, 240, 0.20);
+            border: 0.10vw solid rgba(108, 180, 238, 0.10);
+            display: inline-block;
+        }
+
+        .name-card .name-text {
             display: inline-block;
         }
 
@@ -654,13 +653,14 @@
             // =================================================================
             //  ⚙️ 配置
             // =================================================================
-            const AUTO_PAUSE_SECONDS = 0;
+            const AUTO_PAUSE_SECONDS = 2.5;
+            const AVATAR_INTERVAL_MS = 380; // 每个头像显示间隔（毫秒）
 
             // =================================================================
-            //  📌 固定名单（8场，按最新表格整理）
+            //  📌 固定名单（8场）
             // =================================================================
             const FIXED_ROUNDS = [
-                // 第一场（共76人，去重后）
+                // 第一场（76人，去重后）
                 [
                     "武汉阿根廷球迷俱乐部", "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", ".",
                     "Flash", "张誉", "BLEO", "百事可乐", "烟枪", "边路一条虫", "热血的心",
@@ -675,7 +675,7 @@
                     "🔫", "moonfizz", "小王哥", "AKhArLequIn", "冯玄", "芹泽多摩雄呀",
                     "张迪", "MITNY", "诺言", "无", "初心", "杨文"
                 ],
-                // 第二场
+                // 第二场（34人）
                 [
                     "勤勤勤", "丶布宜诺斯艾利斯.", "A", "王昊💎🐉", ".", "张誉", "BLEO",
                     "百事可乐", "烟枪", "LYTTEOTW", "沐沐小无邪", "托尼·史塔克", "28号zz",
@@ -684,38 +684,38 @@
                     "我爱罐装可乐", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "冯玄", "芹泽多摩雄呀",
                     "张迪", "杨文"
                 ],
-                // 第三场
+                // 第三场（20人）
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "秋天的丝瓜", "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "豆包👶🏻的傻大爸", "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥",
                     "张迪", "杨文"
                 ],
-                // 第四场
+                // 第四场（19人）
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "秋天的丝瓜", "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第五场
+                // 第五场（18人）
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第六场
+                // 第六场（18人）
                 [
                     "A", "张誉", "烟枪", "沐沐小无邪", "28号zz", "史涛维", "胡嵩",
                     "流浪猫", "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘",
                     "🐑雨点", "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第七场
+                // 第七场（16人）
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "胡嵩", "流浪猫",
                     "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘", "🐑雨点",
                     "潇潇暮雨", "Lesliexscape🧀", "小王哥", "张迪", "杨文"
                 ],
-                // 第八场（最终16人）
+                // 第八场（16人，最终获奖者）
                 [
                     "A", "烟枪", "沐沐小无邪", "28号zz", "胡嵩", "流浪猫",
                     "Arhbo", "锡锅", "🇦🇷kun", "🙊陈聘聘", "🐑雨点",
@@ -736,7 +736,8 @@
                 isAutoPlaying: false,
                 isFinished: false,
                 hasStarted: false,
-                avatarsShown: false, // 标记头像是否已显示
+                avatarsShown: false,
+                avatarTimer: null,
             };
 
             // =================================================================
@@ -878,7 +879,7 @@
             // =================================================================
             //  构建卡片内容（头像 + 名字）
             // =================================================================
-            function buildCardContent(name, showAvatar, index) {
+            function buildCardContent(name, showAvatar) {
                 const fragment = document.createDocumentFragment();
 
                 if (showAvatar) {
@@ -887,12 +888,8 @@
                     avatar.src = `assets/avatars/${name}.jpg`;
                     avatar.alt = '';
                     avatar.dataset.name = name;
-                    // 依次展现：每个头像延迟不同
-                    const delay = index * 0.06;
-                    avatar.style.animationDelay = delay + 's';
                     avatar.onerror = function() {
                         this.classList.add('hidden');
-                        // 如果头像加载失败，用占位元素保持布局
                         const placeholder = document.createElement('span');
                         placeholder.className = 'avatar-placeholder';
                         this.parentNode.insertBefore(placeholder, this);
@@ -906,6 +903,58 @@
                 fragment.appendChild(nameSpan);
 
                 return fragment;
+            }
+
+            // =================================================================
+            //  逐个显示头像（顺序随机）
+            // =================================================================
+            function showAvatarsSequentially() {
+                if (state.avatarTimer) {
+                    clearTimeout(state.avatarTimer);
+                    state.avatarTimer = null;
+                }
+
+                // 获取所有卡片中的头像
+                const cards = grid.querySelectorAll('.name-card');
+                const avatarItems = [];
+                cards.forEach(card => {
+                    const avatar = card.querySelector('.avatar');
+                    if (avatar && !avatar.classList.contains('hidden')) {
+                        avatarItems.push({
+                            card: card,
+                            avatar: avatar
+                        });
+                    }
+                });
+
+                if (avatarItems.length === 0) return;
+
+                // 随机打乱顺序（Fisher-Yates）
+                for (let i = avatarItems.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [avatarItems[i], avatarItems[j]] = [avatarItems[j], avatarItems[i]];
+                }
+
+                state.avatarsShown = true;
+                let index = 0;
+
+                function showNext() {
+                    if (index >= avatarItems.length) {
+                        state.avatarTimer = null;
+                        return;
+                    }
+                    const item = avatarItems[index];
+                    // 添加 show 类触发动画
+                    item.avatar.classList.add('show');
+                    // 确保头像可见
+                    item.avatar.style.opacity = '1';
+                    item.avatar.style.transform = 'scale(1)';
+                    index++;
+                    state.avatarTimer = setTimeout(showNext, AVATAR_INTERVAL_MS);
+                }
+
+                // 延迟一点点开始，确保 DOM 已完全更新
+                state.avatarTimer = setTimeout(showNext, 200);
             }
 
             // =================================================================
@@ -929,16 +978,14 @@
                         if (name) existing.set(name, child);
                     }
                     const newSet = new Set(names);
-                    let index = 0;
 
                     for (const [name, el] of existing) {
                         if (newSet.has(name)) {
-                            // 保留原有位置样式
                             el.className = 'name-card';
                             // 清空内容
                             el.innerHTML = '';
-                            // 重建内容
-                            const content = buildCardContent(name, showAvatars, index);
+                            // 重建内容（包含头像）
+                            const content = buildCardContent(name, showAvatars);
                             el.appendChild(content);
                             // 添加状态类
                             if (qualifySet.has(name)) {
@@ -957,7 +1004,10 @@
                             if (extraClass) {
                                 el.classList.add(extraClass);
                             }
-                            index++;
+                            // 确保位置样式保留
+                            el.style.position = 'absolute';
+                            el.style.visibility = 'visible';
+                            el.style.opacity = '1';
                         } else {
                             el.remove();
                         }
@@ -977,12 +1027,12 @@
 
                 const fragment = document.createDocumentFragment();
                 const cards = [];
-                names.forEach((name, index) => {
+                names.forEach((name) => {
                     const card = document.createElement('div');
                     card.className = 'name-card';
                     card.dataset.name = name;
 
-                    const content = buildCardContent(name, showAvatars, index);
+                    const content = buildCardContent(name, showAvatars);
                     card.appendChild(content);
 
                     if (qualifySet.has(name)) {
@@ -1074,6 +1124,10 @@
                     showAvatars: false,
                 });
                 state.avatarsShown = false;
+                if (state.avatarTimer) {
+                    clearTimeout(state.avatarTimer);
+                    state.avatarTimer = null;
+                }
                 updateRoundUI();
             }
 
@@ -1098,7 +1152,7 @@
                     else eliminateSet.add(name);
                 });
 
-                // 第一阶段：显示晋级/淘汰标记（无头像）
+                // 第一阶段：显示晋级/淘汰标记
                 renderCards(prevNames, {
                     qualifySet,
                     eliminateSet,
@@ -1106,7 +1160,7 @@
                     showAvatars: false,
                 });
 
-                // 第二阶段：高亮晋级名单（无头像）
+                // 第二阶段：高亮晋级名单
                 setTimeout(() => {
                     const glowSet = new Set(nextNames);
                     const isFinal = (to === TOTAL_ROUNDS - 1);
@@ -1119,18 +1173,25 @@
                     state.currentRound = to;
                     updateRoundUI();
 
-                    // 第三阶段：恢复正常样式 + 最终场显示头像
+                    // 第三阶段：恢复正常样式 + 最终场显示头像（重新布局）
                     setTimeout(() => {
                         const normalQualify = new Set(nextNames);
                         const isFinalStage = (to === TOTAL_ROUNDS - 1);
+
+                        // 最终场使用 skipLayout: false 重新布局，给头像留空间
                         renderCards(nextNames, {
                             qualifySet: normalQualify,
-                            skipLayout: true,
+                            skipLayout: !isFinalStage,
                             showAvatars: isFinalStage,
                         });
+
                         if (isFinalStage) {
-                            state.avatarsShown = true;
+                            // 延迟启动头像逐个显示
+                            setTimeout(() => {
+                                showAvatarsSequentially();
+                            }, 400);
                         }
+
                         state.isAnimating = false;
 
                         if (state.currentRound >= TOTAL_ROUNDS - 1) {
@@ -1160,6 +1221,10 @@
                     state.isFinished = false;
                     state.currentRound = 0;
                     state.avatarsShown = false;
+                    if (state.avatarTimer) {
+                        clearTimeout(state.avatarTimer);
+                        state.avatarTimer = null;
+                    }
                     renderCurrentRound();
                     updateRoundUI();
                     setTimeout(() => {
@@ -1222,6 +1287,10 @@
                         clearTimeout(state.autoPlayTimer);
                         state.autoPlayTimer = null;
                     }
+                }
+                if (state.avatarTimer) {
+                    clearTimeout(state.avatarTimer);
+                    state.avatarTimer = null;
                 }
                 state.currentRound = 0;
                 state.isFinished = false;
@@ -1292,12 +1361,13 @@
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级 (头像版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
+                console.log(`🇦🇷 阿根廷观赛晋级 (头像逐个随机版) 已就绪，共 ${TOTAL_ROUNDS} 场`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
                 console.log(`⏸️ 每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
+                console.log(`🖼️  头像显示间隔 ${AVATAR_INTERVAL_MS}ms，顺序随机`);
                 console.log('⌨️  按 空格键 开始自动播放 | 刷新页面重置');
-                console.log('🖼️  最终名单将显示头像，图片路径: assets/avatars/名字.jpg');
                 console.log('📁 阿根廷国旗图片: ./assets/argentina-flag.png');
+                console.log('📁 头像图片: ./assets/avatars/名字.jpg');
             }
 
             if (document.readyState === 'loading') {
