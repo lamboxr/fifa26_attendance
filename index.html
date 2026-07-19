@@ -542,12 +542,10 @@
             margin: 0 0.15vw;
         }
 
-        /* 获胜比分（深蓝色） */
         #scoreboard .score-teams .score.win {
             color: #1A3A5C;
         }
 
-        /* 失败比分（灰色） */
         #scoreboard .score-teams .score.lose {
             color: #999;
         }
@@ -566,6 +564,102 @@
             margin: 0 0.4vw;
             letter-spacing: 0.1vw;
             text-shadow: 0 0 0.3vw rgba(46, 134, 193, 0.15);
+        }
+
+        /* =========================================================
+                   感谢词覆盖层 — 左对齐，8行
+                   ========================================================= */
+        #thanks-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 300;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            /* 左对齐 */
+            padding: 3vh 4vw;
+            border-radius: inherit;
+            transition: opacity 1s ease;
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        #thanks-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #thanks-text {
+            width: 100%;
+            max-width: 76vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            font-size: 1.5vw;
+            line-height: 2.6vw;
+            color: #1A3A5C;
+            text-align: left;
+            font-weight: 400;
+            letter-spacing: 0.04vw;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4vh;
+        }
+
+        #thanks-text .thanks-line {
+            display: block;
+            text-align: left;
+            width: 100%;
+            min-height: 2.6vw;
+            position: relative;
+        }
+
+        #thanks-text .thanks-line .line-content {
+            display: inline;
+        }
+
+        #thanks-text .thanks-line .line-content .thanks-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4vw;
+            font-weight: 600;
+            color: #2E86C1;
+            white-space: nowrap;
+        }
+
+        #thanks-text .thanks-line .line-content .thanks-avatar {
+            width: 2.6vh;
+            height: 2.6vh;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 0.1vw solid #2E86C1;
+            background: #eee;
+        }
+
+        #thanks-text .thanks-line .cursor {
+            display: inline-block;
+            width: 0.08vw;
+            height: 2.2vw;
+            background: #2E86C1;
+            animation: blink 0.8s step-end infinite;
+            vertical-align: text-bottom;
+            margin-left: 0.1vw;
+            position: relative;
+            top: 0.1vw;
+        }
+
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
         }
 
         /* ===== 工具类 ===== */
@@ -639,6 +733,21 @@
             #scoreboard .score-card {
                 padding: 0.8vh 2.2vw;
                 min-width: 40vw;
+            }
+            #thanks-text {
+                font-size: 1.8vw;
+                line-height: 3.0vw;
+                max-width: 80vw;
+            }
+            #thanks-text .thanks-line {
+                min-height: 3.0vw;
+            }
+            #thanks-text .thanks-line .cursor {
+                height: 2.8vw;
+            }
+            #thanks-text .thanks-line .line-content .thanks-avatar {
+                width: 2.2vh;
+                height: 2.2vh;
             }
         }
 
@@ -720,6 +829,21 @@
                 padding: 0.6vh 3vw;
                 min-width: 55vw;
             }
+            #thanks-text {
+                font-size: 2.4vw;
+                line-height: 3.8vw;
+                max-width: 88vw;
+            }
+            #thanks-text .thanks-line {
+                min-height: 3.8vw;
+            }
+            #thanks-text .thanks-line .cursor {
+                height: 3.6vw;
+            }
+            #thanks-text .thanks-line .line-content .thanks-avatar {
+                width: 2.0vh;
+                height: 2.0vh;
+            }
         }
 
         @media (max-width: 480px) {
@@ -798,6 +922,21 @@
                 padding: 0.4vh 2.5vw;
                 min-width: 70vw;
             }
+            #thanks-text {
+                font-size: 3.0vw;
+                line-height: 4.6vw;
+                max-width: 92vw;
+            }
+            #thanks-text .thanks-line {
+                min-height: 4.6vw;
+            }
+            #thanks-text .thanks-line .cursor {
+                height: 4.4vw;
+            }
+            #thanks-text .thanks-line .line-content .thanks-avatar {
+                width: 1.8vh;
+                height: 1.8vh;
+            }
         }
     </style>
 </head>
@@ -843,6 +982,11 @@
                 <div class="score-teams"></div>
             </div>
         </div>
+
+        <!-- 感谢词覆盖层 -->
+        <div id="thanks-overlay">
+            <div id="thanks-text"></div>
+        </div>
     </div>
 
     <script>
@@ -862,6 +1006,10 @@
             const SCOREBOARD_MOVE_IN_DURATION_MS = 600;
             const SCOREBOARD_STAY_DURATION_MS = 2000;
             const SCOREBOARD_MOVE_OUT_DURATION_MS = 600;
+
+            // ---- 感谢词配置 ----
+            const THANKS_TYPING_INTERVAL_MS = 30; // 每行每个字符间隔
+            const THANKS_PAUSE_AFTER_MS = 10000; // 感谢词结束后停顿毫秒
 
             document.documentElement.style.setProperty('--eliminate-duration', (ELIMINATE_ANIMATION_DURATION_MS / 1000) +
             's');
@@ -990,6 +1138,24 @@
             };
 
             // =================================================================
+            //  📌 感谢词模板（8行）
+            // =================================================================
+            const THANKS_LINES = [
+                '感谢梅西，感谢阿根廷队，为我们带来这一个月无与伦比的激情与快乐——每一粒进球、每一次呐喊，都刻进了我们的记忆深处！',
+                '感谢每一位到场的或守在屏幕前的阿根廷球迷，是你们不离不弃的热爱，给了国家队、给了梅西、给了每一位球员最坚实的后盾！',
+                '感谢我们可爱的{leader}，带着我们一同沉浸在这场足球盛宴里，从小组赛到决赛，让我们一次次见证阿根廷的辉煌时刻，一次次为蓝白条纹热泪盈眶！',
+                '感谢自讨腰包赞助本次活动的{sponsors}！',
+                '感谢武汉阿根廷球迷协会，以及协会球队的每一位兄弟姐妹，是你们让这座城市的阿根廷情结如此滚烫而真实！',
+                '感谢八场比赛全程参与的志愿者们{volunteers}你们的汗水与笑容，是这场旅程不可或缺的光亮！',
+                'Vamos Argentina! Gracias Messi!',
+                '四年后，我们再聚！'
+            ];
+
+            const LEADER = ["巴蒂斯图阳"];
+            const SPONSORS = ["洪主席"];
+            const VOLUNTEERS = ["烟枪", "福崽崽", "🙊陈聘聘", "李圣", "奎爷"]
+
+            // =================================================================
             //  📌 固定名单（8场）
             // =================================================================
             const FIXED_ROUNDS = [
@@ -1066,6 +1232,7 @@
                 eliminateTimers: [],
                 scoreboardTimer: null,
                 isScoreboardVisible: false,
+                isThanksDone: false,
             };
 
             // =================================================================
@@ -1083,6 +1250,9 @@
             const scoreRound = scoreboard.querySelector('.score-round');
             const scoreDate = scoreboard.querySelector('.score-date');
             const scoreTeams = scoreboard.querySelector('.score-teams');
+
+            const thanksOverlay = document.getElementById('thanks-overlay');
+            const thanksText = document.getElementById('thanks-text');
 
             // =================================================================
             //  布局算法
@@ -1494,11 +1664,9 @@
                 const hostInfo = countries[match.host];
                 const guestInfo = countries[match.guest];
 
-                // 第一行：比赛轮次
                 const roundName = match.name || `第${round}场`;
                 scoreRound.textContent = roundName;
 
-                // 第二行：日期
                 let dateStr;
                 if (round === 8) {
                     dateStr = `Today`;
@@ -1512,17 +1680,13 @@
                 }
                 scoreDate.textContent = dateStr;
 
-                // 第三行：对阵
                 let html = '';
-
-                // 主队（名称 + 国旗）
                 html += `<span class="team">`;
                 html += `<span class="name">${hostInfo.name}</span>`;
                 html +=
                     `<img class="flag-img" src="assets/flags/${match.host}.webp" alt="${match.host}" onerror="this.style.display='none'" />`;
                 html += `</span>`;
 
-                // 判断是否未开球
                 const isUnplayed = (match.hostscore === -1 && match.guestscore === -1);
 
                 if (!isUnplayed && match.hostscore !== undefined && match.guestscore !== undefined) {
@@ -1558,7 +1722,6 @@
                     html += `<span class="vs">VS</span>`;
                 }
 
-                // 客队（国旗 + 名称）
                 html += `<span class="team">`;
                 html +=
                     `<img class="flag-img" src="assets/flags/${match.guest}.webp" alt="${match.guest}" onerror="this.style.display='none'" />`;
@@ -1602,7 +1765,138 @@
             }
 
             // =================================================================
-            //  特效（修正第八场比分牌）
+            //  感谢词 — 8行左对齐，每行独立打字，位置固定
+            // =================================================================
+            function buildThanksLines() {
+                return THANKS_LINES.map(line => {
+                    let html = line;
+                    html = html.replace(/\{leader\}/g, buildNameList(LEADER));
+                    html = html.replace(/\{sponsors\}/g, buildNameList(SPONSORS));
+                    html = html.replace(/\{volunteers\}/g, buildNameList(VOLUNTEERS));
+                    return html;
+                });
+            }
+
+            function buildNameList(names) {
+                return names.map(name =>
+                    `<span class="thanks-name"><img class="thanks-avatar" src="assets/thanks/${name}.jpg" alt="${name}" onerror="this.style.display='none'">${name}</span>`
+                ).join('、');
+            }
+
+            function typeThanks() {
+                return new Promise((resolve) => {
+                    const lines = buildThanksLines();
+                    // 清空容器
+                    thanksText.innerHTML = '';
+
+                    // 为每行创建独立元素
+                    const lineElements = [];
+                    const allChars = [];
+
+                    lines.forEach((lineHTML, lineIdx) => {
+                        const lineDiv = document.createElement('div');
+                        lineDiv.className = 'thanks-line';
+                        // 用 span 包裹内容，cursor 放在最后
+                        const contentSpan = document.createElement('span');
+                        contentSpan.className = 'line-content';
+                        contentSpan.innerHTML = ''; // 初始为空
+                        lineDiv.appendChild(contentSpan);
+
+                        // 存储每行的字符（包括 HTML 标签）
+                        // 我们需要将 HTML 解析为字符序列，保留标签结构
+                        const container = document.createElement('div');
+                        container.innerHTML = lineHTML;
+                        const chars = [];
+                        function walk(node) {
+                            if (node.nodeType === Node.TEXT_NODE) {
+                                const text = node.textContent;
+                                for (let ch of text) {
+                                    chars.push(ch);
+                                }
+                            } else if (node.nodeType === Node.ELEMENT_NODE) {
+                                const tagName = node.tagName.toLowerCase();
+                                const attrs = node.attributes;
+                                let attrStr = '';
+                                for (let attr of attrs) {
+                                    attrStr += ` ${attr.name}="${attr.value}"`;
+                                }
+                                chars.push({ type: 'tagStart', tag: tagName, attrs: attrStr });
+                                for (let child of node.childNodes) {
+                                    walk(child);
+                                }
+                                chars.push({ type: 'tagEnd', tag: tagName });
+                            }
+                        }
+                        walk(container);
+
+                        // 存储该行信息
+                        const lineInfo = {
+                            element: lineDiv,
+                            contentSpan: contentSpan,
+                            chars: chars,
+                            currentIndex: 0,
+                            outputHTML: '',
+                            cursor: null,
+                        };
+                        lineElements.push(lineInfo);
+                        allChars.push(lineInfo);
+
+                        // 添加到主容器
+                        thanksText.appendChild(lineDiv);
+                    });
+
+                    // 所有行同时开始打字
+                    let activeLines = lineElements.length;
+                    let allDone = false;
+
+                    function typeNextForLine(lineInfo) {
+                        if (lineInfo.currentIndex >= lineInfo.chars.length) {
+                            // 该行完成
+                            if (lineInfo.cursor) {
+                                lineInfo.cursor.remove();
+                                lineInfo.cursor = null;
+                            }
+                            activeLines--;
+                            if (activeLines === 0 && !allDone) {
+                                allDone = true;
+                                resolve();
+                            }
+                            return;
+                        }
+
+                        const item = lineInfo.chars[lineInfo.currentIndex];
+                        if (typeof item === 'string') {
+                            lineInfo.outputHTML += item;
+                        } else if (item.type === 'tagStart') {
+                            lineInfo.outputHTML += `<${item.tag}${item.attrs}>`;
+                        } else if (item.type === 'tagEnd') {
+                            lineInfo.outputHTML += `</${item.tag}>`;
+                        }
+
+                        // 更新内容，保留光标
+                        lineInfo.contentSpan.innerHTML = lineInfo.outputHTML;
+
+                        // 添加光标（如果没有）
+                        if (!lineInfo.cursor) {
+                            const cursor = document.createElement('span');
+                            cursor.className = 'cursor';
+                            lineInfo.element.appendChild(cursor);
+                            lineInfo.cursor = cursor;
+                        }
+
+                        lineInfo.currentIndex++;
+                        setTimeout(() => typeNextForLine(lineInfo), THANKS_TYPING_INTERVAL_MS);
+                    }
+
+                    // 启动所有行
+                    lineElements.forEach(lineInfo => {
+                        setTimeout(() => typeNextForLine(lineInfo), 100);
+                    });
+                });
+            }
+
+            // =================================================================
+            //  特效（含感谢词前置）
             // =================================================================
             async function playQualifyEffect() {
                 if (state.isAnimating) return;
@@ -1612,10 +1906,8 @@
 
                 state.isAnimating = true;
 
-                // 显示当前场次比分牌
                 await showScoreboard(from);
 
-                // 执行淘汰逻辑
                 const prevNames = FIXED_ROUNDS[from];
                 const nextNames = FIXED_ROUNDS[to];
                 const nextSet = new Set(nextNames);
@@ -1643,7 +1935,6 @@
                     }, totalEliminateDuration + 150);
                 });
 
-                // 第二阶段：高亮晋级名单
                 const glowSet = new Set(nextNames);
                 renderCards(nextNames, {
                     qualifySet: glowSet,
@@ -1654,13 +1945,11 @@
                 state.currentRound = to;
                 updateRoundUI();
 
-                // 第三阶段：恢复正常样式 + 最终场显示比分牌和头像
                 await new Promise((resolve) => {
                     setTimeout(async () => {
                         const normalQualify = new Set(nextNames);
                         const isFinalStage = (to === TOTAL_ROUNDS - 1);
 
-                        // 移除高亮，显示普通蓝色样式（不带头像）
                         renderCards(nextNames, {
                             qualifySet: normalQualify,
                             skipLayout: true,
@@ -1668,9 +1957,7 @@
                         });
 
                         if (isFinalStage) {
-                            // ★ 显示最后一场的比分牌
                             await showScoreboard(to);
-                            // 比分牌移出后，添加头像
                             renderCards(nextNames, {
                                 qualifySet: normalQualify,
                                 skipLayout: true,
@@ -1841,28 +2128,47 @@
             function onKeyDown(e) {
                 if (e.key === ' ' || e.key === 'Space') {
                     e.preventDefault();
+                    if (!state.isThanksDone) return;
                     if (state.isAutoPlaying) return;
                     if (state.isAnimating) return;
-                    startAutoPlay();
+                    resetToFirst();
+                    setTimeout(() => {
+                        if (!state.isAutoPlaying && !state.isAnimating) {
+                            startAutoPlayInternal();
+                        }
+                    }, 400);
                 }
             }
 
             // =================================================================
             //  初始化
             // =================================================================
-            function init() {
+            async function init() {
+                thanksOverlay.classList.remove('hidden');
+
                 renderCurrentRound();
                 updateRoundUI();
-
                 scoreboard.style.transform = 'translateY(-50%) translateX(-100%)';
+
+                // 感谢词打字
+                await typeThanks();
+
+                // 停顿
+                await new Promise(resolve => setTimeout(resolve, THANKS_PAUSE_AFTER_MS));
+
+                // 隐藏覆盖层
+                thanksOverlay.classList.add('hidden');
+                state.isThanksDone = true;
+
+                // 启动名单流程
+                startAutoPlayInternal();
 
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                console.log(`🇦🇷 阿根廷观赛晋级 (第八场比分牌已修复) 共 ${TOTAL_ROUNDS} 场`);
-                console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
-                console.log('🎯 第八场将先显示决赛比分牌，再逐个展示头像');
-                console.log('⌨️  按 空格键 开始自动播放 | 刷新页面重置');
+                console.log(`🇦🇷 阿根廷观赛晋级 (8行左对齐) 共 ${TOTAL_ROUNDS} 场`);
+                console.log(`⏱️ 感谢词打字间隔 ${THANKS_TYPING_INTERVAL_MS}ms，停顿 ${THANKS_PAUSE_AFTER_MS/1000}s`);
+                console.log('⌨️  空格键重新播放（感谢词之后）');
             }
 
             if (document.readyState === 'loading') {
