@@ -22,7 +22,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 2.5vh 2.5vw;
+            padding: 3.5vh 3.5vw;
             position: relative;
         }
 
@@ -43,17 +43,17 @@
             z-index: 0;
         }
 
-        /* ===== 主容器 — 四周留白，不撑满 ===== */
+        /* ===== 主容器 — 留白更多 ===== */
         #app {
-            width: 92vw;
-            max-width: 92vw;
-            height: 90vh;
-            max-height: 90vh;
+            width: 88vw;
+            max-width: 88vw;
+            height: 85vh;
+            max-height: 85vh;
             background: rgba(255, 255, 255, 0.88);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
             border-radius: 2.4vw;
-            padding: 2.2vh 2.8vw 2.2vh;
+            padding: 2.8vh 3.2vw 2.8vh;
             box-shadow: 0 2.5vh 7vh rgba(0, 40, 80, 0.18), 0 0 0 0.15vw rgba(108, 180, 238, 0.12);
             border: 0.12vw solid rgba(255, 255, 255, 0.25);
             display: flex;
@@ -76,23 +76,25 @@
         }
 
         .logo h1 {
-            font-size: 2.6vw;
+            font-size: 2.2vw;
             font-weight: 800;
             color: #1A3A5C;
             display: flex;
             align-items: center;
             gap: 0.6vw;
             letter-spacing: 0.04vw;
+            line-height: 1.2;
         }
         .logo h1 .flag {
-            font-size: 3.0vw;
+            font-size: 2.6vw;
         }
         .logo .sub {
-            font-size: 0.95vw;
+            font-size: 1.0vw;
             color: #4A7A9C;
             letter-spacing: 0.2vw;
             margin-top: 0.1vh;
             font-weight: 500;
+            font-style: italic;
         }
 
         .round-badge {
@@ -104,6 +106,7 @@
             border-radius: 4vw;
             border: 0.10vw solid rgba(108, 180, 238, 0.18);
             font-size: 0.95vw;
+            flex-shrink: 0;
         }
         .round-badge .label {
             color: #1A3A5C;
@@ -358,7 +361,7 @@
             letter-spacing: 0.2vw;
         }
 
-        /* ===== 底部无任何按钮，完全留空 ===== */
+        /* ===== 底部无任何按钮 ===== */
         footer {
             display: none;
         }
@@ -392,33 +395,36 @@
         /* ===== 响应式（保持大屏优先，小屏兼容） ===== */
         @media (max-width: 1200px) {
             #app {
-                width: 94vw;
-                height: 92vh;
-                padding: 1.8vh 2.2vw;
+                width: 90vw;
+                height: 88vh;
+                padding: 2.0vh 2.4vw;
             }
             .logo h1 {
-                font-size: 3.0vw;
+                font-size: 2.6vw;
             }
             .name-card {
                 font-size: 1.8vw;
                 height: 4.0vh;
                 padding: 0.4vh 1.2vw;
             }
+            .logo .sub {
+                font-size: 1.1vw;
+            }
         }
 
         @media (max-width: 768px) {
             #app {
-                width: 96vw;
+                width: 94vw;
                 height: auto;
-                min-height: 88vh;
-                padding: 1.2vh 1.8vw 1.2vh;
+                min-height: 82vh;
+                padding: 1.4vh 2.0vw 1.4vh;
                 border-radius: 3vw;
             }
             .logo h1 {
-                font-size: 3.8vw;
+                font-size: 3.4vw;
             }
             .logo .sub {
-                font-size: 1.4vw;
+                font-size: 1.6vw;
             }
             .round-badge {
                 font-size: 1.4vw;
@@ -446,7 +452,7 @@
             }
             #nameGrid {
                 padding: 0.8vh 0.6vw;
-                min-height: 240px;
+                min-height: 200px;
             }
         }
 
@@ -456,10 +462,11 @@
                 border-radius: 2.5vw;
             }
             .logo h1 {
-                font-size: 4.8vw;
+                font-size: 4.2vw;
+                flex-wrap: wrap;
             }
             .logo .sub {
-                font-size: 1.8vw;
+                font-size: 2.0vw;
             }
             .round-badge {
                 font-size: 1.8vw;
@@ -488,7 +495,7 @@
             }
             #nameGrid {
                 padding: 0.4vh 0.4vw;
-                min-height: 180px;
+                min-height: 160px;
             }
         }
     </style>
@@ -499,8 +506,8 @@
         <!-- 头部 -->
         <header>
             <div class="logo">
-                <h1><span class="flag">🇦🇷</span> 观赛晋级</h1>
-                <div class="sub">· 阿根廷球迷 · 8场筛选 ·</div>
+                <h1><span class="flag">🇦🇷</span> FIFA 2026世界杯 武汉阿根廷球迷俱乐部 观赛盛宴</h1>
+                <div class="sub">· 谁是最热情的全勤球迷呢？ ·</div>
             </div>
             <div class="round-badge">
                 <span class="label">📋 场次</span>
@@ -605,7 +612,6 @@
                 autoPlayTimer: null,
                 isAutoPlaying: false,
                 isFinished: false,
-                isPaused: false,
             };
 
             // =================================================================
@@ -620,7 +626,7 @@
             const eliminateCountNum = document.getElementById('eliminateCountNum');
 
             // =================================================================
-            //  布局算法
+            //  布局算法（针对短名单优化，避免重叠）
             // =================================================================
             function applyScatterLayout(container, cards, count) {
                 if (!cards || cards.length === 0) return;
@@ -629,12 +635,15 @@
                 let w = rect.width || container.clientWidth || 800;
                 let h = rect.height || container.clientHeight || 500;
 
-                const pad = Math.min(w * 0.020, 40);
+                const pad = Math.min(w * 0.025, 45);
                 w = Math.max(w - pad * 2, 180);
                 h = Math.max(h - pad * 2, 180);
 
+                // 针对短名单（≤20人），使用更大的分散系数
+                const isShort = count <= 20;
                 const density = Math.min(count / 80, 1);
-                const scaleFactor = 0.46 + density * 0.40;
+                // 短名单时 scaleFactor 更小，让卡片更分散
+                const scaleFactor = isShort ? 0.40 + density * 0.35 : 0.46 + density * 0.40;
                 const areaW = w * scaleFactor;
                 const areaH = h * scaleFactor;
                 const offsetX = (w - areaW) / 2 + pad;
@@ -646,10 +655,18 @@
                 cols = Math.max(cols, 1);
                 rows = Math.max(rows, 1);
 
-                const cellW = areaW / (cols + 0.6);
-                const cellH = areaH / (rows + 0.6);
-                const randOffsetX = Math.min(cellW * 0.38, 48);
-                const randOffsetY = Math.min(cellH * 0.38, 48);
+                // 短名单时减少列数，让行数更多，垂直分散
+                if (isShort && count <= 20) {
+                    cols = Math.max(3, Math.ceil(Math.sqrt(count * aspect * 0.7)));
+                    rows = Math.ceil(count / cols);
+                }
+
+                const cellW = areaW / (cols + 0.7);
+                const cellH = areaH / (rows + 0.7);
+                // 短名单时增加随机偏移范围，让位置更错落
+                const randFactor = isShort ? 0.50 : 0.38;
+                const randOffsetX = Math.min(cellW * randFactor, 55);
+                const randOffsetY = Math.min(cellH * randFactor, 55);
 
                 // 获取每个卡片的实际宽度
                 const cardData = cards.map((card) => {
@@ -659,6 +676,8 @@
                 });
 
                 const positions = [];
+                // 为避免重叠，使用尝试-调整策略：如果两个卡片重叠，微调位置
+                const maxAttempts = 30;
                 for (let i = 0; i < cardData.length; i++) {
                     const col = i % cols;
                     const row = Math.floor(i / cols);
@@ -666,8 +685,8 @@
                     let baseY = offsetY + (row + 0.5) * cellH;
                     let shiftX = (Math.random() - 0.5) * randOffsetX * 2;
                     let shiftY = (Math.random() - 0.5) * randOffsetY * 2;
-                    const maxShiftX = Math.min(cellW * 0.32, 38);
-                    const maxShiftY = Math.min(cellH * 0.32, 38);
+                    const maxShiftX = Math.min(cellW * 0.35, 42);
+                    const maxShiftY = Math.min(cellH * 0.35, 42);
                     shiftX = Math.max(-maxShiftX, Math.min(maxShiftX, shiftX));
                     shiftY = Math.max(-maxShiftY, Math.min(maxShiftY, shiftY));
 
@@ -677,6 +696,38 @@
                     const ch = cardData[i].h;
                     x = Math.max(cw / 2 + pad, Math.min(w - cw / 2 - pad, x));
                     y = Math.max(ch / 2 + pad, Math.min(h - ch / 2 - pad, y));
+
+                    // 检查与已有卡片的重叠，若有则微调
+                    let attempt = 0;
+                    let adjusted = false;
+                    while (attempt < maxAttempts) {
+                        let overlap = false;
+                        for (let j = 0; j < positions.length; j++) {
+                            const p = positions[j];
+                            const gap = 6; // 最小间距（px）
+                            const overlapX = (x - cw / 2 < p.x + p.w + gap) && (x + cw / 2 + gap > p.x);
+                            const overlapY = (y - ch / 2 < p.y + p.h + gap) && (y + ch / 2 + gap > p.y);
+                            if (overlapX && overlapY) {
+                                overlap = true;
+                                break;
+                            }
+                        }
+                        if (!overlap) break;
+                        // 随机微调
+                        const adjustX = (Math.random() - 0.5) * Math.min(cellW * 0.3, 30);
+                        const adjustY = (Math.random() - 0.5) * Math.min(cellH * 0.3, 30);
+                        x = Math.max(cw / 2 + pad, Math.min(w - cw / 2 - pad, x + adjustX));
+                        y = Math.max(ch / 2 + pad, Math.min(h - ch / 2 - pad, y + adjustY));
+                        attempt++;
+                        adjusted = true;
+                    }
+                    // 如果仍然重叠，强行分散（但不影响整体美观）
+                    if (attempt >= maxAttempts) {
+                        // 使用更极端的偏移
+                        x = Math.max(cw / 2 + pad, Math.min(w - cw / 2 - pad, x + (Math.random() - 0.5) * 60));
+                        y = Math.max(ch / 2 + pad, Math.min(h - ch / 2 - pad, y + (Math.random() - 0.5) * 60));
+                    }
+
                     const rot = (Math.random() - 0.5) * 12;
                     positions.push({
                         x: x - cw / 2,
@@ -795,7 +846,6 @@
                 updateStats(names, qualifySet, eliminateSet);
 
                 if (!skipLayout) {
-                    // 先让卡片可见但透明，测量宽度
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
                             cards.forEach(c => {
@@ -803,11 +853,6 @@
                                 c.style.opacity = '0';
                             });
                             void grid.offsetHeight;
-                            // 获取每个卡片的自然宽度
-                            cards.forEach(c => {
-                                // 确保宽度已计算
-                                void c.offsetWidth;
-                            });
                             applyScatterLayout(grid, cards, names.length);
                             cards.forEach((c, i) => {
                                 setTimeout(() => {
@@ -917,7 +962,6 @@
                                 state.autoPlayTimer = null;
                             }
                         } else {
-                            // 继续自动播放
                             if (state.isAutoPlaying) {
                                 state.autoPlayTimer = setTimeout(autoPlayStep, AUTO_PAUSE_MS);
                             }
@@ -927,7 +971,7 @@
             }
 
             // =================================================================
-            //  自动播放
+            //  自动播放（仅由空格触发）
             // =================================================================
             function startAutoPlay() {
                 if (state.isAutoPlaying) return;
@@ -939,6 +983,7 @@
                     state.currentRound = 0;
                     renderCurrentRound();
                     updateRoundUI();
+                    // 延迟启动
                     setTimeout(() => {
                         if (!state.isAutoPlaying && !state.isAnimating) {
                             startAutoPlayInternal();
@@ -984,9 +1029,7 @@
                     state.isAutoPlaying = false;
                     return;
                 }
-
                 playQualifyEffect();
-                // playQualifyEffect 内部会在动画完成后调用 autoPlayStep
             }
 
             // =================================================================
@@ -1047,7 +1090,7 @@
             }
 
             // =================================================================
-            //  键盘 — 空格重新播放（无提示）
+            //  键盘 — 空格启动播放（无提示）
             // =================================================================
             function onKeyDown(e) {
                 if (e.key === ' ' || e.key === 'Space') {
@@ -1056,7 +1099,6 @@
                     if (state.isAnimating) return;
                     // 重置并播放
                     resetToFirst();
-                    // 延迟启动
                     setTimeout(() => {
                         if (!state.isAutoPlaying && !state.isAnimating) {
                             startAutoPlayInternal();
@@ -1066,7 +1108,7 @@
             }
 
             // =================================================================
-            //  初始化
+            //  初始化（不再自动播放）
             // =================================================================
             function init() {
                 renderCurrentRound();
@@ -1075,18 +1117,11 @@
                 document.addEventListener('keydown', onKeyDown);
                 window.addEventListener('resize', handleResize);
 
-                // 页面加载后延迟1.2秒自动开始播放
-                setTimeout(() => {
-                    if (!state.isAutoPlaying && !state.isAnimating && !state.isFinished) {
-                        startAutoPlayInternal();
-                    }
-                }, 1200);
-
-                console.log(`🇦🇷 阿根廷观赛晋级 (录屏版) 已启动，共 ${TOTAL_ROUNDS} 场`);
+                console.log(`🇦🇷 FIFA 2026 武汉阿根廷球迷俱乐部观赛晋级 (录屏版)`);
                 console.log('📋 各场人数:', FIXED_ROUNDS.map(r => r.length).join(' → '));
                 console.log(`⏸️ 每次晋级后暂停 ${AUTO_PAUSE_SECONDS} 秒`);
-                console.log('⌨️  空格键 = 重新播放（无提示） | 刷新页面 = 重置');
-                console.log('🎯 无按钮、无进度提示，适合录屏展示');
+                console.log('⌨️  按下空格键开始自动播放（无提示） | 刷新页面重置');
+                console.log('🎯 无按钮、无自动启动，适合录屏展示');
             }
 
             if (document.readyState === 'loading') {
